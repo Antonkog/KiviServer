@@ -17,10 +17,15 @@
 package com.android.inputmethod.pinyin;
 
 import android.content.res.Resources;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.util.Pair;
 import android.view.inputmethod.EditorInfo;
 
 import com.android.inputmethod.pinyin.SoftKeyboard.KeyRow;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Switcher used to switching input mode between Chinese, English, symbol,etc.
@@ -398,6 +403,7 @@ public class InputModeSwitcher {
 
     public InputModeSwitcher(PinyinIME imeService) {
         mImeService = imeService;
+        initCountry();
         Resources r = mImeService.getResources();
         mToggleStateEnLower = Integer.parseInt(r
                 .getString(R.string.toggle_en_lower));
@@ -425,6 +431,21 @@ public class InputModeSwitcher {
         mToggleRowUri = Integer.parseInt(r.getString(R.string.toggle_row_uri));
         mToggleRowEmailAddress = Integer.parseInt(r
                 .getString(R.string.toggle_row_emailaddress));
+    }
+
+    private void initCountry() {
+        String Country = null;
+        int Index = 51;
+        SQLiteDatabase db = SQLiteDatabase.openDatabase("/system/model/model.db",
+                null, SQLiteDatabase.OPEN_READONLY);
+        Cursor cursor = db.rawQuery("select * from  build_info where device_model=?", new String[]{android.os.Build.MODEL});
+
+        if (cursor.moveToFirst()) {
+            int id = cursor.getColumnIndex("country");
+            Country = cursor.getString(id);
+            cursor.close();
+            currentCountry = CountryLanguage.getCountryByCode(Country);
+        }
     }
 
     public int getInputMode() {
@@ -465,19 +486,22 @@ public class InputModeSwitcher {
             KeySelector.INSTANCE.setKeysToSelect(new Pair<>(3, 1));
             if (MODE_SKB_ENGLISH_UPPER == mInputMode
                     || MODE_SKB_ENGLISH_LOWER == mInputMode) {
-                newInputMode = MODE_SKB_RUSSIAN_LOWER;
+                //  newInputMode = MODE_SKB_RUSSIAN_LOWER;
+                newInputMode = currentCountry.getNextLanguage(MODE_SKB_ENGLISH_LOWER);
             }
 
             // Set this to MODE_SKB_ENGLISH_LOWER
             // to lock out Ukrainian input
             if (MODE_SKB_RUSSIAN_UPPER == mInputMode
                     || MODE_SKB_RUSSIAN_LOWER == mInputMode) {
-                newInputMode = MODE_SKB_UKRAINIAN_LOWER;
+                //newInputMode = MODE_SKB_UKRAINIAN_LOWER;
+                newInputMode = currentCountry.getNextLanguage(MODE_SKB_RUSSIAN_LOWER);
             }
 
             if (MODE_SKB_UKRAINIAN_LOWER == mInputMode
                     || MODE_SKB_UKRAINIAN_UPPER == mInputMode) {
-                newInputMode = MODE_SKB_ENGLISH_LOWER;
+                //newInputMode = MODE_SKB_ENGLISH_LOWER;
+                newInputMode = currentCountry.getNextLanguage(MODE_SKB_UKRAINIAN_LOWER);
             }
         } else if (USERDEF_KEYCODE_SYM_3 == userKey) {
             if (MODE_SKB_ENGLISH_UPPER == mInputMode
@@ -539,19 +563,22 @@ public class InputModeSwitcher {
 
         if (MODE_SKB_ENGLISH_UPPER == mInputMode
                 || MODE_SKB_ENGLISH_LOWER == mInputMode) {
-            newInputMode = MODE_SKB_RUSSIAN_LOWER;
+            newInputMode = currentCountry.getNextLanguage(MODE_SKB_ENGLISH_LOWER);
+            //newInputMode = MODE_SKB_RUSSIAN_LOWER;
         }
 
         if (MODE_SKB_RUSSIAN_UPPER == mInputMode
                 || MODE_SKB_RUSSIAN_LOWER == mInputMode) {
             // Set this to MODE_SKB_ENGLISH_LOWER
             // to lock out Ukrainian input
-            newInputMode = MODE_SKB_UKRAINIAN_LOWER;
+            //newInputMode = MODE_SKB_UKRAINIAN_LOWER;
+            newInputMode = currentCountry.getNextLanguage(MODE_SKB_RUSSIAN_LOWER);
         }
 
         if (MODE_SKB_UKRAINIAN_LOWER == mInputMode
                 || MODE_SKB_UKRAINIAN_UPPER == mInputMode) {
-            newInputMode = MODE_SKB_ENGLISH_LOWER;
+            //  newInputMode = MODE_SKB_ENGLISH_LOWER;
+            newInputMode = currentCountry.getNextLanguage(MODE_SKB_UKRAINIAN_LOWER);
         }
 
         saveInputMode(newInputMode);
@@ -880,5 +907,38 @@ public class InputModeSwitcher {
             mEnterKeyNormal = false;
         }
         mToggleStates.mKeyStatesNum = statesNum;
+    }
+
+    CountryLanguage currentCountry = CountryLanguage.UKRAINIAN;
+
+    private enum CountryLanguage {
+        UKRAINIAN("ua", MODE_SKB_ENGLISH_LOWER, MODE_SKB_UKRAINIAN_LOWER, MODE_SKB_RUSSIAN_LOWER),
+        RUSSIAN("ru", MODE_SKB_ENGLISH_LOWER, MODE_SKB_RUSSIAN_LOWER);
+
+        String code;
+        List<Integer> languages;
+
+        CountryLanguage(String langCode, Integer... languages) {
+            code = langCode;
+            this.languages = Arrays.asList(languages);
+        }
+
+        int getNextLanguage(int current) {
+            int newPosition = languages.indexOf(current) + 1;
+            if (newPosition < 0 || newPosition >= languages.size()) {
+                newPosition = 0;
+            }
+            return languages.get(newPosition);
+        }
+
+        static CountryLanguage getCountryByCode(String code) {
+            for (CountryLanguage language : values()) {
+                if (language.code.equalsIgnoreCase(code)) {
+                    return language;
+                }
+            }
+            return UKRAINIAN;
+        }
+
     }
 }
