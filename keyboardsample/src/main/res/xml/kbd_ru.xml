@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<Keyboard xmlns:android="http://schemas.android.com/apk/res/android"
+    android:keyHeight="@dimen/key_height"
+    android:keyWidth="9%p">
+    <Row
+        android:keyWidth="9.99%p"
+        android:rowEdgeFlags="top">
+        <Key
+            android:codes="49"
+            android:keyEdgeFlags="left"
+            android:keyLabel="1" />
+        <Key
+            android:codes="50"
+            android:keyLabel="2" />
+        <Key
+            android:codes="51"
+            android:keyLabel="3" />
+        <Key
+            android:codes="52"
+            android:keyLabel="4" />
+        <Key
+            android:codes="53"
+            android:keyLabel="5" />
+        <Key
+            android:codes="54"
+            android:keyLabel="6" />
+        <Key
+            android:codes="55"
+            android:keyLabel="7" />
+        <Key
+            android:codes="56"
+            android:keyLabel="8" />
+        <Key
+            android:codes="57"
+            android:keyLabel="9" />
+        <Key
+            android:codes="48"
+            android:keyEdgeFlags="right"
+            android:keyLabel="0" />
+    </Row>
+    <Row android:keyWidth="9.1%p">
+        <Key
+            android:codes="45"
+            android:keyEdgeFlags="left"
+            android:keyLabel="й"
+            android:popupCharacters="1"
+            android:popupKeyboard="@xml/kbd_popup_template" />
+        <Key
+            android:keyLabel="ц"
+            android:popupCharacters="2"
+            android:popupKeyboard="@xml/kbd_popup_template" />
+        <Key
+            android:keyLabel="у"
+            android:popupCharacters="3"
+            android:popupKeyboard="@xml/kbd_popup_template" />
+        <Key
+            android:keyLabel="к"
+            android:popupCharacters="4"
+            android:popupKeyboard="@xml/kbd_popup_template" />
+        <Key
+            android:keyLabel="е"
+            android:popupCharacters="ё"
+            android:popupKeyboard="@xml/kbd_popup_template" />
+        <Key
+            android:keyLabel="н"
+            android:popupCharacters="6"
+            android:popupKeyboard="@xml/kbd_popup_template" />
+        <Key
+            android:keyLabel="г"
+            android:popupCharacters="7"
+            android:popupKeyboard="@xml/kbd_popup_template" />
+        <Key
+            android:keyLabel="ш"
+            android:popupCharacters="8"
+            android:popupKeyboard="@xml/kbd_popup_template" />
+        <Key
+            android:keyLabel="щ"
+            android:popupCharacters="9"
+            android:popupKeyboard="@xml/kbd_popup_template" />
+        <Key
+            android:keyLabel="з"
+            android:popupCharacters="0"
+            android:popupKeyboard="@xml/kbd_popup_template" />
+        <Key
+            android:keyEdgeFlags="right"
+            android:keyLabel="х" />
+    </Row>
+
+    <Row android:keyWidth="9.1%p">
+        <Key
+            android:keyEdgeFlags="left"
+            android:keyLabel="ф" />
+        <Key android:keyLabel="ы" />
+        <Key android:keyLabel="в" />
+        <Key android:keyLabel="а" />
+        <Key android:keyLabel="п" />
+        <Key android:keyLabel="р" />
+        <Key android:keyLabel="о" />
+        <Key android:keyLabel="л" />
+        <Key android:keyLabel="д" />
+        <Key android:keyLabel="ж" />
+        <Key
+            android:keyEdgeFlags="right"
+            android:keyLabel="э" />
+    </Row>
+
+    <Row android:keyWidth="8.47%p">
+        <Key
+            android:codes="@integer/key_shift"
+            android:isModifier="true"
+            android:isSticky="true"
+            android:keyEdgeFlags="left"
+            android:keyIcon="@drawable/ic_shift"
+            android:keyWidth="11.8%p" />
+        <Key android:keyLabel="я" />
+        <Key android:keyLabel="ч" />
+        <Key android:keyLabel="с" />
+        <Key android:keyLabel="м" />
+        <Key android:keyLabel="и" />
+        <Key android:keyLabel="т" />
+        <Key android:keyLabel="ь" />
+        <Key android:keyLabel="б" />
+        <Key android:keyLabel="ю" />
+        <Key
+            android:codes="@integer/key_delete"
+            android:isModifier="true"
+            android:isRepeatable="true"
+            android:keyEdgeFlags="right"
+            android:keyIcon="@drawable/ic_backspace"
+            android:keyWidth="11.75%p" />
+    </Row>
+
+    <Row
+        android:keyWidth="10%p"
+        android:rowEdgeFlags="bottom">
+        <Key
+            android:codes="-2"
+            android:keyLabel="\?123"
+            android:keyWidth="15%p" />
+        <!--
+            android:codes: -101 is not a framework-defined key code but a key code that is
+            privately definedcom.wezom.kiviremoteserver.keyboardsample.softkeyboardoard.LatinKeyboardView.
+        -->
+        <Key
+            android:codes="-101"
+            android:isModifier="true"
+            android:keyIcon="@drawable/ic_language_switch" />
+        <Key
+            android:background="@color/key_background_bottom_row"
+            android:codes="32"
+            android:isRepeatable="true"
+            android:keyIcon="@drawable/dark_space"
+            android:keyWidth="40%p" />
+        <Key
+            android:codes="44"
+            android:keyLabel="," />
+
+        <Key
+            android:codes="46"
+            android:keyLabel="." />
+        <Key
+            android:codes="10"
+            android:keyEdgeFlags="right"
+            android:keyWidth="15%p" />
+    </Row>
+</Keyboard>

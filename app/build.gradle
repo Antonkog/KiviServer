@@ -1,0 +1,132 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'io.fabric'
+
+repositories {
+    maven { url 'https://maven.fabric.io/public' }
+    mavenCentral()
+}
+
+buildscript {
+    repositories {
+        maven { url 'https://maven.fabric.io/public' }
+    }
+
+    dependencies {
+        classpath 'io.fabric.tools:gradle:1.+'
+    }
+}
+
+android {
+    compileSdkVersion versions.compileSdk
+    buildToolsVersion versions.buildTools
+    defaultConfig {
+        applicationId "com.wezom.kiviremoteserver"
+        minSdkVersion versions.minSdk
+        targetSdkVersion versions.targetSdk
+        versionCode 3
+        versionName "1.2.2"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        vectorDrawables.useSupportLibrary = true
+    }
+    dexOptions {
+        javaMaxHeapSize "4g"
+    }
+
+    flavorDimensions "default"
+
+    sourceSets {
+        main {
+            manifest.srcFile 'src/main/AndroidManifest.xml'
+        }
+
+        sharedUser {
+            manifest.srcFile 'src/shared/AndroidManifest.xml'
+        }
+    }
+
+    productFlavors {
+        defaultUser {}
+
+        sharedUser {}
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+
+            packagingOptions {
+                exclude 'META-INF/services/javax.annotation.processing.Processor'
+                exclude 'LICENSE.txt'
+                exclude 'META-INF/DEPENDENCIES'
+                exclude 'META-INF/ASL2.0'
+                exclude 'META-INF/NOTICE.txt'
+                exclude 'META-INF/NOTICE'
+                exclude 'META-INF/notice.txt'
+                exclude 'META-INF/LICENSE.txt'
+                exclude 'META-INF/LICENSE'
+            }
+        }
+
+        debug {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+
+        crash.initWith(buildTypes.debug)
+        crash {
+            packagingOptions {
+                exclude 'META-INF/services/javax.annotation.processing.Processor'
+                exclude 'LICENSE.txt'
+                exclude 'META-INF/DEPENDENCIES'
+                exclude 'META-INF/ASL2.0'
+                exclude 'META-INF/NOTICE.txt'
+                exclude 'META-INF/NOTICE'
+                exclude 'META-INF/notice.txt'
+                exclude 'META-INF/LICENSE.txt'
+                exclude 'META-INF/LICENSE'
+            }
+        }
+    }
+
+    compileOptions {
+        targetCompatibility 1.8
+        sourceCompatibility 1.8
+    }
+
+    applicationVariants.all { variant ->
+        variant.outputs.all {
+            def date = new Date().format('ddMMyyyy.HHmmss')
+            outputFileName = "kivi.server.${variant.name}.${variant.versionName}.${date}.apk"
+        }
+    }
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation deps.support.appCompat
+    implementation deps.support.v4
+    implementation deps.support.design
+    implementation deps.support.recyclerView
+    implementation deps.support.cardView
+    implementation deps.rx.core
+    implementation deps.rx.android
+    implementation deps.rx.relay
+    implementation deps.moxy.core
+    implementation deps.moxy.appCompat
+    annotationProcessor deps.moxy.compiler
+    implementation deps.dagger.runtime
+    provided deps.dagger.annotation
+    annotationProcessor deps.dagger.compiler
+    implementation deps.gson
+    implementation deps.butterKnife.core
+    annotationProcessor deps.butterKnife.compiler
+    implementation deps.timber
+    implementation deps.anko.commons
+    implementation 'com.crashlytics.sdk.android:crashlytics:2.9.2'
+
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation project(path: ':mstarime')
+    implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+}

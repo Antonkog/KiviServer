@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="utf-8"?><!-- Copyright (C) 2009 The Android Open Source Project
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+-->
+<skb_template
+    balloon_bg="@drawable/key_balloon_bg"
+    color="@color/label_color"
+    color_balloon="@color/balloon_color"
+    color_highlight="@color/key_background_pressed"
+    key_xmargin="0%p"
+    key_ymargin="0%p"
+    popup_bg="@drawable/miniskb_bg"
+    skb_bg="@drawable/skb_container_bg">
+    <!-- Normal key -->
+    <key_type
+        bg="@drawable/btn_key_normal"
+        color_highlight="@color/key_background_pressed"
+        hlbg="@drawable/btn_key_pressed"
+        id="0" />
+
+    <!-- Function key -->
+    <key_type
+        bg="@drawable/btn_key_normal"
+        hlbg="@drawable/btn_key_pressed"
+        id="1" />
+
+    <!-- Light key, light is off -->
+    <key_type
+        bg="@drawable/btn_key_normal"
+        hlbg="@drawable/btn_key_pressed"
+        id="2" />
+
+    <!-- Light key, light is on -->
+    <key_type
+        bg="@drawable/btn_key_normal"
+        hlbg="@drawable/btn_key_pressed"
+        id="3" />
+
+    <!-- key without background-->
+    <key_type id="4" />
+
+    <!-- Key with normal background but on-key high-light-->
+    <key_type
+        bg="@drawable/btn_key_normal"
+        color_highlight="@color/key_background_pressed"
+        hlbg="@drawable/btn_key_pressed"
+        id="5" />
+
+    <!-- Default icons for enter key -->
+    <key_icon
+        code="66"
+        icon="@drawable/yochees_dark_enter"
+        icon_popup="@drawable/yochees_dark_enter" />
+
+    <!-- Default icons for space key -->
+    <key_icon
+        code="62"
+        icon="@drawable/dark_space"
+        icon_popup="@drawable/dark_space"
+        start_pos_x="34.696%p"
+        width="35.104%p" />
+
+    <!-- Default icons for delete key -->
+    <key_icon
+        code="67"
+        icon="@drawable/ic_backspace"
+        icon_popup="@drawable/ic_backspace" />
+
+    <!-- Default key definition -->
+    <!-- Enter key for QWERTY-like keyboards.-->
+    <key
+        code="66"
+        height="25%p"
+        id="1"
+        key_type="1"
+        start_pos_x="85.714%p"
+        start_pos_y="75%p"
+        width="14.286%p">
+        <!--<toggle_state-->
+        <!--code="66"-->
+        <!--label="GO"-->
+        <!--state_id="@string/toggle_enter_go" />-->
+        <!--<toggle_state-->
+        <!--code="66"-->
+        <!--icon="@drawable/sym_keyboard_search"-->
+        <!--icon_popup="@drawable/sym_keyboard_search"-->
+        <!--state_id="@string/toggle_enter_search" />-->
+        <!--<toggle_state-->
+        <!--code="66"-->
+        <!--label="SEND"-->
+        <!--state_id="@string/toggle_enter_send" />-->
+        <!--<toggle_state-->
+        <!--code="66"-->
+        <!--label="NEXT"-->
+        <!--state_id="@string/toggle_enter_next" />-->
+        <!--<toggle_state-->
+        <!--code="66"-->
+        <!--label="DONE"-->
+        <!--state_id="@string/toggle_enter_done" />   -->
+        <toggle_state
+            code="66"
+            icon="@drawable/yochees_dark_enter"
+            state_id="@string/toggle_enter_go" />
+        <toggle_state
+            code="66"
+            icon="@drawable/sym_keyboard_search"
+            icon_popup="@drawable/sym_keyboard_search"
+            state_id="@string/toggle_enter_search" />
+        <toggle_state
+            code="66"
+            icon="@drawable/yochees_dark_enter"
+            state_id="@string/toggle_enter_send" />
+        <toggle_state
+            code="66"
+            icon="@drawable/yochees_dark_enter"
+            state_id="@string/toggle_enter_next" />
+        <toggle_state
+            code="66"
+            icon="@drawable/yochees_dark_enter"
+            state_id="@string/toggle_enter_done" />
+    </key>
+
+    <!-- Enter key for phone keyboard.-->
+    <key
+        balloon="false"
+        code="66"
+        height="25%p"
+        id="2"
+        key_type="1"
+        start_pos_x="75%p"
+        start_pos_y="75%p"
+        width="25%p">
+        <toggle_state
+            code="66"
+            label="GO"
+            state_id="@string/toggle_enter_go" />
+        <toggle_state
+            code="66"
+            icon="@drawable/sym_keyboard_search"
+            icon_popup="@drawable/sym_keyboard_search"
+            state_id="@string/toggle_enter_search" />
+        <toggle_state
+            code="66"
+            label="SEND"
+            state_id="@string/toggle_enter_send" />
+        <toggle_state
+            code="66"
+            label="NEXT"
+            state_id="@string/toggle_enter_next" />
+        <toggle_state
+            code="66"
+            label="DONE"
+            state_id="@string/toggle_enter_done" />
+    </key>
+
+    <!-- Delete key.-->
+    <key
+        code="67"
+        height="25%p"
+        id="3"
+        key_type="1"
+        repeat="true"
+        start_pos_x="85.715%p"
+        start_pos_y="50%p"
+        width="14.286%p" />
+
+    <!-- Symbol-switching key (off-mode).-->
+    <key
+        code="-3"
+        height="25%p"
+        id="4"
+        key_type="2"
+        label="\?123"
+        start_pos_x="0%p"
+        start_pos_y="75%p"
+        width="14.286%p" />
+
+    <!-- Symbol-switching key (on-mode).-->
+    <key
+        code="-3"
+        height="25%p"
+        id="5"
+        key_type="3"
+        label="\?123"
+        start_pos_x="0%p"
+        start_pos_y="75%p"
+        width="14.286%p" />
+
+    <!-- Language-switching key. -->
+    <key
+        code="-2"
+        height="25%p"
+        icon="@drawable/ic_language_switch"
+        id="6"
+        key_type="1"
+        repeat="true"
+        start_pos_x="14.286%p"
+        start_pos_y="75%p"
+        width="10.205%p">
+        <toggle_state
+            code="-2"
+            icon="@drawable/ic_language_switch"
+            state_id="@string/toggle_en_lower" />
+        <toggle_state
+            code="-2"
+            icon="@drawable/ic_language_switch"
+            state_id="@string/toggle_en_upper" />
+    </key>
+
+    <!-- Comma key(English mode). -->
+    <key
+        height="25%p"
+        id="7"
+        key_type="0"
+        label=","
+        start_pos_x="75.509%p"
+        start_pos_y="75%p"
+        width="10.205%p" />
+
+    <!-- period -->
+    <key
+        height="25%p"
+        id="8"
+        key_type="0"
+        label="."
+        start_pos_x="24.491%p"
+        start_pos_y="75%p"
+        width="10.205%p" />
+</skb_template>
+

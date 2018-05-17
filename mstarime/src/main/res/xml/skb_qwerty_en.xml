@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?><!-- Copyright (C) 2009 The Android Open Source Project
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+-->
+<keyboard
+    balloon="true"
+    height="25%p"
+    key_type="0"
+    qwerty="true"
+    qwerty_uppercase="true"
+    repeat="false"
+    skb_cache_flag="true"
+    skb_template="@xml/skb_template1"
+    width="10%p">
+
+    <row>
+        <keys
+            codes="45|51|33|46|48|53|49|37|43|44"
+            labels="Q|W|E|R|T|Y|U|I|O|P"
+            splitter="|" />
+    </row>
+
+    <row
+        start_pos_x="4.078%p"
+        width="10.205%p">
+        <keys
+            codes="29|47|32|34|35|36|38|39|40"
+            labels="A|S|D|F|G|H|J|K|L"
+            splitter="|" />
+    </row>
+
+    <row width="10.205%p">
+        <key
+            code="-1"
+            icon="@drawable/ic_shift"
+            icon_popup="@drawable/ic_shift"
+            key_type="2"
+            width="14.286%p">
+            <toggle_state
+                code="-1"
+                icon="@drawable/ic_shift"
+                icon_popup="@drawable/ic_shift"
+                key_type="2"
+                state_id="@string/toggle_en_lower" />
+            <toggle_state
+                code="-1"
+                icon="@drawable/ic_shift_selected"
+                icon_popup="@drawable/ic_shift_selected"
+                key_type="3"
+                state_id="@string/toggle_en_upper" />
+        </key>
+        <keys
+            codes="54|52|31|50|30|42|41"
+            labels="Z|X|C|V|B|N|M"
+            splitter="|" />
+        <key id="3" />
+    </row>
+
+    <!--<row-->
+    <!--row_id="@string/toggle_row_cn"-->
+    <!--width="20%p">-->
+    <!--<key id="6" />-->
+    <!--<key id="4" />-->
+    <!--<key-->
+    <!--code="62"-->
+    <!--key_type="5"-->
+    <!--width="30.608%p" />-->
+    <!--<key-->
+    <!--icon="@drawable/period_full_icon"-->
+    <!--icon_popup="@drawable/period_full_popup_icon"-->
+    <!--label="。"-->
+    <!--width="14.696%p" />-->
+    <!--<key id="1" />-->
+    <!--</row>-->
+
+    <row
+        row_id="@string/toggle_row_en"
+        start_pos_y="75%p"
+        width="14.696%p">
+        <key id="4" />
+        <!-- todo Uncomment this when you'll add more languages-->
+        <key id="6" />
+        <key id="8" />
+        <key
+            code="62"
+            key_type="5"
+            width="40.813%p" />
+        <!--<key-->
+        <!--code="62"-->
+        <!--key_type="5"-->
+        <!--width="55.75%p" />-->
+        <key id="7" />
+        <key id="1" />
+    </row>
+
+    <row
+        row_id="@string/toggle_row_uri"
+        start_pos_y="75%p"
+        width="14.696%p">
+        <key id="4" />
+        <!-- todo Uncomment this when you'll add more languages-->
+        <key id="6" />
+        <key id="8" />
+        <key
+            code="62"
+            key_type="5"
+            width="40.813%p" />
+        <!--<key-->
+        <!--code="62"-->
+        <!--key_type="5"-->
+        <!--width="55.75%p" />-->
+        <key id="7" />
+        <key id="1" />
+    </row>
+
+    <row
+        row_id="@string/toggle_row_emailaddress"
+        start_pos_y="75%p"
+        width="14.696%p">
+        <key id="4" />
+        <!-- todo Uncomment this when you'll add more languages-->
+        <key id="6" />
+        <key id="8" />
+        <key
+            code="62"
+            key_type="5"
+            width="40.813%p" />
+        <!--<key-->
+        <!--code="62"-->
+        <!--key_type="5"-->
+        <!--width="55.75%p" />-->
+        <key id="7" />
+        <key id="1" />
+    </row>
+</keyboard>
+

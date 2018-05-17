@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?><!-- Copyright (C) 2009 The Android Open Source Project
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+-->
+<keyboard
+    balloon="true"
+    height="25%p"
+    key_type="0"
+    repeat="false"
+    skb_cache_flag="true"
+    skb_template="@xml/skb_template1"
+    width="10%p">
+
+    <row width="9.972%p">
+        <keys
+            codes="8|9|10|11|12|13|14|15|16"
+            labels="1|2|3|4|5|6|7|8|9"
+            splitter="|" />
+        <key
+            code="7"
+            label="0"
+            width="10.3%p" />
+    </row>
+
+    <row width="9.972%p">
+        <keys
+            labels="\@|#"
+            splitter="|" />
+        <key label="￥">
+            <toggle_state
+                label="$"
+                state_id="@string/toggle_en_sym1" />
+        </key>
+        <keys
+            labels="%|&quot;|*"
+            splitter="|" />
+        <key label="—">
+            <toggle_state
+                label="-"
+                state_id="@string/toggle_en_sym1" />
+        </key>
+        <key label="、">
+            <toggle_state
+                label="/"
+                state_id="@string/toggle_en_sym1" />
+        </key>
+        <key label="(" />
+
+        <key
+            label=")"
+            width="10.3%p" />
+
+    </row>
+
+    <row width="9.972%p">
+        <key label="！">
+            <toggle_state
+                label="!"
+                state_id="@string/toggle_en_sym1" />
+        </key>
+        <key label="“">
+            <toggle_state
+                label="&quot;"
+                state_id="@string/toggle_en_sym1" />
+        </key>
+        <key label="”">
+            <toggle_state
+                label="'"
+                state_id="@string/toggle_en_sym1" />
+        </key>
+        <key label=":">
+            <toggle_state
+                label=":"
+                state_id="@string/toggle_en_sym1" />
+        </key>
+        <key label=";">
+            <toggle_state
+                label=";"
+                state_id="@string/toggle_en_sym1" />
+        </key>
+        <key label=",">
+            <toggle_state
+                label=","
+                state_id="@string/toggle_en_sym1" />
+        </key>
+        <key label="\?">
+            <toggle_state
+                label="\?"
+                state_id="@string/toggle_en_sym1" />
+        </key>
+        <key
+            label="«"
+            width="7.95%p" />
+        <key
+            label="»"
+            width="7.95%p" />
+        <key id="3" />
+    </row>
+
+    <row
+        key_type="1"
+        width="14.696%p">
+        <key
+            code="-5"
+            key_type="2"
+            label="1/2"
+            width="14.286%p" />
+        <key
+            code="-3"
+            icon="@drawable/ic_language_switch"
+            key_type="3"
+            width="14.285%p" />
+        <key
+            code="62"
+            key_type="5"
+            width="41.25%p" />
+        <key
+            key_type="0"
+            label="."
+            width="15.886%p" />
+        <key id="1" />
+    </row>
+</keyboard>
+

@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?><!-- Copyright (C) 2009 The Android Open Source Project
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+-->
+<keyboard
+    balloon="true"
+    height="25%p"
+    key_type="0"
+    qwerty="true"
+    qwerty_uppercase="true"
+    repeat="false"
+    skb_cache_flag="true"
+    skb_template="@xml/skb_template1"
+    width="10%p">
+
+    <row width="8.3333%p">
+        <keys
+            codes="1081|1094|1091|1082|1077|1085|1075|1169|1096|1097|1079|1093"
+            labels="Й|Ц|У|К|Е|Н|Г|Ґ|Ш|Щ|З|Х"
+            splitter="|" />
+    </row>
+
+    <row width="8.3333%p">
+        <keys
+            codes="1092|1110|1074|1072|1087|1088|1086|1083|1076|1078|1108|1111"
+            labels="Ф|І|В|А|П|Р|О|Л|Д|Ж|Є|Ї"
+            splitter="|" />
+    </row>
+
+    <row width="7.935%p">
+        <key
+            code="-1"
+            icon="@drawable/ic_shift"
+            icon_popup="@drawable/ic_shift"
+            key_type="2"
+            width="14.286%p">
+            <toggle_state
+                code="-1"
+                icon="@drawable/ic_shift"
+                icon_popup="@drawable/ic_shift"
+                key_type="2"
+                state_id="@string/toggle_en_lower" />
+            <toggle_state
+                code="-1"
+                icon="@drawable/ic_shift_selected"
+                icon_popup="@drawable/ic_shift_selected"
+                key_type="3"
+                state_id="@string/toggle_en_upper" />
+        </key>
+        <keys
+            codes="1103|1095|1089|1084|1080|1090|1100|1073|1102"
+            labels="Я|Ч|С|М|И|Т|Ь|Б|Ю"
+            splitter="|" />
+        <key id="3" />
+    </row>
+
+    <row
+        row_id="@string/toggle_row_en"
+        start_pos_y="75%p"
+        width="14.696%p">
+        <key id="4" />
+        <!-- todo Uncomment this when you'll add more languages-->
+        <key id="6" />
+        <key id="8" />
+        <key
+            code="62"
+            key_type="5"
+            width="40.813%p" />
+        <!--<key-->
+        <!--code="62"-->
+        <!--key_type="5"-->
+        <!--width="55.75%p" />-->
+        <key id="7" />
+        <key id="1" />
+    </row>
+
+    <row
+        row_id="@string/toggle_row_uri"
+        start_pos_y="75%p"
+        width="14.696%p">
+        <key id="4" />
+        <!-- todo Uncomment this when you'll add more languages-->
+        <key id="6" />
+        <key id="8" />
+        <key
+            code="62"
+            key_type="5"
+            width="40.813%p" />
+        <!--<key-->
+        <!--code="62"-->
+        <!--key_type="5"-->
+        <!--width="55.75%p" />-->
+        <key id="7" />
+        <key id="1" />
+    </row>
+
+    <row
+        row_id="@string/toggle_row_emailaddress"
+        start_pos_y="75%p"
+        width="14.696%p">
+        <key id="4" />
+        <!-- todo Uncomment this when you'll add more languages-->
+        <key id="6" />
+        <key id="8" />
+        <key
+            code="62"
+            key_type="5"
+            width="40.813%p" />
+        <!--<key-->
+        <!--code="62"-->
+        <!--key_type="5"-->
+        <!--width="55.75%p" />-->
+        <key id="7" />
+        <key id="1" />
+    </row>
+</keyboard>
+
