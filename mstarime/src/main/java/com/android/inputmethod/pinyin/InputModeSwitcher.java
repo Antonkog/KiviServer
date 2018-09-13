@@ -403,7 +403,7 @@ public class InputModeSwitcher {
 
     public InputModeSwitcher(PinyinIME imeService) {
         mImeService = imeService;
-        initCountry();
+        //initCountry();
         Resources r = mImeService.getResources();
         mToggleStateEnLower = Integer.parseInt(r
                 .getString(R.string.toggle_en_lower));

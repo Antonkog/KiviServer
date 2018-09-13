@@ -49,6 +49,7 @@ import com.android.inputmethod.pinyin.inputprocessors.UkrainianInputProcessor;
 import com.android.inputmethod.pinyin.keycode.RussianKeyCodes;
 import com.android.inputmethod.pinyin.keycode.UkrainianKeyCodes;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
@@ -423,9 +424,8 @@ public class PinyinIME extends InputMethodService {
         if (event.isShiftPressed()) {
             if ((keyCode == KeyEvent.KEYCODE_CTRL_LEFT || keyCode == KeyEvent.KEYCODE_CTRL_RIGHT))
                 return false;
-
-            if ((keyCode >= KeyEvent.KEYCODE_0 && keyCode <= KeyEvent.KEYCODE_9) ||
-                    keyCode == KeyEvent.KEYCODE_GRAVE ||
+            if (keyCode != KeyEvent.KEYCODE_6 && (keyCode >= KeyEvent.KEYCODE_0 && keyCode <= KeyEvent.KEYCODE_9) ||
+                    /* keyCode == KeyEvent.KEYCODE_GRAVE ||*/
                     keyCode == KeyEvent.KEYCODE_MINUS ||
                     keyCode == KeyEvent.KEYCODE_EQUALS ||
                     keyCode == KeyEvent.KEYCODE_LEFT_BRACKET ||
@@ -507,6 +507,8 @@ public class PinyinIME extends InputMethodService {
             keyChar = '$';
         } else if ((keyCode == KeyEvent.KEYCODE_5) && event.isShiftPressed()) {
             keyChar = '%';
+        } else if ((keyCode == KeyEvent.KEYCODE_6) && event.isShiftPressed()) {
+            keyChar = ':';
         } else if ((keyCode == KeyEvent.KEYCODE_7) && event.isShiftPressed()) {
             keyChar = '&';
         } else if ((keyCode == KeyEvent.KEYCODE_8) && event.isShiftPressed()) {
@@ -1118,6 +1120,27 @@ public class PinyinIME extends InputMethodService {
         }
     }
 
+    @Override
+    public void setCandidatesViewShown(boolean shown) {
+        super.setCandidatesViewShown(shown);
+
+    }
+
+    String sysProp = "sys.kiviinputmethod";
+
+    private void setSystemProp(String prop, String value) {
+        try {
+            Class properties = Class.forName("android.os.SystemProperties");
+            Method setProp = properties.getMethod("set",
+                    new Class[]{String.class, String.class});
+            setProp.invoke(properties, new Object[]{prop, value});
+            Log.e("setSystemProp", "ok " + prop + ":" + value);
+        } catch (Exception e) {
+            Log.e("setSystemProp", "err " + prop + ":" + value + " error " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
     private void resetCandidateWindow() {
         if (mEnvironment.needDebug()) {
             Log.d(TAG, "Candidates window is to be reset");
@@ -1182,6 +1205,8 @@ public class PinyinIME extends InputMethodService {
                     + String.valueOf(editorInfo.inputType) + " Restarting:"
                     + String.valueOf(restarting));
         }
+
+        setSystemProp(sysProp, "1");
         KeySelector.INSTANCE.setKeysToSelect(defaultPair);
 
         updateIcon(mInputModeSwitcher.requestInputWithSkb(editorInfo));
@@ -1196,6 +1221,7 @@ public class PinyinIME extends InputMethodService {
         if (mEnvironment.needDebug()) {
             Log.d(TAG, "onFinishInputView.");
         }
+        setSystemProp(sysProp, "0");
         KeySelector.INSTANCE.setKeysToSelect(defaultPair);
 
         mSkbContainer.setInputViewFocusable(true);

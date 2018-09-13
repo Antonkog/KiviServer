@@ -335,7 +335,8 @@ public class ExecutorServiceIME extends PinyinIME implements EventProtocolExecut
                     break;
 
                 case SWITCH_OFF:
-                    launchApp("com.funshion.poweroffdialog");
+                    new Thread(() -> executeKeyDownUp(KeyEvent.KEYCODE_POWER)).start();
+                    //   launchApp("com.funshion.poweroffdialog");
                     break;
 
                 case SCROLL:

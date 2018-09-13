@@ -94,13 +94,13 @@ android {
         targetCompatibility 1.8
         sourceCompatibility 1.8
     }
-
-    applicationVariants.all { variant ->
-        variant.outputs.all {
-            def date = new Date().format('ddMMyyyy.HHmmss')
-            outputFileName = "kivi.server.${variant.name}.${variant.versionName}.${date}.apk"
-        }
-    }
+//
+//    applicationVariants.all { variant ->
+//        variant.outputs.all {
+//            def date = new Date().format('ddMMyyyy.HHmmss')
+//            outputFileName = "kivi.server.${variant.name}.${variant.versionName}.${date}.apk"
+//        }
+//    }
 }
 
 dependencies {

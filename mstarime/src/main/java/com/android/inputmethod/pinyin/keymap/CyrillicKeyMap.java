@@ -98,6 +98,9 @@ public class CyrillicKeyMap {
         keys.put(KEYCODE_B, RUSSIAN_B);
         keys.put(KEYCODE_N, RUSSIAN_N);
         keys.put(KEYCODE_M, RUSSIAN_M);
+        keys.put(71, 1093);//[	х	х	71+	1093
+
+        keys.put(74, 1078);//;	ж	ж	74+	1078
         keys.put(KEYCODE_PERIOD, RUSSIAN_PERIOD);
         keys.put(KEYCODE_COMMA, RUSSIAN_COMMA);
     }
@@ -106,6 +109,9 @@ public class CyrillicKeyMap {
         if (keys == null)
             initKeys();
         keys.put(KEYCODE_S, UKRAINIAN_S);
+        keys.put(72, 1111);//]	ї	ъ	72+	1098
+        keys.put(68, 1169);//\	ґ	ё	73-	1105 KEYCODE_GRAVE 68
+        keys.put(75, 1108);//'	є	э	75+	1101
         return keys;
     }
 
@@ -113,6 +119,9 @@ public class CyrillicKeyMap {
         if (keys == null)
             initKeys();
         keys.put(KEYCODE_S, RUSSIAN_S);
+        keys.put(72, 1098);//]	ї	ъ	72+	1098
+        keys.put(68, 1105);//\	ґ	ё	73-	1105 KEYCODE_GRAVE 68
+        keys.put(75, 1101);//'	є	э	75+	1101
         return keys;
     }
 }
