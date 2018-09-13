@@ -16,6 +16,7 @@
 
 package com.android.inputmethod.pinyin;
 
+import android.app.Instrumentation;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Canvas;
@@ -28,7 +29,10 @@ import android.os.Vibrator;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.Pair;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputConnection;
 
 import com.android.inputmethod.pinyin.SoftKeyboard.KeyRow;
 
@@ -748,7 +752,7 @@ public class SoftKeyboardView extends View {
      *             the specific direction to move.
      * @return void
      ***************************************************************/
-    public void moveToNextKey(int direction) {
+    public void moveToNextKey(int direction, EditorInfo ei, InputConnection ic) {
         int currentIndex = getIndexCurrentSelectedKey();
         int currentRow = getRowCurrentSelectedKey();
         int nextRow;
@@ -766,6 +770,31 @@ public class SoftKeyboardView extends View {
                         isSkbOnFocus = false;
                     } else {
                         isSkbOnFocus = true;
+                    }
+
+
+                    if ("com.android.browser".equalsIgnoreCase(ei.packageName)) {
+                        Runnable r = new Runnable() {
+                            @Override
+                            public void run() {
+                                new Instrumentation().sendKeyDownUpSync(KeyEvent.KEYCODE_BACK);
+//                            ActivityManager am = (ActivityManager) Application.getSystemService(ACTIVITY_SERVICE);
+//                            RunningTaskInfo foregroundTaskInfo = am.getRunningTasks(1).get(0);
+                            }
+                        };
+
+                        Thread t = new Thread(r);
+                        t.start();
+
+                    } else {
+                        if (ei != null && ic != null) {
+                            if (ei.actionId != 0) {
+                                ic.performEditorAction(ei.actionId);
+                            } else if ((ei.imeOptions & EditorInfo.IME_MASK_ACTION)
+                                    != EditorInfo.IME_ACTION_NONE) {
+                                ic.performEditorAction(ei.imeOptions & EditorInfo.IME_MASK_ACTION);
+                            }
+                        }
                     }
                 } else {
                     int index = mSoftKeyboard.getmapToKey(mSoftKey.mLeft + mSoftKey.width() / 2,

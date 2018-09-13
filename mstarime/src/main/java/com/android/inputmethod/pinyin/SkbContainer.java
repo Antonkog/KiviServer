@@ -27,6 +27,8 @@ import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputConnection;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.ViewFlipper;
@@ -240,7 +242,15 @@ public class SkbContainer extends RelativeLayout implements OnTouchListener {
      ****************************************************************/
     public void actionForKeyEvent(int direction) {
         if (mMajorView != null) {
-            mMajorView.moveToNextKey(direction);
+
+//            int action = mInputModeSwitcher.mEditorInfo.imeOptions
+//                    & (EditorInfo.IME_MASK_ACTION | EditorInfo.IME_FLAG_NO_ENTER_ACTION);
+
+            final EditorInfo ei = (mService).getCurrentInputEditorInfo();
+            final InputConnection ic = (mService).getCurrentInputConnection();
+
+            mMajorView.moveToNextKey(direction, ei, ic);
+
         }
     }
 
