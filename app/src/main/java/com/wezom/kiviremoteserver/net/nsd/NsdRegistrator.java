@@ -1,9 +1,11 @@
 package com.wezom.kiviremoteserver.net.nsd;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.net.nsd.NsdManager;
 import android.net.nsd.NsdServiceInfo;
 import android.preference.PreferenceManager;
+import android.provider.Settings;
 
 import com.wezom.kiviremoteserver.common.DeviceUtils;
 import com.wezom.kiviremoteserver.di.qualifiers.ApplicationContext;
@@ -22,6 +24,7 @@ public class NsdRegistrator {
 
     private static final String SERVICE_MASK = "(KIVI_TV)";
     private static final String SERVICE_TYPE = "_http._tcp.";
+    private static final String SECURE_SETTINGS_BLUETOOTH_NAME="bluetooth_name";
 
     private Context context;
     private NsdManager.RegistrationListener registrationListener;
@@ -50,7 +53,10 @@ public class NsdRegistrator {
         NsdServiceInfo serviceInfo = new NsdServiceInfo();
         // The name is subject to change based on conflicts
         // with other services advertised on the same network.
-        serviceInfo.setServiceName(getDeviceName() + getUUIDMask());
+
+        ContentResolver  mContentResolver = context.getContentResolver();
+        String name = Settings.Secure.getString(mContentResolver,SECURE_SETTINGS_BLUETOOTH_NAME);
+        serviceInfo.setServiceName(name + getUUIDMask());
         serviceInfo.setServiceType(SERVICE_TYPE);
         serviceInfo.setPort(port);
         Timber.d("Register nsd %s ", getDeviceName() + getUUIDMask());

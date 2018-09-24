@@ -835,10 +835,7 @@ public class SoftKeyboardView extends View {
                     setSoftKeySelected(currentRow, currentIndex - 1);
                 } else {
                     if (currentRow > 0) {
-                        nextRow = getValidRow(currentRow - 1, false);
-                        setSoftKeySelected(nextRow, getMaxIndexOfRow(nextRow));
-                    } else {
-                        // to do something:lost focus?
+                        setSoftKeySelected(currentRow, getMaxIndexOfRow(currentRow));
                     }
                 }
                 invalidate();
@@ -855,7 +852,7 @@ public class SoftKeyboardView extends View {
                         if (currentRow >= 3) {
                             return;
                         }
-                        setSoftKeySelected(getValidRow(currentRow + 1, true), 0);
+                        setSoftKeySelected(currentRow, 0);
                     }
                 }
                 invalidate();
