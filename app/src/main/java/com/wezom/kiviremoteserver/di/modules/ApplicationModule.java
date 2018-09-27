@@ -4,7 +4,7 @@ import android.app.Application;
 import android.content.Context;
 
 import com.wezom.kiviremoteserver.di.qualifiers.ApplicationContext;
-import com.wezom.kiviremoteserver.net.nsd.NsdRegistrator;
+import com.wezom.kiviremoteserver.net.nsd.NsdUtil;
 
 import dagger.Module;
 import dagger.Provides;
@@ -30,8 +30,8 @@ public class ApplicationModule {
 
     @Provides
     @ApplicationContext
-    static NsdRegistrator provideCategoryRepository(Context context) {
-        return new NsdRegistrator(context);
+    static NsdUtil provideNSDUtil(Context context) {
+        return new NsdUtil(context);
     }
 
 }

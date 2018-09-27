@@ -53,8 +53,10 @@ public class App extends Application {
             case "crash":
             case "release":
                 Fabric.with(this, new Crashlytics());
+                 break;
             case "debug":
                 Timber.plant(new Timber.DebugTree());
+                break;
         }
 
         startService(new Intent(this, KiviRemoteService.class));

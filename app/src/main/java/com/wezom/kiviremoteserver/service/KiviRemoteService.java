@@ -11,7 +11,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
-import android.net.nsd.NsdManager;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
@@ -43,7 +42,7 @@ import com.wezom.kiviremoteserver.common.Utils;
 import com.wezom.kiviremoteserver.interfaces.DataStructure;
 import com.wezom.kiviremoteserver.interfaces.RemoteServer;
 import com.wezom.kiviremoteserver.mvp.view.ServiceMvpView;
-import com.wezom.kiviremoteserver.net.nsd.NsdRegistrator;
+import com.wezom.kiviremoteserver.net.nsd.NsdUtil;
 import com.wezom.kiviremoteserver.net.server.KiviServer;
 import com.wezom.kiviremoteserver.net.server.model.ServerApplicationInfo;
 import com.wezom.kiviremoteserver.service.protocol.ServerEventStructure;
@@ -71,14 +70,13 @@ import static com.wezom.kiviremoteserver.common.KiviProtocolStructure.ExecAction
 public class KiviRemoteService extends Service implements ServiceMvpView {
 
     @Inject
-    NsdRegistrator nsdRegistrator;
+    NsdUtil autoDiscoveryUtil;
 
     private final static int SERVER_ID = 123;
     public static boolean isStarted = false;
 
     private RemoteServer server;
 
-    private NsdManager nsdManager;
     private Handler handler = new Handler();
 
     private String messIp = "";
@@ -116,7 +114,6 @@ public class KiviRemoteService extends Service implements ServiceMvpView {
 
         dispose();
         disposables = new CompositeDisposable();
-        nsdManager = (NsdManager) getApplicationContext().getSystemService(NSD_SERVICE);
         server = startServer();
 
         isStarted = true;
@@ -287,13 +284,15 @@ public class KiviRemoteService extends Service implements ServiceMvpView {
     @Override
     public void registerNsd(int port) {
         Timber.d("Register nsd");
-        nsdRegistrator.registerServiceNsd(port, nsdManager);
+        autoDiscoveryUtil = new NsdUtil(getApplicationContext());
+        autoDiscoveryUtil.initializeResolveListener();
+        autoDiscoveryUtil.registerService(port);
+        autoDiscoveryUtil.discoverServices();
     }
 
     @Override
     public void unregisterNsd() {
-        if (nsdRegistrator != null && nsdManager != null)
-            nsdRegistrator.unregisterNsd(nsdManager);
+        autoDiscoveryUtil.tearDown();
     }
 
     @Override
