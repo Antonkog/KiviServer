@@ -19,11 +19,13 @@ package com.android.inputmethod.pinyin;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 import android.util.Pair;
 import android.view.inputmethod.EditorInfo;
 
 import com.android.inputmethod.pinyin.SoftKeyboard.KeyRow;
 
+import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
 
@@ -403,7 +405,7 @@ public class InputModeSwitcher {
 
     public InputModeSwitcher(PinyinIME imeService) {
         mImeService = imeService;
-        //initCountry();
+        currentCountry = CountryLanguage.getCountryByCode(getCountryCode());
         Resources r = mImeService.getResources();
         mToggleStateEnLower = Integer.parseInt(r
                 .getString(R.string.toggle_en_lower));
@@ -433,19 +435,65 @@ public class InputModeSwitcher {
                 .getString(R.string.toggle_row_emailaddress));
     }
 
-    private void initCountry() {
-        String Country = null;
-        int Index = 51;
-        SQLiteDatabase db = SQLiteDatabase.openDatabase("/system/model/model.db",
-                null, SQLiteDatabase.OPEN_READONLY);
-        Cursor cursor = db.rawQuery("select * from  build_info where device_model=?", new String[]{android.os.Build.MODEL});
+    private String getCountryCode() {
+        String country = "";
+        if (!isTVRealtek()) {
+            try {
+                SQLiteDatabase db = SQLiteDatabase.openDatabase("/system/model/model.db",
+                        null, SQLiteDatabase.OPEN_READONLY);
+                Cursor cursor = db.rawQuery("select * from  build_info where device_model=?", new String[]{android.os.Build.MODEL});
 
-        if (cursor.moveToFirst()) {
-            int id = cursor.getColumnIndex("country");
-            Country = cursor.getString(id);
-            cursor.close();
-            currentCountry = CountryLanguage.getCountryByCode(Country);
+                if (cursor != null && cursor.moveToFirst()) {
+                    int id = cursor.getColumnIndex("country");
+                    country = cursor.getString(id);
+                    cursor.close();
+                    return country;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                Log.e(this.getClass().getName(), "exception while getting country from mtc database : " + e.getMessage());
+            }
+        } else {
+            country = getProperty("ro.product.country");
         }
+
+        if (country.length() > 2) {
+            return mapCountryValue(country);
+        }
+        return country;
+    }
+
+    private String mapCountryValue(String value) {
+        switch (value.toLowerCase()) {
+            case "ukraine":
+            case "ukr":
+                return "UA";
+            case "russia":
+            case "rus":
+                return "RU";
+            default: {
+                Log.e(this.getClass().getName(),    " wrong country " + value  + ", setting default - UA : ");
+                return "UA";
+            }
+        }
+    }
+
+
+    public static String getProperty(String value) {
+        String model = "";
+        try {
+            Class<?> c = Class.forName("android.os.SystemProperties");
+            Method get = c.getMethod("get", String.class);
+            model = (String) get.invoke(c, value);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return model;
+    }
+
+
+    public static boolean isTVRealtek() {
+        return "realtek".equalsIgnoreCase(getProperty("ro.product.manufacturer"));
     }
 
     public int getInputMode() {
