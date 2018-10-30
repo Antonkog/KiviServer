@@ -1,5 +1,6 @@
 package com.wezom.kiviremoteserver.net.server.threads;
 
+import com.crashlytics.android.Crashlytics;
 import com.wezom.kiviremoteserver.net.server.model.WriteThreadedModel;
 
 import java.io.PrintWriter;
@@ -40,6 +41,7 @@ public class SendingThread extends Thread {
             }
         } catch (Exception e) {
             Timber.e(e, e.getMessage());
+            Crashlytics.logException(e);
         }
     }
 

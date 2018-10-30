@@ -1,0 +1,87 @@
+{
+  "project_info": {
+    "project_number": "493497368835",
+    "firebase_url": "https://kiviremoteserver-f4116.firebaseio.com",
+    "project_id": "kiviremoteserver-f4116",
+    "storage_bucket": "kiviremoteserver-f4116.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:493497368835:android:d365568d679ae3b7",
+        "android_client_info": {
+          "package_name": "com.wezom.kiviremoteserver"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "493497368835-1upbqqpupdo7l8605t41it8lo8jatk91.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.wezom.kiviremoteserver",
+            "certificate_hash": "9ce412bf50bb7c586674929375112d202474cff1"
+          }
+        },
+        {
+          "client_id": "493497368835-ld4ttn8lu52i647gvcupfaugbotg01d4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.wezom.kiviremoteserver",
+            "certificate_hash": "2144e171cd5d43b0baf33daedacf89f8c580455b"
+          }
+        },
+        {
+          "client_id": "493497368835-60umqqj0gdriatohti9njcjdttq0v4pe.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.wezom.kiviremoteserver",
+            "certificate_hash": "27196e386b875e76adf700e7ea84e4c6eee33dfa"
+          }
+        },
+        {
+          "client_id": "493497368835-fi38v7376ofpi2nr5k5u01ii55bqumjf.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.wezom.kiviremoteserver",
+            "certificate_hash": "b560e901c347e51d046d21019c4606f9869efc58"
+          }
+        },
+        {
+          "client_id": "493497368835-ap9303bn7vu2fdd7snki13n9dqd0ql8v.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.wezom.kiviremoteserver",
+            "certificate_hash": "3f99a6ff87a633a30d403e02f23b5b8a56faf20e"
+          }
+        },
+        {
+          "client_id": "493497368835-gsn8g0sob1s2nnb09hkm81399fu7q7c6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyArs81j3zqb9gHD_3uhpputLyCU7474FFg"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "493497368835-gsn8g0sob1s2nnb09hkm81399fu7q7c6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
