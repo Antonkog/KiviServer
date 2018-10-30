@@ -11,6 +11,7 @@ import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.util.Log;
 
+import com.wezom.kiviremoteserver.App;
 import com.wezom.kiviremoteserver.di.qualifiers.ApplicationContext;
 
 import javax.inject.Inject;
@@ -26,7 +27,8 @@ public class NsdUtil {
     private static final String SERVICE_TYPE = "_http._tcp.";
     private static final String DEVICE_NAME_KEY = "device_name";
 
-    private String mServiceName = Build.MODEL;
+    private String mServiceName;
+
     private NsdServiceInfo nsdServiceInfo;
 
     private Context context;
@@ -41,6 +43,16 @@ public class NsdUtil {
     public NsdUtil(@ApplicationContext Context context) {
         this.context = context;
         mNsdManager = (NsdManager) context.getSystemService(Context.NSD_SERVICE);
+        mServiceName = setServiceName();
+    }
+
+    private String setServiceName() {
+        mServiceName = Build.MODEL;
+        if(App.isTVRealtek()){
+            mServiceName = App.getProperty("ro.product.panel");
+            if(mServiceName.isEmpty()) mServiceName = Build.MODEL;
+        }
+        return mServiceName;
     }
 
     private void observeNameChange(@ApplicationContext Context context) {
@@ -66,6 +78,7 @@ public class NsdUtil {
                     Timber.d(TAG + "Unknown Service Type: " + service.getServiceType());
                 } else if (service.getServiceName().equals(mServiceName)) {
                     Timber.d(TAG + "Same machine: " + mServiceName);
+                    nsdServiceInfo = service;
                     syncDeviceName();
                 } else if (service.getServiceName().contains(mServiceName)) {
                     mNsdManager.resolveService(service, mResolveListener);
@@ -74,7 +87,7 @@ public class NsdUtil {
 
             @Override
             public void onServiceLost(NsdServiceInfo service) {
-                Timber.e(TAG + "service lost" + service);
+                Timber.e(TAG + "service lost" + service.toString() + "\n old service :  \n" + nsdServiceInfo.toString());
                 if (nsdServiceInfo == service) {
                     nsdServiceInfo = null;
                 }

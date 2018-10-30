@@ -11,15 +11,14 @@ import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Set;
 
 import timber.log.Timber;
 
-import static android.content.Context.MODE_WORLD_READABLE;
 import static android.content.Context.UI_MODE_SERVICE;
 
 /**
@@ -106,15 +105,19 @@ public class DeviceUtils {
     }
 
     private static List<String> getWhiteList(Context context) {
-        int length;
-        SharedPreferences sp;
+        Set<String> apps;
         try {
-            Context c = context.createPackageContext("com.bestv.ott", Context.CONTEXT_IGNORE_SECURITY);
-            sp = c.getSharedPreferences("systemwhiltelist", MODE_WORLD_READABLE);
-            length = sp.getInt("length", 0);
-            whiteListSystemApps.clear();
-            for (int i = 0; i < length; i++) {
-                whiteListSystemApps.add(sp.getString("string" + i, null));
+            Context myContext = context.createPackageContext("com.kivi.launcher",
+                    Context.MODE_PRIVATE);
+
+            SharedPreferences testPrefs = myContext.getSharedPreferences
+                    ("kivi.launcher", Context.MODE_PRIVATE);
+            apps = testPrefs.getStringSet("white_list", null);
+            if (apps != null) {
+                whiteListSystemApps.clear();
+                whiteListSystemApps.addAll(apps);
+            } else {
+                Timber.e("getWhiteList empty");
             }
         } catch (PackageManager.NameNotFoundException e) {
             Timber.e(e, e.getMessage());

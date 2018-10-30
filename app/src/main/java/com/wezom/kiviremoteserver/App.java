@@ -13,6 +13,7 @@ import com.wezom.kiviremoteserver.di.modules.ApplicationModule;
 import com.wezom.kiviremoteserver.service.CursorService;
 import com.wezom.kiviremoteserver.service.KiviRemoteService;
 
+import java.lang.reflect.Method;
 import java.util.UUID;
 
 import io.fabric.sdk.android.Fabric;
@@ -61,5 +62,23 @@ public class App extends Application {
 
         startService(new Intent(this, KiviRemoteService.class));
         startService(new Intent(this, CursorService.class));
+    }
+
+
+
+    public static boolean isTVRealtek() {
+        return "realtek".equalsIgnoreCase(getProperty("ro.product.manufacturer"));
+    }
+
+    public static String getProperty(String value) {
+        String model = "";
+        try {
+            Class<?> c = Class.forName("android.os.SystemProperties");
+            Method get = c.getMethod("get", String.class);
+            model = (String) get.invoke(c, value);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return model;
     }
 }
