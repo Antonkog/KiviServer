@@ -95,13 +95,13 @@ public class App extends Application {
         WindowManager wmgr = (WindowManager) getApplicationContext()
                 .getSystemService(Context.WINDOW_SERVICE);
         final WindowManager.LayoutParams param = new WindowManager.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT,
                 WindowManager.LayoutParams.TYPE_SYSTEM_DIALOG,//TYPE_SYSTEM_ALERT
-                WindowManager.LayoutParams.FLAG_LOCAL_FOCUS_MODE,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 PixelFormat.TRANSLUCENT);
         param.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
-        param.windowAnimations = android.R.style.Animation_Translucent;
+       param.windowAnimations = android.R.style.Animation_Toast;
         View generalView = View.inflate(this, R.layout.layout_dialog, null);
         generalView.findViewById(R.id.yes).setOnClickListener(v -> {
             Intent intent = new Intent();
