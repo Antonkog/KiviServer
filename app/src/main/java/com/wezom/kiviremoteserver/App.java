@@ -1,10 +1,23 @@
 package com.wezom.kiviremoteserver;
 
 import android.app.Application;
+import android.content.BroadcastReceiver;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.graphics.PixelFormat;
+import android.hardware.usb.UsbDevice;
+import android.hardware.usb.UsbManager;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatDelegate;
+import android.util.Log;
+import android.view.Gravity;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.widget.RelativeLayout;
 
 import com.crashlytics.android.Crashlytics;
 import com.wezom.kiviremoteserver.di.components.ApplicationComponent;
@@ -15,6 +28,7 @@ import com.wezom.kiviremoteserver.service.KiviRemoteService;
 
 import java.lang.reflect.Method;
 import java.util.UUID;
+import java.util.logging.Handler;
 
 import io.fabric.sdk.android.Fabric;
 import timber.log.Timber;
@@ -54,7 +68,7 @@ public class App extends Application {
             case "crash":
             case "release":
                 Fabric.with(this, new Crashlytics());
-                 break;
+                break;
             case "debug":
                 Timber.plant(new Timber.DebugTree());
                 break;
@@ -62,6 +76,52 @@ public class App extends Application {
 
         startService(new Intent(this, KiviRemoteService.class));
         startService(new Intent(this, CursorService.class));
+
+        BroadcastReceiver mUsbReceiver = new BroadcastReceiver() {
+            public void onReceive(Context context, Intent intent) {
+                String action = intent.getAction();
+                UsbDevice device = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
+                Log.e("inputManager", "usb " + action + "  : " + device);
+                startDialog(device);
+            }
+        };
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(UsbManager.ACTION_USB_ACCESSORY_ATTACHED);
+        filter.addAction(UsbManager.ACTION_USB_DEVICE_ATTACHED);
+        registerReceiver(mUsbReceiver, filter);
+    }
+
+    private void startDialog(UsbDevice device) {
+        WindowManager wmgr = (WindowManager) getApplicationContext()
+                .getSystemService(Context.WINDOW_SERVICE);
+        final WindowManager.LayoutParams param = new WindowManager.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                WindowManager.LayoutParams.TYPE_SYSTEM_DIALOG,//TYPE_SYSTEM_ALERT
+                WindowManager.LayoutParams.FLAG_LOCAL_FOCUS_MODE,
+                PixelFormat.TRANSLUCENT);
+        param.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
+        param.windowAnimations = android.R.style.Animation_Translucent;
+        View generalView = View.inflate(this, R.layout.layout_dialog, null);
+        generalView.findViewById(R.id.yes).setOnClickListener(v -> {
+            Intent intent = new Intent();
+            intent.setComponent(new ComponentName("com.rtk.mediabrowser", "com.rtk.mediabrowser.MediaBrowser"));
+            startActivity(intent);
+            wmgr.removeView(generalView);
+        });
+
+        generalView.findViewById(R.id.no).setOnClickListener(v -> {
+            wmgr.removeView(generalView);
+        });
+        wmgr.addView(generalView, param);
+        new android.os.Handler().postDelayed(() -> {
+            try {
+
+                wmgr.removeView(generalView);
+            } catch (Exception e) {
+            }
+            ;
+        }, 150 * 1000);
     }
 
 

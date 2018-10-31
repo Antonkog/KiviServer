@@ -5,6 +5,7 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.media.AudioManager;
+import android.os.PowerManager;
 import android.os.SystemClock;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
