@@ -834,7 +834,7 @@ public class SoftKeyboardView extends View {
                 if (currentIndex > 0) {
                     setSoftKeySelected(currentRow, currentIndex - 1);
                 } else {
-                    if (currentRow > 0) {
+                    if (currentRow >= 0) {
                         setSoftKeySelected(currentRow, getMaxIndexOfRow(currentRow));
                     }
                 }

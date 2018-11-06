@@ -26,7 +26,8 @@ public class KiviProtocolStructure {
         OPEN_SETTINGS,
         HOME_DOWN,
         HOME_UP,
-        LAUNCH_QUICK_APPS
+        LAUNCH_QUICK_APPS,
+        NAME_CHANGE
     }
 
     public enum ServerEventType {

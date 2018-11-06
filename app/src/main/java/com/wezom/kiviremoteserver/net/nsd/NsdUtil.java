@@ -25,7 +25,7 @@ public class NsdUtil {
     private static final String TAG = "NsdUtil";
     private static final String SERVICE_MASK = "(KIVI_TV)";
     private static final String SERVICE_TYPE = "_http._tcp.";
-    private static final String DEVICE_NAME_KEY = "device_name";
+    public static final String DEVICE_NAME_KEY = "device_name";
 
     private String mServiceName;
 
