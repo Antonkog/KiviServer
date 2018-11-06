@@ -76,19 +76,20 @@ public class App extends Application {
 
         startService(new Intent(this, KiviRemoteService.class));
         startService(new Intent(this, CursorService.class));
-
-        BroadcastReceiver mUsbReceiver = new BroadcastReceiver() {
-            public void onReceive(Context context, Intent intent) {
-                String action = intent.getAction();
-                UsbDevice device = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
-                Log.e("inputManager", "usb " + action + "  : " + device);
-                startDialog(device);
-            }
-        };
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(UsbManager.ACTION_USB_ACCESSORY_ATTACHED);
-        filter.addAction(UsbManager.ACTION_USB_DEVICE_ATTACHED);
-        registerReceiver(mUsbReceiver, filter);
+        if (isTVRealtek()) {
+            BroadcastReceiver mUsbReceiver = new BroadcastReceiver() {
+                public void onReceive(Context context, Intent intent) {
+                    String action = intent.getAction();
+                    UsbDevice device = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
+                    Log.e("inputManager", "usb " + action + "  : " + device);
+                    startDialog(device);
+                }
+            };
+            IntentFilter filter = new IntentFilter();
+            filter.addAction(UsbManager.ACTION_USB_ACCESSORY_ATTACHED);
+            filter.addAction(UsbManager.ACTION_USB_DEVICE_ATTACHED);
+            registerReceiver(mUsbReceiver, filter);
+        }
     }
 
     private void startDialog(UsbDevice device) {
@@ -101,7 +102,7 @@ public class App extends Application {
                 WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 PixelFormat.TRANSLUCENT);
         param.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
-       param.windowAnimations = android.R.style.Animation_Toast;
+        param.windowAnimations = android.R.style.Animation_Toast;
         View generalView = View.inflate(this, R.layout.layout_dialog, null);
         generalView.findViewById(R.id.yes).setOnClickListener(v -> {
             Intent intent = new Intent();
@@ -121,9 +122,8 @@ public class App extends Application {
             } catch (Exception e) {
             }
             ;
-        }, 150 * 1000);
+        }, 15 * 1000);
     }
-
 
 
     public static boolean isTVRealtek() {
