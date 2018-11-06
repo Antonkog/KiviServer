@@ -7,6 +7,7 @@ import android.content.res.Resources;
 import android.media.AudioManager;
 import android.os.PowerManager;
 import android.os.SystemClock;
+import android.provider.Settings;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.inputmethod.EditorInfo;
@@ -35,6 +36,8 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
+
+import static com.wezom.kiviremoteserver.net.nsd.NsdUtil.DEVICE_NAME_KEY;
 
 /**
  * Created by andre on 06.06.2017.
@@ -356,6 +359,13 @@ public class ExecutorServiceIME extends PinyinIME implements EventProtocolExecut
                     launchQuickApps();
                     break;
 
+                case NAME_CHANGE:
+                    String name = dataStructure.getArgs().get(0);
+                    if(name != null && !name.trim().isEmpty()){
+                        Settings.Global.putString(getApplicationContext().getContentResolver(), DEVICE_NAME_KEY, name);
+                        Settings.System.putString(getApplicationContext().getContentResolver(), DEVICE_NAME_KEY, name);
+                    }
+                    break;
                 default:
                     Timber.e("some not handled action in IME => %s", dataStructure.getAction());
                     break;
