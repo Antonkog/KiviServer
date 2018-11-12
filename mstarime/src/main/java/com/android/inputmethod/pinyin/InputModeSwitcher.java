@@ -24,6 +24,7 @@ import android.util.Pair;
 import android.view.inputmethod.EditorInfo;
 
 import com.android.inputmethod.pinyin.SoftKeyboard.KeyRow;
+import com.android.inputmethod.pinyin.util.Country;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -436,65 +437,9 @@ public class InputModeSwitcher {
     }
 
     private String getCountryCode() {
-        String country = "";
-        if (!isTVRealtek()) {
-            try {
-                SQLiteDatabase db = SQLiteDatabase.openDatabase("/system/model/model.db",
-                        null, SQLiteDatabase.OPEN_READONLY);
-                Cursor cursor = db.rawQuery("select * from  build_info where device_model=?", new String[]{android.os.Build.MODEL});
-
-                if (cursor != null && cursor.moveToFirst()) {
-                    int id = cursor.getColumnIndex("country");
-                    country = cursor.getString(id);
-                    cursor.close();
-                    return country;
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                Log.e(this.getClass().getName(), "exception while getting country from mtc database : " + e.getMessage());
-            }
-        } else {
-            country = getProperty("ro.product.country");
-        }
-
-        if (country.length() > 2) {
-            return mapCountryValue(country);
-        }
-        return country;
+        return Country.getCountry().getCode();
     }
 
-    private String mapCountryValue(String value) {
-        switch (value.toLowerCase()) {
-            case "ukraine":
-            case "ukr":
-                return "UA";
-            case "russia":
-            case "rus":
-                return "RU";
-            default: {
-                Log.e(this.getClass().getName(),    " wrong country " + value  + ", setting default - UA : ");
-                return "UA";
-            }
-        }
-    }
-
-
-    public static String getProperty(String value) {
-        String model = "";
-        try {
-            Class<?> c = Class.forName("android.os.SystemProperties");
-            Method get = c.getMethod("get", String.class);
-            model = (String) get.invoke(c, value);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return model;
-    }
-
-
-    public static boolean isTVRealtek() {
-        return "realtek".equalsIgnoreCase(getProperty("ro.product.manufacturer"));
-    }
 
     public int getInputMode() {
         return mInputMode;

@@ -122,7 +122,7 @@ public class App extends Application {
             } catch (Exception e) {
             }
             ;
-        }, 15 * 1000);
+        }, 30 * 1000);
     }
 
 
