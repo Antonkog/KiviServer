@@ -24,6 +24,8 @@ public interface RemoteServer {
 
     void sendPong();
 
+    void sendAspect(AspectMessage aspectMessage);
+
     void disposeResources();
 
     Pair<String, String> getLocalIpPair(Context context);

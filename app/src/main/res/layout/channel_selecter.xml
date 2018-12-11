@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:focusable="false"
+    android:orientation="horizontal"
+    android:padding="5dp">
+
+    <TextView android:textColor="@color/lb_tv_white"
+        android:id="@+id/value"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_margin="5dp"
+        android:layout_weight="1"
+        android:background="#0000"
+        android:focusable="false"
+        
+        android:gravity="center"
+        android:textSize="75dp" />
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:focusable="false"
+        android:orientation="vertical"
+        android:padding="5dp">
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:focusable="false">
+
+            <TextView android:textColor="@color/lb_tv_white"
+                android:layout_width="0dp"
+                android:layout_height="45dp"
+                android:layout_margin="5dp"
+                android:layout_weight="1"
+                android:background="@drawable/number_bgr"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:tag="1"
+                android:text="1"
+                android:textAlignment="center"
+                android:textSize="25dp" />
+
+            <TextView android:textColor="@color/lb_tv_white"
+                android:layout_width="0dp"
+                android:layout_height="45dp"
+                android:layout_margin="5dp"
+                android:layout_weight="1"
+                android:background="@drawable/number_bgr"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:tag="2"
+                android:text="2"
+                android:textAlignment="center"
+                android:textSize="25dp" />
+
+            <TextView android:textColor="@color/lb_tv_white"
+                android:layout_width="0dp"
+                android:layout_height="45dp"
+                android:layout_margin="5dp"
+                android:layout_weight="1"
+                android:background="@drawable/number_bgr"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:tag="3"
+                android:text="3"
+                android:textAlignment="center"
+                android:textSize="25dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:focusable="false">
+
+            <TextView android:textColor="@color/lb_tv_white"
+                android:layout_width="0dp"
+                android:layout_height="45dp"
+                android:layout_margin="5dp"
+                android:layout_weight="1"
+                android:background="@drawable/number_bgr"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:tag="4"
+                android:text="4"
+                android:textAlignment="center"
+                android:textSize="25dp" />
+
+            <TextView android:textColor="@color/lb_tv_white"
+                android:layout_width="0dp"
+                android:layout_height="45dp"
+                android:layout_margin="5dp"
+                android:layout_weight="1"
+                android:background="@drawable/number_bgr"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:tag="5"
+                android:text="5"
+                android:textAlignment="center"
+                android:textSize="25dp" />
+
+            <TextView android:textColor="@color/lb_tv_white"
+                android:layout_width="0dp"
+                android:layout_height="45dp"
+                android:layout_margin="5dp"
+                android:layout_weight="1"
+                android:background="@drawable/number_bgr"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:tag="6"
+                android:text="6"
+                android:textAlignment="center"
+                android:textSize="25dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:focusable="false">
+
+            <TextView android:textColor="@color/lb_tv_white"
+                android:layout_width="0dp"
+                android:layout_height="45dp"
+                android:layout_margin="5dp"
+                android:layout_weight="1"
+                android:background="@drawable/number_bgr"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:tag="7"
+                android:text="7"
+                android:textAlignment="center"
+                android:textSize="25dp" />
+
+            <TextView android:textColor="@color/lb_tv_white"
+                android:layout_width="0dp"
+                android:layout_height="45dp"
+                android:layout_margin="5dp"
+                android:layout_weight="1"
+                android:background="@drawable/number_bgr"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:tag="8"
+                android:text="8"
+                android:textAlignment="center"
+                android:textSize="25dp" />
+
+            <TextView android:textColor="@color/lb_tv_white"
+                android:layout_width="0dp"
+                android:layout_height="45dp"
+                android:layout_margin="5dp"
+                android:layout_weight="1"
+                android:background="@drawable/number_bgr"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:tag="9"
+                android:text="9"
+                android:textAlignment="center"
+                android:textSize="25dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:focusable="false">
+
+            <ImageView
+                android:id="@+id/delete"
+                android:layout_width="0dp"
+                android:layout_height="45dp"
+                android:layout_margin="5dp"
+                android:layout_weight="1"
+                android:background="@drawable/number_bgr"
+                android:clickable="true"
+                android:focusable="true"
+                android:src="@drawable/ic_arrow_back_24dp"
+                android:gravity="center"
+                android:tag="10"
+                android:textAlignment="center"
+                android:textSize="25dp" />
+
+            <TextView android:textColor="@color/lb_tv_white"
+                android:id="@+id/zero"
+                android:layout_width="0dp"
+                android:layout_height="45dp"
+                android:layout_margin="5dp"
+                android:layout_weight="1"
+                android:background="@drawable/number_bgr"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:tag="11"
+                android:text="0"
+                android:textAlignment="center"
+                android:textSize="25dp" />
+
+            <ImageView
+
+                android:id="@+id/change_channel"
+                android:layout_width="0dp"
+                android:layout_height="45dp"
+                android:layout_margin="5dp"
+                android:layout_weight="1"
+                android:background="@drawable/number_bgr"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:tag="12"
+                android:src="@drawable/ic_send_24dp"
+                android:textAlignment="center"
+                android:textSize="25dp" />
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

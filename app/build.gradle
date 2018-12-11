@@ -24,8 +24,9 @@ android {
         applicationId "com.wezom.kiviremoteserver"
         minSdkVersion versions.minSdk
         targetSdkVersion versions.targetSdk
-        versionCode 5
-        versionName "1.2.5"
+        versionCode 11
+        multiDexEnabled true
+        versionName "1.2.11"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }
@@ -33,22 +34,15 @@ android {
         javaMaxHeapSize "4g"
     }
 
-    flavorDimensions "default"
-
-    sourceSets {
-        main {
-            manifest.srcFile 'src/main/AndroidManifest.xml'
-        }
-
-        sharedUser {
-            manifest.srcFile 'src/shared/AndroidManifest.xml'
-        }
-    }
+    flavorDimensions "dim1"
 
     productFlavors {
-        defaultUser {}
-
-        sharedUser {}
+        mstar {
+            dimension "dim1"
+        }
+        realtek {
+            dimension "dim1"
+        }
     }
 
     buildTypes {
@@ -110,6 +104,7 @@ dependencies {
     implementation deps.support.design
     implementation deps.support.recyclerView
     implementation deps.support.cardView
+    implementation deps.support.leanback
     implementation deps.rx.core
     implementation deps.rx.android
     implementation deps.rx.relay
@@ -117,7 +112,9 @@ dependencies {
     implementation deps.moxy.appCompat
     annotationProcessor deps.moxy.compiler
     implementation deps.dagger.runtime
-    provided deps.dagger.annotation
+    compileOnly deps.dagger.annotation
+    mstarImplementation fileTree(include: ['*.jar', '*.aar'], dir: 'libs')
+    realtekImplementation fileTree(include: ['*.jar', '*.aar'], dir: 'libs-realtek')
     annotationProcessor deps.dagger.compiler
     implementation deps.gson
     implementation deps.butterKnife.core

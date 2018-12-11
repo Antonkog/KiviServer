@@ -14,6 +14,7 @@ import com.wezom.kiviremoteserver.bus.SendToSettingsEvent;
 import com.wezom.kiviremoteserver.common.ImeUtils;
 import com.wezom.kiviremoteserver.common.KiviProtocolStructure;
 import com.wezom.kiviremoteserver.common.RxBus;
+import com.wezom.kiviremoteserver.interfaces.AspectMessage;
 import com.wezom.kiviremoteserver.interfaces.RemoteServer;
 import com.wezom.kiviremoteserver.mvp.view.ServiceMvpView;
 import com.wezom.kiviremoteserver.net.server.model.WriteThreadedModel;
@@ -190,6 +191,12 @@ public class KiviServer implements RemoteServer {
     public void sendPong() {
         postMessage(new ServerEventStructure(KiviProtocolStructure.ServerEventType.PONG));
     }
+
+
+    @Override
+    public void sendAspect(AspectMessage aspectMessage) {
+        postMessage(new ServerEventStructure(aspectMessage));
+  }
 
     private class ServerThread extends Thread {
         @Override

@@ -5,7 +5,6 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.media.AudioManager;
-import android.os.PowerManager;
 import android.os.SystemClock;
 import android.provider.Settings;
 import android.view.KeyEvent;
@@ -18,6 +17,7 @@ import com.wezom.kiviremoteserver.bus.HideKeyboardEvent;
 import com.wezom.kiviremoteserver.bus.NewDataEvent;
 import com.wezom.kiviremoteserver.bus.PingEvent;
 import com.wezom.kiviremoteserver.bus.SendAppsListEvent;
+import com.wezom.kiviremoteserver.bus.SendAspectEvent;
 import com.wezom.kiviremoteserver.bus.SendVolumeEvent;
 import com.wezom.kiviremoteserver.bus.ShowKeyboardEvent;
 import com.wezom.kiviremoteserver.common.DeviceUtils;
@@ -365,6 +365,9 @@ public class ExecutorServiceIME extends PinyinIME implements EventProtocolExecut
                         Settings.Global.putString(getApplicationContext().getContentResolver(), DEVICE_NAME_KEY, name);
                         Settings.System.putString(getApplicationContext().getContentResolver(), DEVICE_NAME_KEY, name);
                     }
+                    break;
+                case REQUEST_ASPECT:
+                    RxBus.INSTANCE.publish(new SendAspectEvent());
                     break;
                 default:
                     Timber.e("some not handled action in IME => %s", dataStructure.getAction());

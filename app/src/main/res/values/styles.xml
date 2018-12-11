@@ -16,4 +16,26 @@
         <item name="colorControlActivated">@color/colorPrimary</item>
     </style>
 
+
+    <style name="Kivi_ProgressBar">
+        <item name="android:indeterminateOnly">false</item>
+        <item name="android:progressDrawable">@drawable/kivi_progress_horizontal</item>
+        <item name="android:minHeight">15px</item>
+        <item name="android:maxHeight">15px</item>
+        <item name="android:mirrorForRtl">true</item>
+    </style>
+    <!-- Base application theme. -->
+
+    <style name="TextWhite" parent="@android:style/Widget.TextView">
+        <item name="android:textColor">@color/lb_tv_white</item>
+
+    </style>
+
+    <style name="MyLeanback" parent="Theme.Leanback">
+        <item name="android:textViewStyle">@style/TextWhite</item>
+        <item name="android:windowEnableSplitTouch">false</item>
+        <item name="android:splitMotionEvents">false</item>
+    </style>
+
+
 </resources>

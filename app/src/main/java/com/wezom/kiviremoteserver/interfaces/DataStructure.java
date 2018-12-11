@@ -35,12 +35,16 @@ public class DataStructure {
     @SerializedName("package_name")
     private String packageName;
 
-    public DataStructure(KiviProtocolStructure.ExecActionEnum action, List<String> args, List<Float> motion, int mouseEvent, String packageName) {
+    @SerializedName("aspectMessage")
+    private AspectMessage aspectMessage;
+
+    public DataStructure(KiviProtocolStructure.ExecActionEnum action, List<String> args, List<Float> motion, int mouseEvent, String packageName, AspectMessage aspectMessage) {
         this.action = action;
         this.args = args;
         this.motion = motion;
         this.mouseEvent = mouseEvent;
         this.packageName = packageName;
+        this.aspectMessage = aspectMessage;
     }
 
     public KiviProtocolStructure.ExecActionEnum getAction() {
@@ -62,5 +66,9 @@ public class DataStructure {
 
     public String getPackageName() {
         return packageName;
+    }
+
+    public AspectMessage getAspectMessage() {
+        return aspectMessage;
     }
 }

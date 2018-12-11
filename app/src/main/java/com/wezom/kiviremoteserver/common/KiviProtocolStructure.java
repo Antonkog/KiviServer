@@ -18,6 +18,7 @@ public class KiviProtocolStructure {
         @Deprecated rightClick,
         RIGHT_CLICK,
         REQUEST_APPS,
+        REQUEST_ASPECT,
         LAUNCH_APP,
         REQUEST_VOLUME,
         PING,

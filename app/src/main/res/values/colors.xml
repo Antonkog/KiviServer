@@ -8,7 +8,7 @@
     <color name="colorWhite">#ffffff</color>
     <color name="trans">#00FFFFFF</color>
 
-
+    <color name="lb_tv_white">#FFCCCCCC</color>
     <color name="key_background_pressed">#3EAC4F</color>
     <color name="key_background_normal">#4C4C4C</color>
     <color name="key_background_bottom_row">#404040</color>

@@ -20,6 +20,31 @@
     <uses-permission android:name="android.permission.INJECT_EVENTS"
         tools:ignore="ProtectedPermissions" />
 
+    <uses-feature android:name="android.hardware.usb.host" />
+
+    <uses-feature
+        android:name="android.software.leanback"
+        android:required="true" />
+
+    <uses-permission
+        android:name="android.permission.BIND_APPWIDGET"
+        tools:ignore="ProtectedPermissions" />
+
+    <uses-feature
+        android:name="android.hardware.touchscreen"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.location.gps"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.bluetooth"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.microphone"
+        android:required="false" />
     <application
         android:name=".App"
         android:allowBackup="true"
@@ -51,6 +76,14 @@
                 android:name="android.view.im"
                 android:resource="@xml/method" />
         </service>
+
+
+        <service
+            android:name=".service.AspectLayoutService"
+            android:enabled="true"
+            android:exported="true"
+            android:theme="@style/MyLeanback" />
+
 
         <receiver android:name=".receiver.BootCompleteReceiver">
             <intent-filter>

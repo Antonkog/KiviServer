@@ -3,7 +3,6 @@
 
 
     <string name="ok">ОК</string>
-    <string name="error">Ошибка</string>
     <string name="network_failure_message">Сеть недоступна. Проверьте интернет соединение.</string>
 
 
@@ -34,4 +33,128 @@
     <string name="overlay_was_denied">Приложение не может продолжать работу без разрешения</string>
     <string name="ip">Device IP:</string>
     <string name="running_on">Running on AndroidTV:</string>
+
+    <string name="double_dot">:</string>
+    <string name="dvbc">DVB-C</string>
+    <string name="dvbs">DVB-S</string>
+
+
+    <string name="wifi">Wi-Fi</string>
+    <string name="video_sound">Видео и Звук</string>
+    <string name="info">Про устройство</string>
+    <string name="vga">VGA</string>
+    <string name="atv">АТВ</string>
+    <string name="hdmi">HDMI 1</string>
+    <string name="hdmi2">HDMI 2</string>
+    <string name="hdmi3">HDMI 3</string>
+    <string name="hdmi4">HDMI 4</string>
+    <string name="dtv">Телевидение</string>
+    <string name="dvi">DVI</string>
+    <string name="av">AV</string>
+    <string name="hide">Спрятать</string>
+    <string name="show">Показать</string>
+    <string name="to_hide">Скрытые приложения</string>
+    <string name="to_visible">Видимые приложения</string>
+    <string name="delete">Удалить</string>
+    <string name="message_choose_app">Пожалуйста выберите приложение</string>
+    <string name="result">Результат</string>
+    <string name="recommended">Рекомендации</string>
+    <string name="settings">Настройки</string>
+    <string name="inputs">Входы</string>
+    <string name="my_apps">Мои приложения</string>
+    <string name="kivi_apps">Рекомендовано KIVI</string>
+    <string name="empty_text" />
+    <string name="background">Фон</string>
+    <string name="apps_list">Приложения</string>
+    <string name="clock">Дата и время</string>
+    <string name="gallery_title">Галерея</string>
+    <string name="search">Поиск в интернете</string>
+    <string name="file">Файлы</string>
+    <string name="storage">Память</string>
+    <string name="picture">Картинки</string>
+    <string name="video">Видео</string>
+    <string name="music">Музыка</string>
+    <string name="app">Приложения</string>
+    <string name="settings_android">Android</string>
+    <string name="old_preference">Устаревшее</string>
+    <string name="to_usb">USB</string>
+    <string name="ypbpr">Компонент</string>
+    <string name="base_settings">Базовые</string>
+    <string name="accessibility_service_description">accessibility_service_description</string>
+    <string name="small">Маленький</string>
+    <string name="standard">Стандартный</string>
+    <string name="large">Увеличеный</string>
+    <string name="extra_large">Большой</string>
+    <string name="icon_size_str">Размер иконок</string>
+    <string name="line_settings">Разделы</string>
+    <string name="widget">Виджет</string>
+    <string name="hidden">Скрытые</string>
+    <string name="add_widget">Добавить виджет</string>
+    <string name="lines_description">Пожалуйста, выберите раздел и переместите его на желаемую позицию</string>
+
+    <string name="ratio">соотношение</string>
+    <string name="channel">канал</string>
+    <string name="optimization">Начать оптимизацию</string>
+    <string name="sleep">Выключить</string>
+    <string name="mode">Режим</string>
+    <string name="normal">Нормальный</string>
+    <string name="soft">Мягкий</string>
+    <string name="economy">Эконом</string>
+    <string name="vivid">Яркий</string>
+    <string name="auto">Авто</string>
+    <string name="user">Пользовательский</string>
+    <string name="r_16x9">16x9</string>
+    <string name="default_r">По умолчанию</string>
+    <string name="r_4x3">4x3</string>
+    <string name="picture_des">Изображение (только для видео)</string>
+    <string name="sleep_desc">Выключить через %s</string>
+    <string name="temperature_des">Температура</string>
+    <string name="color_g">Зеленый</string>
+    <string name="color_b">Синий</string>
+    <string name="color_r">Красный</string>
+    <string name="sharpness">Четкость</string>
+    <string name="saturation">Насыщенность</string>
+    <string name="contrast">Контрастность</string>
+    <string name="brightness">Яркость</string>
+    <string name="backlight">Подсветка</string>
+    <string name="mode_desc">Режим изображения (только для видео)</string>
+    <string name="ratio_desc">Соотношение сторон (только для видео)</string>
+    <string name="timer_off">Таймер выключен</string>
+    <string name="off">Выкл</string>
+    <string name="minutes">" мин"</string>
+    <string name="hours">" ч"</string>
+    <string name="cool">Холодный</string>
+    <string name="nature">Натуральный</string>
+    <string name="warm">Теплый</string>
+    <string name="high">Высокий</string>
+    <string name="middle">Средний</string>
+    <string name="low">Низкий</string>
+    <string name="hdr">HDR</string>
+    <string name="warmer">Теплый 2</string>
+    <string name="cooler">Холодный 2</string>
+    <string name="movie">Кино</string>
+    <string name="sport">Спорт</string>
+    <string name="game">Игра</string>
+    <string name="support">Поддержка 24/7</string>
+    <string name="help_header">Онлайн поддержка пользователей 24/7
+</string>
+    <string name="help">
+Для получения консультации, а также помощи в настройке Вашего ТВ,
+пожалуйста, обратитесь к нам по номеру горячей линии
+или через веб-сайт
+</string>
+    <string name="phone_desk">*Бесплатно с мобильных и стационарных номеров Украины</string>
+    <string name="online_support">Удаленная настройка</string>
+    <string name="back">Назад</string>
+    <string name="system">Система</string>
+    <string name="recommended_apps">Советуем</string>
+    <string name="version">Версия</string>
+    <string name="other">Другое</string>
+    <string name="voice">Голос</string>
+    <string name="keyboard">Клавиатура</string>
+    <string name="store">Режим в магазине</string>
+    <string name="send_log">Отправить отчет</string>
+    <string name="please_wait">Пожалуйста подождите</string>
+    <string name="number_log">Номер отчета</string>
+    <string name="error">Ошибка</string>
 </resources>

@@ -17,7 +17,6 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.RelativeLayout;
 
 import com.crashlytics.android.Crashlytics;
 import com.wezom.kiviremoteserver.di.components.ApplicationComponent;
@@ -28,9 +27,9 @@ import com.wezom.kiviremoteserver.service.KiviRemoteService;
 
 import java.lang.reflect.Method;
 import java.util.UUID;
-import java.util.logging.Handler;
 
 import io.fabric.sdk.android.Fabric;
+import wezom.kiviremoteserver.environment.bridge.BridgeGeneral;
 import timber.log.Timber;
 
 import static com.wezom.kiviremoteserver.common.Constants.APPLICATION_UID;
@@ -140,5 +139,14 @@ public class App extends Application {
             e.printStackTrace();
         }
         return model;
+    }
+
+    public static boolean isRUMarket() {
+        try {
+            return new BridgeGeneral().isRUMarket();
+        } catch (Exception e) {
+            return true;
+        }
+        // return MSTAR();
     }
 }

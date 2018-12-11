@@ -2,6 +2,7 @@ package com.wezom.kiviremoteserver.service.protocol;
 
 import com.google.gson.annotations.SerializedName;
 import com.wezom.kiviremoteserver.common.KiviProtocolStructure;
+import com.wezom.kiviremoteserver.interfaces.AspectMessage;
 import com.wezom.kiviremoteserver.net.server.model.ServerApplicationInfo;
 
 import java.util.List;
@@ -11,12 +12,15 @@ import java.util.List;
  */
 
 public class ServerEventStructure {
-    @SerializedName("event")
     private KiviProtocolStructure.ServerEventType event;
     @SerializedName("app_info")
     private List<ServerApplicationInfo> appInfo;
-    @SerializedName("volume")
     private Integer volume;
+    private AspectMessage aspectMessage;
+
+    public ServerEventStructure(AspectMessage aspectMessage) {
+        this.aspectMessage = aspectMessage;
+    }
 
     public ServerEventStructure(KiviProtocolStructure.ServerEventType event) {
         this.event = event;

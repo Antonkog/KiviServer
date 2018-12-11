@@ -29,6 +29,7 @@ import com.wezom.kiviremoteserver.bus.NewDataEvent;
 import com.wezom.kiviremoteserver.bus.NewMessageEvent;
 import com.wezom.kiviremoteserver.bus.PingEvent;
 import com.wezom.kiviremoteserver.bus.SendAppsListEvent;
+import com.wezom.kiviremoteserver.bus.SendAspectEvent;
 import com.wezom.kiviremoteserver.bus.SendInitVolumeEvent;
 import com.wezom.kiviremoteserver.bus.SendToSettingsEvent;
 import com.wezom.kiviremoteserver.bus.SendVolumeEvent;
@@ -39,6 +40,8 @@ import com.wezom.kiviremoteserver.common.ImeUtils;
 import com.wezom.kiviremoteserver.common.KiviProtocolStructure;
 import com.wezom.kiviremoteserver.common.RxBus;
 import com.wezom.kiviremoteserver.common.Utils;
+import com.wezom.kiviremoteserver.environment.EnvironmentPictureSettings;
+import com.wezom.kiviremoteserver.interfaces.AspectMessage;
 import com.wezom.kiviremoteserver.interfaces.DataStructure;
 import com.wezom.kiviremoteserver.interfaces.RemoteServer;
 import com.wezom.kiviremoteserver.mvp.view.ServiceMvpView;
@@ -50,7 +53,9 @@ import com.wezom.kiviremoteserver.ui.activity.HomeActivity;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -130,6 +135,14 @@ public class KiviRemoteService extends Service implements ServiceMvpView {
                 .listen(SendInitVolumeEvent.class)
                 .subscribe(event -> sendVolume(), Timber::e));
 
+        disposables.add(bus.
+                listen(SendAspectEvent.class).
+                subscribe(
+                event -> server.sendAspect(new AspectMessage(new EnvironmentPictureSettings())),
+                Timber::e
+        ));
+
+
         disposables.add(bus
                 .listen(NewMessageEvent.class)
                 .observeOn(AndroidSchedulers.mainThread())
@@ -139,6 +152,10 @@ public class KiviRemoteService extends Service implements ServiceMvpView {
                 }).subscribe(request -> {
                     if (request.getAction() != null && request.getAction() == OPEN_SETTINGS) {
                         openSettings();
+                        return;
+                    }
+                    if (request.getAspectMessage() != null) {
+                        syncAspectWithPhone(request.getAspectMessage());
                         return;
                     }
 
@@ -218,6 +235,71 @@ public class KiviRemoteService extends Service implements ServiceMvpView {
 
         disposables.add(bus.listen(PingEvent.class).subscribe(event -> server.sendPong(), Timber::e));
     }
+
+    private void syncAspectWithPhone(AspectMessage message) {
+        EnvironmentPictureSettings pictureSettings = new EnvironmentPictureSettings();
+        Timber.i("got aspect : " + message.toString() + "picture " + pictureSettings.isSafe());
+        if (pictureSettings != null && pictureSettings.isSafe()) {
+            if (message.settings != null) {
+                Iterator it = message.settings.entrySet().iterator();
+                while (it.hasNext()) {
+                    Map.Entry<String, Integer> pair = (Map.Entry) it.next();
+                    try {
+                        switch (AspectMessage.ASPECT_VALUE.valueOf(pair.getKey())) {
+                            case PICTUREMODE:
+                                pictureSettings.setPictureMode(pair.getValue());
+                                break;
+                            case BRIGHTNESS:
+                                pictureSettings.setBrightness(pair.getValue());
+                                break;
+                            case SHARPNESS:
+                                pictureSettings.setSharpness(pair.getValue());
+                                break;
+                            case SATURATION:
+                                pictureSettings.setSaturation(pair.getValue());
+                                break;
+                            case BACKLIGHT:
+                                pictureSettings.setBacklight(pair.getValue());
+                                break;
+                            case GREEN:
+                                pictureSettings.setGreen(pair.getValue());
+                                break;
+                            case RED:
+                                pictureSettings.setRed(pair.getValue());
+                                break;
+                            case BLUE:
+                                pictureSettings.setBLue(pair.getValue());
+                                break;
+                            case HDR:
+                                pictureSettings.setHDR(pair.getValue());
+                                break;
+                            case TEMPERATURE :
+                                pictureSettings.setTemperature(pair.getValue());
+                                break;
+                            case CONTRAST:
+                                pictureSettings.setContrast(pair.getValue());
+                                break;
+                            case VIDEOARCTYPE:
+                                pictureSettings.setVideoArcType(pair.getValue());
+                                break;
+
+                        }
+                    } catch (IllegalArgumentException e) {
+                        Timber.e("wrong aspect key: " + e.getMessage());
+                    }
+                    catch (ClassCastException e) {
+                        Timber.e("wrong aspect key: " + e.getMessage());
+                    }
+                    System.out.println(pair.getKey() + " = " + pair.getValue());
+                    it.remove(); // avoids a ConcurrentModificationException
+                }
+
+
+            }
+        }
+    }
+
+
 
     /**
      * Remove this when ios version hits 1.6 and android(remote) version hits 1.1.1
