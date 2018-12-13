@@ -17,9 +17,11 @@ public class ServerEventStructure {
     private List<ServerApplicationInfo> appInfo;
     private Integer volume;
     private AspectMessage aspectMessage;
+    private String availableAspectValues;
 
-    public ServerEventStructure(AspectMessage aspectMessage) {
+    public ServerEventStructure(AspectMessage aspectMessage, String aspectAvailable) {
         this.aspectMessage = aspectMessage;
+        this.availableAspectValues = aspectAvailable;
     }
 
     public ServerEventStructure(KiviProtocolStructure.ServerEventType event) {

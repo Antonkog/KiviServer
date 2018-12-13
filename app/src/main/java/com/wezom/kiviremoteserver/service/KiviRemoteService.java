@@ -41,6 +41,7 @@ import com.wezom.kiviremoteserver.common.KiviProtocolStructure;
 import com.wezom.kiviremoteserver.common.RxBus;
 import com.wezom.kiviremoteserver.common.Utils;
 import com.wezom.kiviremoteserver.environment.EnvironmentPictureSettings;
+import com.wezom.kiviremoteserver.interfaces.AspectAvailable;
 import com.wezom.kiviremoteserver.interfaces.AspectMessage;
 import com.wezom.kiviremoteserver.interfaces.DataStructure;
 import com.wezom.kiviremoteserver.interfaces.RemoteServer;
@@ -138,7 +139,7 @@ public class KiviRemoteService extends Service implements ServiceMvpView {
         disposables.add(bus.
                 listen(SendAspectEvent.class).
                 subscribe(
-                event -> server.sendAspect(new AspectMessage(new EnvironmentPictureSettings())),
+                event -> server.sendAspect(new AspectMessage(new EnvironmentPictureSettings()), AspectAvailable.getInstance().getJson(getApplicationContext())),
                 Timber::e
         ));
 
@@ -273,7 +274,7 @@ public class KiviRemoteService extends Service implements ServiceMvpView {
                             case HDR:
                                 pictureSettings.setHDR(pair.getValue());
                                 break;
-                            case TEMPERATURE :
+                            case TEMPERATURE:
                                 pictureSettings.setTemperature(pair.getValue());
                                 break;
                             case CONTRAST:
@@ -286,8 +287,7 @@ public class KiviRemoteService extends Service implements ServiceMvpView {
                         }
                     } catch (IllegalArgumentException e) {
                         Timber.e("wrong aspect key: " + e.getMessage());
-                    }
-                    catch (ClassCastException e) {
+                    } catch (ClassCastException e) {
                         Timber.e("wrong aspect key: " + e.getMessage());
                     }
                     System.out.println(pair.getKey() + " = " + pair.getValue());

@@ -29,8 +29,8 @@ import java.lang.reflect.Method;
 import java.util.UUID;
 
 import io.fabric.sdk.android.Fabric;
-import wezom.kiviremoteserver.environment.bridge.BridgeGeneral;
 import timber.log.Timber;
+import wezom.kiviremoteserver.environment.bridge.BridgeGeneral;
 
 import static com.wezom.kiviremoteserver.common.Constants.APPLICATION_UID;
 

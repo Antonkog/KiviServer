@@ -194,8 +194,8 @@ public class KiviServer implements RemoteServer {
 
 
     @Override
-    public void sendAspect(AspectMessage aspectMessage) {
-        postMessage(new ServerEventStructure(aspectMessage));
+    public void sendAspect(AspectMessage aspectMessage, String availableValues) {
+        postMessage(new ServerEventStructure(aspectMessage, availableValues));
   }
 
     private class ServerThread extends Thread {
