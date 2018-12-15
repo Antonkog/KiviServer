@@ -343,14 +343,17 @@ public class ExecutorServiceIME extends PinyinIME implements EventProtocolExecut
                     //   launchApp("com.funshion.poweroffdialog");
                     break;
 
-                case SCROLL:
-                    scroll(dataStructure.getMotion().get(1));
+                case SCROLL_BOTTOM_TO_TOP:
+                    executeCommand(KeyEvent.KEYCODE_DPAD_DOWN);//todo: hotfix v12
+//                    scroll(dataStructure.getMotion().get(1));
                     break;
-
+                case SCROLL_TOP_TO_BOTTOM:
+                    executeCommand(KeyEvent.KEYCODE_DPAD_UP); //todo: hotfix v12
+//                    scroll(-dataStructure.getMotion().get(1));
+                    break;
                 case HOME_DOWN:
                     executeKeyDownInstrumentation(KeyEvent.KEYCODE_HOME);
                     break;
-
                 case HOME_UP:
                     navigateHome();
                     break;
@@ -361,7 +364,7 @@ public class ExecutorServiceIME extends PinyinIME implements EventProtocolExecut
 
                 case NAME_CHANGE:
                     String name = dataStructure.getArgs().get(0);
-                    if(name != null && !name.trim().isEmpty()){
+                    if (name != null && !name.trim().isEmpty()) {
                         Settings.Global.putString(getApplicationContext().getContentResolver(), DEVICE_NAME_KEY, name);
                         Settings.System.putString(getApplicationContext().getContentResolver(), DEVICE_NAME_KEY, name);
                     }
