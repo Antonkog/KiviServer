@@ -86,6 +86,7 @@ TemperatureValues	1,2,3,4,5	1,2,3,4,5
                 ports[i] = sources.get(i).getId();
             }
             settings.put(VALUE_TYPE.INPUT_PORT.name(), ports);
+            context = null;
         }
     }
 }

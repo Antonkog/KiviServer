@@ -141,7 +141,6 @@ public class KiviRemoteService extends Service implements ServiceMvpView {
                 sendAspectEvent -> server.sendAspect(new AspectMessage(new EnvironmentPictureSettings()), AspectAvailable.getInstance()),
                 Timber:: e));
 
-
         disposables.add(bus
                 .listen(NewMessageEvent.class)
                 .observeOn(AndroidSchedulers.mainThread())
@@ -149,6 +148,7 @@ public class KiviRemoteService extends Service implements ServiceMvpView {
                     Timber.d("Handle message " + event.getMessage());
                     return gson.fromJson(event.getMessage(), DataStructure.class);
                 }).subscribe(request -> {
+                    AspectAvailable.getInstance().setValues(getApplicationContext());
                     if (request.getAction() != null && request.getAction() == OPEN_SETTINGS) {
                         openSettings();
                         return;
