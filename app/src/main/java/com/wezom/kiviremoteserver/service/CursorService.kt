@@ -35,6 +35,7 @@ class CursorService : Service() {
 
     private val binder = LocalBinder()
 
+    @Suppress("DEPRECATION")
     private val cursorLayout = WindowManager.LayoutParams(
             WindowManager.LayoutParams.MATCH_PARENT,
             WindowManager.LayoutParams.MATCH_PARENT,

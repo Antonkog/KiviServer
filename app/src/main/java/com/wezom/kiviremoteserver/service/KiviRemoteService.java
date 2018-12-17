@@ -136,12 +136,10 @@ public class KiviRemoteService extends Service implements ServiceMvpView {
                 .listen(SendInitVolumeEvent.class)
                 .subscribe(event -> sendVolume(), Timber::e));
 
-        disposables.add(bus.
-                listen(SendAspectEvent.class).
-                subscribe(
-                event -> server.sendAspect(new AspectMessage(new EnvironmentPictureSettings()), AspectAvailable.getInstance().getJson(getApplicationContext())),
-                Timber::e
-        ));
+
+        disposables.add(bus.listen(SendAspectEvent.class).subscribe(
+                sendAspectEvent -> server.sendAspect(new AspectMessage(new EnvironmentPictureSettings()), AspectAvailable.getInstance()),
+                Timber:: e));
 
 
         disposables.add(bus
