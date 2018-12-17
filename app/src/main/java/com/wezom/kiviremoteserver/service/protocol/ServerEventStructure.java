@@ -2,6 +2,7 @@ package com.wezom.kiviremoteserver.service.protocol;
 
 import com.google.gson.annotations.SerializedName;
 import com.wezom.kiviremoteserver.common.KiviProtocolStructure;
+import com.wezom.kiviremoteserver.interfaces.AspectAvailable;
 import com.wezom.kiviremoteserver.interfaces.AspectMessage;
 import com.wezom.kiviremoteserver.net.server.model.ServerApplicationInfo;
 
@@ -17,9 +18,9 @@ public class ServerEventStructure {
     private List<ServerApplicationInfo> appInfo;
     private Integer volume;
     private AspectMessage aspectMessage;
-    private String availableAspectValues;
+    private AspectAvailable availableAspectValues;
 
-    public ServerEventStructure(AspectMessage aspectMessage, String aspectAvailable) {
+    public ServerEventStructure(AspectMessage aspectMessage, AspectAvailable aspectAvailable) {
         this.aspectMessage = aspectMessage;
         this.availableAspectValues = aspectAvailable;
     }
