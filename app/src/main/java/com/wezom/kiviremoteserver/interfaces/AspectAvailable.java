@@ -25,7 +25,7 @@ public class AspectAvailable {
         PICTUREMODE
     }
 
-    private HashMap<String, int[]> settings;
+    public HashMap<String, int[]> settings;
 
 
     // versionName "1.2.11"

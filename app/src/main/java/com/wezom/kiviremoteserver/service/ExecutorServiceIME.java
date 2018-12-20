@@ -1,11 +1,16 @@
 package com.wezom.kiviremoteserver.service;
 
+import android.app.ActivityManager;
 import android.app.Instrumentation;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.media.AudioManager;
+import android.os.Build;
 import android.os.SystemClock;
+import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -13,6 +18,7 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
 
 import com.android.inputmethod.pinyin.PinyinIME;
+import com.wezom.kiviremoteserver.App;
 import com.wezom.kiviremoteserver.bus.HideKeyboardEvent;
 import com.wezom.kiviremoteserver.bus.NewDataEvent;
 import com.wezom.kiviremoteserver.bus.PingEvent;
@@ -37,6 +43,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
+import static com.wezom.kiviremoteserver.common.Constants.LAST_VOLUME_REALTEK;
 import static com.wezom.kiviremoteserver.net.nsd.NsdUtil.DEVICE_NAME_KEY;
 
 /**
@@ -54,9 +61,10 @@ public class ExecutorServiceIME extends PinyinIME implements EventProtocolExecut
     private final int height = Resources.getSystem().getDisplayMetrics().heightPixels;
     private final int x = width / 2;
     private final int y = height / 2;
-
+    private final int DEFAULT_PREF_VOLUME = -2;
     private CompositeDisposable disposables;
     private final Instrumentation instrumentation = new Instrumentation();
+    private SharedPreferences prefs;
 
     @Override
     public void onWindowShown() {
@@ -76,6 +84,7 @@ public class ExecutorServiceIME extends PinyinIME implements EventProtocolExecut
     public void onCreate() {
         super.onCreate();
         dispose();
+        prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         disposables = new CompositeDisposable();
         Timber.d("create IME_Service");
         audioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
@@ -173,8 +182,12 @@ public class ExecutorServiceIME extends PinyinIME implements EventProtocolExecut
         }
 
         if (keyCode == KeyEvent.KEYCODE_VOLUME_MUTE) {
-            keyDownUp(KeyEvent.KEYCODE_VOLUME_MUTE);
-            sendVolume();
+            if(App.isTVRealtek()){
+                realtekVolumeWorkAround();
+            } else {
+                keyDownUp(KeyEvent.KEYCODE_VOLUME_MUTE);
+                sendVolume();
+            }
             return;
         }
 
@@ -204,6 +217,29 @@ public class ExecutorServiceIME extends PinyinIME implements EventProtocolExecut
 
                 }, Timber::e
         );
+    }
+
+    private void realtekVolumeWorkAround() {
+        keyDownUp(KeyEvent.KEYCODE_VOLUME_MUTE);
+
+        int oldVolume = prefs.getInt(LAST_VOLUME_REALTEK, DEFAULT_PREF_VOLUME);
+        int currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+
+        if(currentVolume != 0){
+            prefs.edit().putInt(LAST_VOLUME_REALTEK, currentVolume).apply();
+            while (currentVolume != 0){
+                keyDownUp(KeyEvent.KEYCODE_VOLUME_DOWN);
+                currentVolume --;
+            }
+        } else {
+            if(oldVolume!= DEFAULT_PREF_VOLUME){
+                while (currentVolume != oldVolume ){
+                    keyDownUp(KeyEvent.KEYCODE_VOLUME_UP);
+                    currentVolume++;
+                }
+            }
+        }
+        sendVolume();
     }
 
     private void navigateHome() {
@@ -343,13 +379,17 @@ public class ExecutorServiceIME extends PinyinIME implements EventProtocolExecut
                     //   launchApp("com.funshion.poweroffdialog");
                     break;
 
+                case SCROLL: //for old version of remoteControl versionCode<20
+                    scroll(dataStructure.getMotion().get(1));
+                    break;
+
                 case SCROLL_BOTTOM_TO_TOP:
-                    executeCommand(KeyEvent.KEYCODE_DPAD_DOWN);//todo: hotfix v12
-//                    scroll(dataStructure.getMotion().get(1));
+                    if(isBrowserCurrent()) scroll(-150);
+                    else executeCommand(KeyEvent.KEYCODE_DPAD_DOWN);
                     break;
                 case SCROLL_TOP_TO_BOTTOM:
-                    executeCommand(KeyEvent.KEYCODE_DPAD_UP); //todo: hotfix v12
-//                    scroll(-dataStructure.getMotion().get(1));
+                    if(isBrowserCurrent()) scroll(150);
+                    else executeCommand(KeyEvent.KEYCODE_DPAD_UP);
                     break;
                 case HOME_DOWN:
                     executeKeyDownInstrumentation(KeyEvent.KEYCODE_HOME);
@@ -391,6 +431,19 @@ public class ExecutorServiceIME extends PinyinIME implements EventProtocolExecut
         if (disposables != null && !disposables.isDisposed()) {
             disposables.dispose();
         }
+    }
+
+    private boolean isBrowserCurrent() {
+        ActivityManager mActivityManager = (ActivityManager) this.getSystemService(Context.ACTIVITY_SERVICE);
+        String packageName = "";
+        if (Build.VERSION.SDK_INT > 20) {
+            packageName = mActivityManager.getRunningAppProcesses().get(0).processName;
+        } else {
+            packageName = mActivityManager.getRunningTasks(1).get(0).topActivity.getPackageName();
+        }
+        Timber.e("current package : " +packageName);
+        if (packageName.contains("browser")) return true;
+        return false;
     }
 
     @Override

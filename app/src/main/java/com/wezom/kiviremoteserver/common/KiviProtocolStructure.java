@@ -23,6 +23,7 @@ public class KiviProtocolStructure {
         REQUEST_VOLUME,
         PING,
         SWITCH_OFF,
+        SCROLL, //for old version
         SCROLL_TOP_TO_BOTTOM,
         SCROLL_BOTTOM_TO_TOP,
         OPEN_SETTINGS,
