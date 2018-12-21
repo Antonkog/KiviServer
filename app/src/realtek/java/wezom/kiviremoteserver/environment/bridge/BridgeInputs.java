@@ -1,5 +1,6 @@
 package wezom.kiviremoteserver.environment.bridge;
 
+import android.annotation.TargetApi;
 import android.app.Instrumentation;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -20,15 +21,26 @@ import java.util.ArrayList;
 
 public class BridgeInputs {
     public void getPortsList(ArrayList<InputSourceHelper.INPUT_PORT> result, Context context) {
+        String str = App.getProperty("ro.ota.modelname");
+        boolean is2831 = "2831".equals(str.trim());
+        String model = Build.MODEL;
+        boolean is24inch = model != null && Build.MODEL.startsWith("24");
+
         result.add(InputSourceHelper.INPUT_PORT.INPUT_SOURCE_ATV);
         result.add(InputSourceHelper.INPUT_PORT.INPUT_SOURCE_CVBS);
 //        result.add(InputSourceHelper.INPUT_PORT.INPUT_SOURCE_YPBPR);
 //        result.add(InputSourceHelper.INPUT_PORT.INPUT_SOURCE_VGA);
         result.add(InputSourceHelper.INPUT_PORT.INPUT_SOURCE_HDMI);
         result.add(InputSourceHelper.INPUT_PORT.INPUT_SOURCE_HDMI2);
-        result.add(InputSourceHelper.INPUT_PORT.INPUT_SOURCE_HDMI3);
+        if (!is2831 || !is24inch)
+            result.add(InputSourceHelper.INPUT_PORT.INPUT_SOURCE_HDMI3);
         result.add(InputSourceHelper.INPUT_PORT.INPUT_SOURCE_DTV);
-        result.add(InputSourceHelper.INPUT_PORT.INPUT_SOURCE_DVBS);
+        if (!is2831) {
+            result.add(InputSourceHelper.INPUT_PORT.INPUT_SOURCE_DVBS);
+        } else {
+            if (!is24inch)
+                result.add(InputSourceHelper.INPUT_PORT.INPUT_SOURCE_YPBPR);
+        }
         result.add(InputSourceHelper.INPUT_PORT.INPUT_SOURCE_DVBC);
 
 //        TvInputManager inputManager = (TvInputManager) context.getSystemService(Context.TV_INPUT_SERVICE);
@@ -62,19 +74,15 @@ public class BridgeInputs {
         startTvInputs(getInputUri(id), context);
     }
 
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private Uri getInputUri(String SourceName) {
 
         if (SourceName.contains("atv") || SourceName.contains("dtv") || SourceName.contains("vga")) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                return TvContract.buildChannelsUriForInput(SourceName);
-            }
+            return TvContract.buildChannelsUriForInput(SourceName);
         } else {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                return TvContract.buildChannelUriForPassthroughInput(SourceName);
-            }
+            return TvContract.buildChannelUriForPassthroughInput(SourceName);
 //            return TvContract.buildChannelUriForPassthroughInput(SourceName);
         }
-        return null;
     }
 
     private void startTvInputs(Uri channelUri, Context context) {
@@ -200,8 +208,8 @@ public class BridgeInputs {
     //    UsbEndpoint[mAddress=131,mAttributes=3,mMaxPacketSize=32,mInterval=8]]]]
 
     public void unSubscribe(Context context) {
-  //      context.unregisterReceiver(mUsbReceiver);
-   //     inputManager.unregisterCallback(callback);
+        //      context.unregisterReceiver(mUsbReceiver);
+        //     inputManager.unregisterCallback(callback);
     }
 
     enum CHANNEL {

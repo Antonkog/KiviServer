@@ -1,0 +1,157 @@
+<resources>
+    <string name="app_name">Kivi Remote Server</string>
+
+
+    <string name="ok">ОК</string>
+    <string name="network_failure_message">Сеть недоступна. Проверьте интернет соединение.</string>
+
+
+    <string name="start_server">start server</string>
+    <string name="terminate_server">terminate</string>
+    <string name="settings_open">settings</string>
+    <string name="set_kivi_ime">Set IME NOW!</string>
+
+    <!--CLIENT SIDE strings-->
+    <string name="mess_server_at" formatted="false">Server at IP: %s, port: %s</string>
+    <string name="server_terminate_message">"Servet terminated"</string>
+
+
+    <!-- Title for Latin keyboard  -->
+
+    <!-- Symbols that are commonly considered word separators in this language -->
+    <string name="word_separators">\u0020.,;:!?\n()[]*&amp;@{}/&lt;&gt;_+=|&quot;</string>
+
+    <!-- Labels on soft keys -->
+    <string name="label_go_key">Go</string>
+    <string name="label_next_key">Next</string>
+    <string name="label_send_key">Send</string>
+
+    <!-- Labels for subtype -->
+
+    <!-- Titles for ImePreference -->
+
+    <string name="overlay_was_denied">Приложение не может продолжать работу без разрешения</string>
+    <string name="ip">Device IP:</string>
+    <string name="running_on">Running on AndroidTV:</string>
+    <string name="wifi">Wi-Fi</string>
+    <string name="video_sound">Відео та Звук</string>
+    <string name="info">Про пристрій</string>
+    <string name="vga">VGA</string>
+    <string name="atv">АТБ</string>
+    <string name="hdmi">HDMI 1</string>
+    <string name="hdmi2">HDMI 2</string>
+    <string name="hdmi3">HDMI 3</string>
+    <string name="hdmi4">HDMI 4</string>
+    <string name="dtv">Телебачення</string>
+    <string name="dvi">DVI</string>
+    <string name="av">AV</string>
+    <string name="hide">Сховати</string>
+    <string name="show">Показати</string>
+    <string name="to_hide">Приховані додатки</string>
+    <string name="to_visible">Видимі додатки</string>
+    <string name="delete">Видалити</string>
+    <string name="message_choose_app">Будь ласка оберіть додаток</string>
+    <string name="result">Результат</string>
+    <string name="recommended">Рекомендації</string>
+    <string name="settings">Налаштування</string>
+    <string name="inputs">Джерела</string>
+    <string name="my_apps">Мої додатки</string>
+    <string name="kivi_apps">Рекомендовано KIVI</string>
+    <string name="empty_text" />
+    <string name="background">Фон</string>
+    <string name="apps_list">Додатки</string>
+    <string name="clock">Дата та час</string>
+    <string name="gallery_title">Галерея</string>
+    <string name="search">"Пошук в Інтернеті "</string>
+    <string name="file">Файли</string>
+    <string name="storage">Пам\'ять</string>
+    <string name="picture">Картинки</string>
+    <string name="video">Відео</string>
+    <string name="music">Музика</string>
+    <string name="app">Додатки</string>
+    <string name="old_preference">Застаріле</string>
+    <string name="to_usb">USB</string>
+    <string name="ypbpr">Компонент</string>
+    <string name="base_settings">Базові</string>
+    <string name="settings_android">Android</string>
+    <string name="accessibility_service_description">accessibility_service_description</string>
+    <string name="small">Маленький</string>
+    <string name="standard">Стандартний</string>
+    <string name="large">Збільшений</string>
+    <string name="extra_large">Великий</string>
+    <string name="icon_size_str">Розмір іконок</string>
+    <string name="line_settings">Розділи</string>
+    <string name="widget">Віджет</string>
+    <string name="hidden">Приховані</string>
+    <string name="add_widget">Додати віджет</string>
+    <string name="lines_description">Будь ласка виберіть розділ та перемістіть його на бажану позицію
+</string>
+
+
+    <string name="ratio">Співвідношення</string>
+    <string name="channel">Канал</string>
+    <string name="optimization">Почати оптимізацію</string>
+    <string name="sleep">сон</string>
+    <string name="mode">Режим</string>
+    <string name="normal">Нормальний</string>
+    <string name="soft">М\'який</string>
+    <string name="economy">Економія</string>
+    <string name="vivid">Яскравий</string>
+    <string name="auto">Авто</string>
+    <string name="user">Користувач</string>
+    <string name="r_16x9">16x9</string>
+    <string name="default_r">За замовченням</string>
+    <string name="r_4x3">4x3</string>
+    <string name="picture_des">Зображення (тільки для відео)</string>
+    <string name="sleep_desc">Вимкнути через %s</string>
+    <string name="temperature_des">Температура</string>
+    <string name="color_g">Зелений</string>
+    <string name="color_b">Синій</string>
+    <string name="color_r">Червоний</string>
+    <string name="sharpness">Різкість</string>
+    <string name="saturation">Насиченість</string>
+    <string name="contrast">Контрастність</string>
+    <string name="brightness">Яскравість</string>
+    <string name="backlight">Підсвічування</string>
+    <string name="mode_desc">Режим зображення (тільки для відео)</string>
+    <string name="ratio_desc">Співвідношення сторін (тільки для відео)</string>
+    <string name="timer_off">Таймер сну</string>
+    <string name="off">Вимкнено</string>
+    <string name="minutes">" хв"</string>
+    <string name="hours">" год"</string>
+
+    <string name="cool">Холодний</string>
+    <string name="nature">Природний</string>
+    <string name="warm">Теплий</string>
+    <string name="high">Високий</string>
+    <string name="middle">Середній</string>
+    <string name="low">Низький</string>
+    <string name="hdr">HDR</string>
+
+    <string name="warmer">Теплий 2</string>
+    <string name="cooler">Холодний 2</string>
+    <string name="movie">Кіно</string>
+    <string name="sport">Спорт</string>
+    <string name="game">Гра</string>
+    <string name="support">Підтримка 24/7</string>
+
+    <string name="help_header">Онлайн підтримка користувачів 24/7</string>
+    <string name="help">
+Для отримання консультації, а також допомоги в налаштуванні Вашого ТВ,
+будьласка, зверніться до нас за номером гарячої лінії
+або через веб-сайт </string>
+    <string name="phone_desk">*Безкоштовно з усіх мобільних та стаціонарних номерів України</string>
+    <string name="online_support">Віддалене налаштування</string>
+    <string name="back">Назад</string>
+    <string name="system">Система</string>
+    <string name="recommended_apps">Радимо</string>
+    <string name="version">Версія</string>
+    <string name="other">Інше</string>
+    <string name="voice">Голос</string>
+    <string name="keyboard">Клавіатура</string>
+    <string name="store">В магазині</string>
+    <string name="send_log">Надіслати звіт</string>
+    <string name="please_wait">Будь ласка зачекайте</string>
+    <string name="number_log">Номер звіту</string>
+    <string name="error">Помилка</string>
+</resources>

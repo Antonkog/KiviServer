@@ -6,29 +6,32 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
+import android.graphics.Color;
 import android.graphics.PixelFormat;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
+import android.support.v4.app.NotificationCompat;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.mstar.android.tv.TvCommonManager;
-import com.mstar.android.tv.TvPictureManager;
-import com.mstar.android.tvapi.common.vo.ColorTemperatureExData;
 import com.wezom.kiviremoteserver.R;
+import com.wezom.kiviremoteserver.environment.EnvironmentFactory;
+import com.wezom.kiviremoteserver.environment.EnvironmentInputsHelper;
+import com.wezom.kiviremoteserver.environment.EnvironmentPictureSettings;
 import com.wezom.kiviremoteserver.service.aspect.Alarm;
 import com.wezom.kiviremoteserver.service.aspect.HDRValues;
 import com.wezom.kiviremoteserver.service.inputs.InputSourceHelper;
@@ -37,18 +40,18 @@ import com.wezom.kiviremoteserver.ui.views.LRTextSwitcher;
 import com.wezom.kiviremoteserver.ui.views.NumberDialing;
 import com.wezom.kiviremoteserver.ui.views.ScreenProgress;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
+import wezom.kiviremoteserver.environment.bridge.BridgeGeneral;
 import wezom.kiviremoteserver.environment.bridge.BridgePicture;
 import wezom.kiviremoteserver.environment.bridge.driver_set.PictureMode;
 import wezom.kiviremoteserver.environment.bridge.driver_set.Ratio;
 import wezom.kiviremoteserver.environment.bridge.driver_set.TemperatureValues;
 
-//com.wezom.kiviremoteserver.mstar.java.launcher.kivi.com.kivilauncher.environment.bridge.driver_set.
+//com.wezom.kiviremoteserver.mstar.java.com.wezom.kiviremoteserver.environment.bridge.driver_set.
 //import wezom.kiviremoteserver.environment.bridge.driver_set.PictureMode;
 //import wezom.kiviremoteserver.environment.bridge.driver_set.Ratio;
 //Ratio
@@ -57,48 +60,18 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
 
     private int generalType = BridgePicture.LAYER_TYPE;//WindowManager.LayoutParams.TYPE_TOAST;
     private WindowManager wmgr;
+    private int alarmPosition = 0;
     private RelativeLayout generalView;
     private LinearLayout headerContainer;
     private LinearLayout bodyContainer;
     private LayoutInflater layoutInflater;
+    // LinearLayout bodyPictureSettings;
     private HorizontalScrollView bodyInputs;
     private TextView description;
     private NumberDialing bodyChannel;
-    private View channelHeader;
-    private TvPictureManager pictureManager;
-
-    private List<PictureMode> modes = Arrays.asList(PictureMode.PICTURE_MODE_NORMAL,
-            PictureMode.PICTURE_MODE_SOFT,
-            PictureMode.PICTURE_MODE_USER,
-            PictureMode.PICTURE_MODE_AUTO,
-            PictureMode.PICTURE_MODE_VIVID);
-    //      PictureMode.PICTURE_MODE_ECONOMY);
-    private List<Ratio> ratios = Arrays.asList(
-            Ratio.VIDEO_ARC_DEFAULT,
-            Ratio.VIDEO_ARC_16x9,
-            Ratio.VIDEO_ARC_4x3,
-            Ratio.VIDEO_ARC_AUTO);
-
-
-    private boolean sleepFocused;
-    private boolean isUHD = false;
-    private boolean isHaveChannel = false;
-
-    private List<Integer> shutDownTimers = Arrays.asList(-1, 10, 20, 30, 60, 120);
-    private int alarmPosition = 0;
-    private int minutesLeft;
-    private long slipIn = 0;
-
-    private int contrast = 0;
-    private int brightness = 0;
-    private int sharpness = 0;
-    private int saturation = 0;
-    private int backlight = 0;
-    private int color_r = 0;
-    private int color_g = 0;
-    private int color_b = 0;
-
-
+    //private View channelHeader;
+    private EnvironmentPictureSettings pictureSettings;
+    private EnvironmentInputsHelper inputsHelper;
     public static volatile long lastUpdate;
     private Handler timer = new Handler();
     private Runnable updateSleepTime = new Runnable() {
@@ -109,10 +82,13 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
             }
 
             timer.postDelayed(updateSleepTime, 1000);
-            if (System.currentTimeMillis() - 8000 > lastUpdate) {
+            if (System.currentTimeMillis() - 10000 > lastUpdate) {
+                Log.e("AspectLayoutService", "stopSelf");
                 stopSelf();
             }
         }
+
+
     };
 
     private void updateSleepText() {
@@ -138,19 +114,55 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
         }
     }
 
+//    Handler handler = new Handler();
+//    Runnable runnable = new Runnable() {
+//        @Override
+//        public void run() {
+//            View view = generalView.findFocus();
+//            optimization.clearFocus();
+//            if (view != null) {
+//                Log.e("view", "" + view);
+//             //   view.setBackgroundColor(Color.RED);
+//            }
+//            handler.postDelayed(runnable, 1000);
+//        }
+//    };
+
+    //    PictureMode[] modes = ;
+
+    //      PictureMode.PICTURE_MODE_ECONOMY);
+    List<Ratio> ratios = Arrays.asList(
+            Ratio.VIDEO_ARC_DEFAULT,
+            Ratio.VIDEO_ARC_16x9,
+            Ratio.VIDEO_ARC_4x3,
+            Ratio.VIDEO_ARC_AUTO);
+    List<Integer> shutDownTimers = Arrays.asList(-1, 10, 20, 30, 60, 120);
+    private boolean sleepFocused;
+    // boolean isUHD = false;
+
     //android.widget.LinearLayout{e7580bb VFE...C.. .F...... 444,0-554,98 #7f090128 app:id/root}
     @Override
     public void onCreate() {
         super.onCreate();
-        pictureManager = TvPictureManager.getInstance();
+
+        Log.e("AspectLayoutService", "started");
+
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this).setSmallIcon(R.drawable.ic_launcher_background);
+        mBuilder.setOnlyAlertOnce(true);
+        startForeground(0, mBuilder.build());
+
+        // new Handler().postDelayed(() -> {
         String MODEL = Build.MODEL;
-        isUHD = MODEL != null && (MODEL.contains("U") || MODEL.contains("u"));
         // Log.e("MODEL", "name " + MODEL);
         // new Handler().postDelayed(() -> {
         lastUpdate = System.currentTimeMillis();
+        pictureSettings = new EnvironmentPictureSettings();
+        inputsHelper = new EnvironmentInputsHelper();
         createLayout(getBaseContext());
         //}, 5000);
         timer.post(updateSleepTime);
+        //   }, 3000);
+
     }
 
     @Nullable
@@ -163,29 +175,72 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
 
     public void createLayout(Context context) {
         //Log.e("create", "create");
-        pictureManager = TvPictureManager.getInstance();
+
         layoutInflater = (LayoutInflater)
                 getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         wmgr = (WindowManager) context.getApplicationContext()
                 .getSystemService(Context.WINDOW_SERVICE);
         generalView = (RelativeLayout) View.inflate(context, R.layout.layout_aspect, null);
-        generalView.setVisibility(View.VISIBLE);
+        //generalView.setVisibility(View.VISIBLE);
         final WindowManager.LayoutParams param = new WindowManager.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 generalType,//TYPE_SYSTEM_ALERT
                 WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 PixelFormat.TRANSLUCENT);
+//        param.windowAnimations = android.R.style.Animation_Activity;
+        //param.rotationAnimation = WindowManager.LayoutParams.ROTATION_ANIMATION_SEAMLESS;
+        // generalView.setVisibility(View.GONE);
+        //      param.windowAnimations = android.R.style.Animation_Translucent;
         wmgr.addView(generalView, param);
-
+//        generalView.setVisibility(View.VISIBLE);
+//        generalView.clearAnimation();
+//        generalView.animate().setInterpolator(new AccelerateDecelerateInterpolator())
+//                .setDuration(500)
+//                .translationY(400).start();
+        // new Handler().postDelayed(()->generalView.setVisibility(View.VISIBLE),3000);
         headerContainer = generalView.findViewById(R.id.header_container);
         bodyContainer = generalView.findViewById(R.id.body_container);
         description = generalView.findViewById(R.id.description);
-        int currewnt = TvCommonManager.getInstance().getCurrentTvInputSource();
-        if (currewnt == 28 || currewnt == 1) {
-            isHaveChannel = true;
+
+        generalView.setVisibility(View.VISIBLE);
+        generalView.clearAnimation();
+
+
+//        bodyContainer.animate().setInterpolator(new AccelerateDecelerateInterpolator())
+//                .setDuration(500).translationYBy(0)
+//                .translationY(0).start();
+//        bodyContainer.animate()
+//                .yBy(400).y(0)
+//                .setStartDelay(100)
+//                .setDuration(500).start();
+
+
+        final Animation anDesk = AnimationUtils.loadAnimation(this, R.anim.outside_bottom);
+        // anDesk.setInterpolator(new AccelerateDecelerateInterpolator());
+        anDesk.setDuration(300);
+        description.startAnimation(anDesk);
+        bodyContainer.startAnimation(anDesk);
+        headerContainer.startAnimation(anDesk);
+//        final Animation anHead = AnimationUtils.loadAnimation(this, R.anim.outside_bottom);
+//        anHead.setInterpolator(new AccelerateDecelerateInterpolator());
+//        anHead.setDuration(200);
+//        anHead.setStartTime(100);
+//        final Animation anBody = AnimationUtils.loadAnimation(this, R.anim.outside_bottom);
+//        anBody.setInterpolator(new AccelerateDecelerateInterpolator());
+//        anBody.setDuration(200);
+//        anHead.setStartTime(300);
+
+        View view = new View(this);
+        ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(1, 1);
+        view.setLayoutParams(layoutParams);
+        view.setFocusable(true);
+        headerContainer.addView(view);
+
+        if (EnvironmentFactory.ENVIRONMENT_MTC == BridgeGeneral.ENVIRONMENT) {
+            addSeparator(headerContainer);
+            addOptimization(headerContainer);
         }
-        addOptimization(headerContainer);
         addSeparator(headerContainer);
         addPictureSetting(headerContainer);
         addSeparator(headerContainer);
@@ -198,11 +253,16 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
         addPictureMode(headerContainer);
         addSeparator(headerContainer);
         addRatio(headerContainer);
+        addSeparator(headerContainer);
 
-        if (isHaveChannel) {
+
+        int current = inputsHelper.getCurrentTvInputSource();
+        if (inputsHelper.isTV(current)) {
             addSeparator(headerContainer);
             addChannelSelector(headerContainer);
         }
+
+        updateTextColors(generalView);
 //        handler.postDelayed(runnable, 1000);
         // generalView.requestFocus();
 //        generalView.setOnKeyListener(new View.OnKeyListener() {
@@ -214,8 +274,51 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
 //                return false;
 //            }
 //        });
+
+        initCarousel(headerContainer);
     }
 
+    private void initCarousel(LinearLayout headerContainer) {
+        int i = 0;
+        KeyActions keyActions = actions.get(headerContainer.getChildAt(0));
+        if (keyActions == null) {
+            i = 1;
+            keyActions = actions.get(headerContainer.getChildAt(1));
+        }
+        if (keyActions == null) {
+            i = 2;
+            keyActions = actions.get(headerContainer.getChildAt(2));
+        }
+        if (keyActions != null) {
+            headerContainer.getChildAt(i).requestFocus();
+            headerContainer.getChildAt(i).requestFocus();
+            keyActions.addAction(KeyEvent.KEYCODE_DPAD_LEFT, (action) -> {
+                if (action == KeyEvent.ACTION_DOWN)
+                    headerContainer.getChildAt(headerContainer.getChildCount() - 1).requestFocus();
+            });
+        }
+        keyActions = actions.get(headerContainer.getChildAt(headerContainer.getChildCount() - 1));
+        if (keyActions != null) {
+            int finalI = i;
+            keyActions
+                    .addAction(KeyEvent.KEYCODE_DPAD_RIGHT, (action) -> {
+                        if (action == KeyEvent.ACTION_DOWN)
+                            headerContainer.getChildAt(finalI).requestFocus();
+                    });
+        }
+    }
+
+    public static void updateTextColors(ViewGroup generalView) {
+        for (int i = 0; i < generalView.getChildCount(); i++) {
+            View view = generalView.getChildAt(i);
+            if (view instanceof TextView) {
+                ((TextView) view).setTextColor(Color.WHITE);
+            }
+            if (view instanceof ViewGroup) {
+                updateTextColors((ViewGroup) view);
+            }
+        }
+    }
 
     private void addSeparator(LinearLayout headerContainer) {
         View view = new View(headerContainer.getContext());
@@ -230,8 +333,9 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
 
     @Override
     public void onDestroy() {
-        if (timer != null) timer.removeCallbacks(updateSleepTime);
-        if (wmgr != null && generalView != null) wmgr.removeView(generalView);
+        timer.removeCallbacks(updateSleepTime);
+        if (wmgr != null)
+            wmgr.removeView(generalView);
         super.onDestroy();
     }
 
@@ -250,6 +354,7 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
 
             }
         });
+        //updateTextColors(bodyPictureSettings);
         pictureDetailSettings(bodyPictureSettings);
         List<View> list = new ArrayList<>();
         KeyListener listener = new KeyListener(list, view);
@@ -258,17 +363,25 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
             bodyPictureSettings.getChildAt(i).setOnKeyListener(listener);
         }
         actions.put(view, new KeyActions()
-                .addAction(KeyEvent.KEYCODE_DPAD_UP, () -> {
-                    if (isSafe()) {
+                .addAction(KeyEvent.KEYCODE_DPAD_UP, (action) -> {
+                    if (action == KeyEvent.ACTION_UP) {
                         list.get(0).requestFocus();
                         list.get(0).requestFocus();
                     }
-                }).setAction(KeyEvent.ACTION_UP)
+                })
         );
         generalView.addView(view);
         view.setOnKeyListener(this);
     }
 
+    int contrast = 0;
+    int brightness = 0;
+    int sharpness = 0;
+    int saturation = 0;
+    int backlight = 0;
+    int color_r = 0;
+    int color_g = 0;
+    int color_b = 0;
 
     private void addTemperatureSetting(LinearLayout generalView) {
 
@@ -284,13 +397,10 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
                 description.setText(R.string.temperature_des);
             }
         });
-
-
-        ColorTemperatureExData colorTemperatureExData = TvPictureManager
-                .getInstance().getColorTempratureEx();
-        color_r = colorTemperatureExData.redGain;
-        color_g = colorTemperatureExData.greenGain;
-        color_b = colorTemperatureExData.blueGain;
+        pictureSettings.initColors();
+        color_r = pictureSettings.getRedColor();
+        color_g = pictureSettings.getGreenColor();
+        color_b = pictureSettings.getBlueColor();
 
 
         pdsColorTemperature(bodyPictureSettings);//
@@ -306,52 +416,37 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
     }
 
     private void pictureDetailSettings(LinearLayout body) {
-        int mPictureMode = TvPictureManager.getInstance().getPictureMode();
-        int inputSrcType = TvCommonManager.getInstance()
-                .getCurrentTvInputSource();
-        Cursor cursor = getApplicationContext()
-                .getContentResolver()
-                .query(Uri.parse("content://mstar.tv.usersetting/picmode_setting/inputsrc/"
-                                + inputSrcType + "/picmode/" + mPictureMode), null,
-                        null, null, null);
-        if (cursor != null && cursor.moveToFirst()) {
-            contrast = cursor.getInt(cursor
-                    .getColumnIndex("u8Contrast"));
-            brightness = cursor.getInt(cursor
-                    .getColumnIndex("u8Brightness"));
-            sharpness = cursor.getInt(cursor
-                    .getColumnIndex("u8Sharpness"));
-            saturation = cursor.getInt(cursor
-                    .getColumnIndex("u8Saturation"));
-            backlight = cursor.getInt(cursor
-                    .getColumnIndex("u8Backlight"));
+
+        pictureSettings.initSettings(this);
+
+        brightness = pictureSettings.getBrightness();
+        contrast = pictureSettings.getContrast();
+        sharpness = pictureSettings.getSharpness;
+        saturation = pictureSettings.getSaturation();
+        backlight = pictureSettings.getBacklight();
+        if (isSafe()) {
+            psdBrightness(body);//+
+            psdContrast(body);//+
+            psdSaturation(body);//+
+            //psdSharpness(body);//+
+            psdHDR(body);//+
+            psdTemperature(body);//+
         }
-        cursor.close();
-
-
-        // psdBacklight(body);//+
-        psdBrightness(body);//+
-        psdContrast(body);//+
-        psdSaturation(body);//+
-        psdSharpness(body);//+
-        psdHDR(body);//+
-        psdTemperature(body);//+
+        psdBacklight(body);//+
 
 
     }
 
     private void psdTemperature(LinearLayout body) {
-        TemperatureValues current = TemperatureValues.getByID(TvPictureManager.getInstance().getColorTempratureIdx());
+        TemperatureValues current = TemperatureValues.getByID(pictureSettings.getTemperature());
         LRTextSwitcher lrTextSwitcher = new LRTextSwitcher(this);
-        lrTextSwitcher.setUpValues(TemperatureValues.COLOR_TEMP_COOL,
-                TemperatureValues.COLOR_TEMP_NATURE,
-                TemperatureValues.COLOR_TEMP_WARM);
+        lrTextSwitcher.setUpValues(TemperatureValues.getSet());
         lrTextSwitcher.setOnKeyListener(this);
         if (current != null)
             lrTextSwitcher.setValue(current);
         lrTextSwitcher.setLable(R.string.temperature_des);
         lrTextSwitcher.setIcon(R.drawable.color_temper_focus);
-        lrTextSwitcher.setProgressListener(progress -> TvPictureManager.getInstance().setColorTempratureIdx(progress));
+        lrTextSwitcher.setProgressListener(progress -> pictureSettings.setTemperature(progress));
         body.addView(lrTextSwitcher);
 
 
@@ -359,21 +454,15 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
 
     private void psdHDR(LinearLayout body) {
         LRTextSwitcher lrTextSwitcher = new LRTextSwitcher(this);
-        HDRValues current = HDRValues.getByID(TvPictureManager.getInstance().getHdrAttributes(TvPictureManager.HDR_OPEN_ATTRIBUTES,
-                TvPictureManager.VIDEO_MAIN_WINDOW).level);
-        lrTextSwitcher.setUpValues(HDRValues.HDR_OPEN_LEVEL_AUTO,
-                HDRValues.HDR_OPEN_LEVEL_LOW,
-                HDRValues.HDR_OPEN_LEVEL_MIDDLE,
-                HDRValues.HDR_OPEN_LEVEL_HIGH,
-                HDRValues.HDR_OPEN_LEVEL_OFF);
+        HDRValues current = HDRValues.getByID(pictureSettings.getHDR());
+        lrTextSwitcher.setUpValues(pictureSettings.getHDRSet());
         lrTextSwitcher.setOnKeyListener(this);
         if (current != null)
             lrTextSwitcher.setValue(current);
         lrTextSwitcher.setLable(R.string.hdr);
         lrTextSwitcher.setIcon(R.drawable.ic_hdr_strong_black_24dp);
         lrTextSwitcher.setProgressListener(progress -> {
-            TvPictureManager.getInstance().setHdrAttributes(TvPictureManager.HDR_OPEN_ATTRIBUTES,
-                    TvPictureManager.VIDEO_MAIN_WINDOW, progress);
+            pictureSettings.setHDR(progress);
         });
         body.addView(lrTextSwitcher);
 
@@ -385,8 +474,7 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
         screenProgress.setProgress(color_g);
         screenProgress.setLable(R.string.color_g);
         screenProgress.setIcon(R.drawable.ic_color_lens_black_24dp);
-        screenProgress.setProgressListener(progress -> TvPictureManager.getInstance().setVideoItem(
-                TvPictureManager.PICTURE_SHARPNESS, progress));
+        screenProgress.setProgressListener(progress -> pictureSettings.setGreen(progress));
         body.addView(screenProgress);
     }
 
@@ -396,8 +484,7 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
         screenProgress.setProgress(color_b);
         screenProgress.setLable(R.string.color_b);
         screenProgress.setIcon(R.drawable.ic_color_lens_black_24dp);
-        screenProgress.setProgressListener(progress -> TvPictureManager.getInstance().setVideoItem(
-                TvPictureManager.PICTURE_SHARPNESS, progress));
+        screenProgress.setProgressListener(progress -> pictureSettings.setBLue(progress));
         body.addView(screenProgress);
     }
 
@@ -407,8 +494,7 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
         screenProgress.setProgress(color_r);
         screenProgress.setLable(R.string.color_r);
         screenProgress.setIcon(R.drawable.ic_color_lens_black_24dp);
-        screenProgress.setProgressListener(progress -> TvPictureManager.getInstance().setVideoItem(
-                TvPictureManager.PICTURE_SHARPNESS, progress));
+        screenProgress.setProgressListener(progress -> pictureSettings.setRed(progress));
         body.addView(screenProgress);
     }
 
@@ -418,8 +504,7 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
         screenProgress.setProgress(sharpness);
         screenProgress.setLable(R.string.sharpness);
         screenProgress.setIcon(R.drawable.sharpness_focus);
-        screenProgress.setProgressListener(progress -> TvPictureManager.getInstance().setVideoItem(
-                TvPictureManager.PICTURE_SHARPNESS, progress));
+        screenProgress.setProgressListener(progress -> pictureSettings.setSharpness(progress));
         body.addView(screenProgress);
     }
 
@@ -429,8 +514,8 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
         screenProgress.setProgress(saturation);
         screenProgress.setLable(R.string.saturation);
         screenProgress.setIcon(R.drawable.saturation_focus);
-        screenProgress.setProgressListener(progress -> TvPictureManager.getInstance().setVideoItem(
-                TvPictureManager.PICTURE_SATURATION, progress));
+        screenProgress.setProgressListener(progress ->
+                pictureSettings.setSaturation(progress));
         body.addView(screenProgress);
     }
 
@@ -440,8 +525,8 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
         screenProgress.setProgress(contrast);
         screenProgress.setLable(R.string.contrast);
         screenProgress.setIcon(R.drawable.contrast_focus);
-        screenProgress.setProgressListener(progress -> TvPictureManager.getInstance().setVideoItem(
-                TvPictureManager.PICTURE_CONTRAST, progress));
+        screenProgress.setProgressListener(progress ->
+                pictureSettings.setContrast(progress));
         body.addView(screenProgress);
     }
 
@@ -451,8 +536,8 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
         screenProgress.setProgress(brightness);
         screenProgress.setLable(R.string.brightness);
         screenProgress.setIcon(R.drawable.bright_focus);
-        screenProgress.setProgressListener(progress -> TvPictureManager.getInstance().setVideoItem(
-                TvPictureManager.PICTURE_BRIGHTNESS, progress));
+        screenProgress.setProgressListener(progress ->
+                pictureSettings.setBrightness(progress));
         body.addView(screenProgress);
     }
 
@@ -462,8 +547,8 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
         screenProgress.setProgress(backlight);
         screenProgress.setLable(R.string.backlight);
         screenProgress.setIcon(R.drawable.backlight_focus);
-        screenProgress.setProgressListener(progress -> TvPictureManager.getInstance().setVideoItem(
-                TvPictureManager.PICTURE_BACKLIGHT, progress));
+        screenProgress.setProgressListener(progress ->
+                pictureSettings.setBacklight(progress));
         body.addView(screenProgress);
 
     }
@@ -475,7 +560,7 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
 
     private void addPictureMode(LinearLayout generalView) {
         View view = layoutInflater.inflate(R.layout.aspect_header, generalView, false);
-        PictureMode currentMode = PictureMode.getByID(pictureManager.getPictureMode());
+        PictureMode currentMode = PictureMode.getByID(pictureSettings.getPictureMode());
         if (currentMode == null) {
             currentMode = PictureMode.PICTURE_MODE_NORMAL;
         }
@@ -492,40 +577,54 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
         view.setOnKeyListener(this);
 
         actions.put(view, new KeyActions()
-                .addAction(KeyEvent.KEYCODE_DPAD_UP, () -> {
-                    if (isSafe()) {
-                        PictureMode current = PictureMode.getByID(pictureManager.getPictureMode());
-                        if (current == null) {
-                            current = PictureMode.PICTURE_MODE_NORMAL;
+                .addAction(KeyEvent.KEYCODE_DPAD_UP, (action) -> {
+                    if (action == KeyEvent.ACTION_DOWN)
+                        if (isSafe()) {
+                            PictureMode current = PictureMode.getByID(pictureSettings.getPictureMode());
+                            if (current == null) {
+                                current = PictureMode.PICTURE_MODE_NORMAL;
+                            }
+                            int position = PictureMode.getModes().indexOf(current);
+                            int newPosition = 0;
+                            if (position < PictureMode.getModes().size() - 1) {
+                                newPosition = position + 1;
+                            }
+                            current = PictureMode.getModes().get(newPosition);
+                            pictureSettings.setPictureMode(current.getId());
+                            ((TextView) view.findViewById(R.id.text)).setText(current.getString());
                         }
-                        int position = modes.indexOf(current);
-                        int newPosition = 0;
-                        if (position < modes.size() - 1) {
-                            newPosition = position + 1;
-                        }
-                        current = modes.get(newPosition);
-                        pictureManager.setPictureMode(current.getId());
-                        ((TextView) view.findViewById(R.id.text)).setText(current.getString());
-                    }
                 })
-                .addAction(KeyEvent.KEYCODE_DPAD_DOWN, () -> {
-                    if (isSafe()) {
-                        PictureMode current = PictureMode.getByID(pictureManager.getPictureMode());
-                        if (current == null) {
-                            current = PictureMode.PICTURE_MODE_NORMAL;
+                .addAction(KeyEvent.KEYCODE_DPAD_DOWN, (action) -> {
+                    if (action == KeyEvent.ACTION_DOWN)
+                        if (isSafe()) {
+                            PictureMode current = PictureMode.getByID(pictureSettings.getPictureMode());
+                            if (current == null) {
+                                current = PictureMode.PICTURE_MODE_NORMAL;
+                            }
+                            int position = PictureMode.getModes().indexOf(current);
+                            int newPosition = PictureMode.getModes().size() - 1;
+                            if (position > 0) {
+                                newPosition = position - 1;
+                            }
+                            current = PictureMode.getModes().get(newPosition);
+                            pictureSettings.setPictureMode(current.getId());
+                            ((TextView) view.findViewById(R.id.text)).setText(current.getString());
                         }
-                        int position = modes.indexOf(current);
-                        int newPosition = modes.size() - 1;
-                        if (position > 0) {
-                            newPosition = position - 1;
-                        }
-                        current = modes.get(newPosition);
-                        pictureManager.setPictureMode(current.getId());
-                        ((TextView) view.findViewById(R.id.text)).setText(current.getString());
-                    }
                 })
         );
+
+
     }
+
+    int minutesLeft;
+
+    String getStringTime(int time) {
+        int minutes = time / (60 * 1000);
+        int seconds = (time / 1000) % 60;
+        return String.format("%d:%02d", minutes, seconds);
+    }
+
+    long slipIn = 0;
 
 
     private void addSleep(LinearLayout generalView) {
@@ -578,17 +677,21 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
         textView.setText(text);
 
         actions.put(view, new KeyActions()
-                .addAction(KeyEvent.KEYCODE_DPAD_UP, () -> {
-                    am.cancel(pi);
-                    PreferenceManager.getDefaultSharedPreferences(this).edit().remove("shutDownTime").commit();
-                    alarmPosition++;
-                    setAlarm(am, pi, textView);
+                .addAction(KeyEvent.KEYCODE_DPAD_UP, (action) -> {
+                    if (action == KeyEvent.ACTION_DOWN) {
+                        am.cancel(pi);
+                        PreferenceManager.getDefaultSharedPreferences(this).edit().remove("shutDownTime").commit();
+                        alarmPosition++;
+                        setAlarm(am, pi, textView);
+                    }
                 })
-                .addAction(KeyEvent.KEYCODE_DPAD_DOWN, () -> {
-                    am.cancel(pi);
-                    PreferenceManager.getDefaultSharedPreferences(this).edit().remove("shutDownTime").commit();
-                    alarmPosition--;
-                    setAlarm(am, pi, textView);
+                .addAction(KeyEvent.KEYCODE_DPAD_DOWN, (action) -> {
+                    if (action == KeyEvent.ACTION_DOWN) {
+                        am.cancel(pi);
+                        PreferenceManager.getDefaultSharedPreferences(this).edit().remove("shutDownTime").commit();
+                        alarmPosition--;
+                        setAlarm(am, pi, textView);
+                    }
 
                 })
         );
@@ -621,6 +724,7 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
         });
         bodyInputs = (HorizontalScrollView) layoutInflater.inflate(R.layout.picture_settings_horizontal, bodyContainer, false);
         //iniInputs(bodyInputs.findViewById(R.id.container));
+        //  updateTextColors(bodyInputs);
         iniInputs(bodyInputs.findViewById(R.id.container));
         List<View> list = new ArrayList<>();
         KeyListener listener = new KeyListener(list, view);
@@ -631,10 +735,12 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
         }
         view.setOnKeyListener(this);
         actions.put(view, new KeyActions()
-                .addAction(KeyEvent.KEYCODE_DPAD_UP, () -> {
-                    container.getChildAt(0).requestFocus();
-                    container.getChildAt(0).requestFocus();
-                }).setAction(KeyEvent.ACTION_UP)
+                .addAction(KeyEvent.KEYCODE_DPAD_UP, (action) -> {
+                    if (action == KeyEvent.ACTION_UP) {
+                        container.getChildAt(0).requestFocus();
+                        container.getChildAt(0).requestFocus();
+                    }
+                })
         );
     }
 
@@ -654,15 +760,11 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
 
     }
 
-    View optimization;
+//    View optimization;
 
     private void addOptimization(LinearLayout generalView) {
-        View view = new View(this);
-        ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(1, 1);
-        view.setLayoutParams(layoutParams);
-        view.setFocusable(true);
-        generalView.addView(view);
-        optimization = layoutInflater.inflate(R.layout.aspect_header_img, generalView, false);
+
+        View optimization = layoutInflater.inflate(R.layout.aspect_header_img, generalView, false);
         ((ImageView) optimization.findViewById(R.id.image)).setImageResource(R.drawable.ic_speed_24dp);
 
 
@@ -675,25 +777,26 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
                 description.setText(R.string.optimization);
             }
         });
+        actions.put(optimization, new KeyActions()
+                .addAction(KeyEvent.KEYCODE_DPAD_LEFT, (action) -> {
+                })
+        );
+
         optimization.setOnClickListener((v) -> {
             Intent intent = new Intent("com.funshion.android.intent.action.FUN_TV_CC_BUTTON");
             optimization.getContext().sendBroadcast(intent);
+//            Intent intentSettings = new Intent("android.settings.SETTINGS");
+//            intentSettings.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//
+//            startActivity(intentSettings);
 
         });
-        optimization.requestFocus();
-        actions.put(optimization, new KeyActions()
-                .addAction(KeyEvent.KEYCODE_DPAD_LEFT, () -> {
-                    if (isHaveChannel) {
-                        channelHeader.requestFocus();
-                    } else {
-                        ratio.requestFocus();
-                    }
-                })
-        );
+
+
     }
 
     private void addChannelSelector(LinearLayout generalView) {
-        channelHeader = layoutInflater.inflate(R.layout.aspect_header_img, generalView, false);
+        View channelHeader = layoutInflater.inflate(R.layout.aspect_header_img, generalView, false);
         ((ImageView) channelHeader.findViewById(R.id.image)).setImageResource(R.drawable.channel_num_selected);
 
         // ((TextView) view.findViewById(R.id.text)).setText(R.string.channel);
@@ -711,13 +814,13 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
         channelHeader.setOnKeyListener(this);
 
         actions.put(channelHeader, new KeyActions()
-                        .addAction(KeyEvent.KEYCODE_DPAD_UP, () -> {
-                            bodyChannel.request();
+                        .addAction(KeyEvent.KEYCODE_DPAD_UP, (action) -> {
+                            if (action == KeyEvent.ACTION_DOWN) {
+                                bodyChannel.request();
 //                    View current = generalView.findFocus();
 //                    if (current != null) current.clearFocus();
-                            bodyChannel.request();
-                        }).addAction(KeyEvent.KEYCODE_DPAD_RIGHT, () -> {
-                            optimization.requestFocus();
+                                bodyChannel.request();
+                            }
                         })
         );
 
@@ -728,11 +831,11 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
 
     }
 
-    View ratio;
+//    View ratio;
 
     private void addRatio(LinearLayout generalView) {
-        ratio = layoutInflater.inflate(R.layout.aspect_header, generalView, false);
-        Ratio currentRatio = Ratio.getByID(pictureManager.getVideoArcType());
+        View ratio = layoutInflater.inflate(R.layout.aspect_header, generalView, false);
+        Ratio currentRatio = Ratio.getByID(pictureSettings.getVideoArcType());
         if (currentRatio == null) {
             currentRatio = Ratio.VIDEO_ARC_DEFAULT;
         }
@@ -746,50 +849,45 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
         });
 
         actions.put(ratio, new KeyActions()
-                .addAction(KeyEvent.KEYCODE_DPAD_UP, () -> {
-                    Ratio current = Ratio.getByID(pictureManager.getVideoArcType());
-                    if (current == null) {
-                        current = Ratio.VIDEO_ARC_DEFAULT;
+                .addAction(KeyEvent.KEYCODE_DPAD_UP, (action) -> {
+                    if (action == KeyEvent.ACTION_DOWN) {
+                        Ratio current = Ratio.getByID(pictureSettings.getVideoArcType());
+                        if (current == null) {
+                            current = Ratio.VIDEO_ARC_DEFAULT;
+                        }
+                        int position = ratios.indexOf(current);
+                        int newPosition = 0;
+                        if (position < ratios.size() - 1) {
+                            newPosition = position + 1;
+                        }
+                        current = ratios.get(newPosition);
+                        pictureSettings.setVideoArcType(current.getId());
+                        ((TextView) ratio.findViewById(R.id.text)).setText(current.getString());
                     }
-                    int position = ratios.indexOf(current);
-                    int newPosition = 0;
-                    if (position < ratios.size() - 1) {
-                        newPosition = position + 1;
-                    }
-                    current = ratios.get(newPosition);
-                    pictureManager.setVideoArcType(current.getId());
-                    ((TextView) ratio.findViewById(R.id.text)).setText(current.getString());
                 })
-                .addAction(KeyEvent.KEYCODE_DPAD_DOWN, () -> {
-                    Ratio current = Ratio.getByID(pictureManager.getVideoArcType());
-                    if (current == null) {
-                        current = Ratio.VIDEO_ARC_DEFAULT;
+                .addAction(KeyEvent.KEYCODE_DPAD_DOWN, (action) -> {
+                    if (action == KeyEvent.ACTION_DOWN) {
+                        Ratio current = Ratio.getByID(pictureSettings.getVideoArcType());
+                        if (current == null) {
+                            current = Ratio.VIDEO_ARC_DEFAULT;
+                        }
+                        int position = ratios.indexOf(current);
+                        int newPosition = ratios.size() - 1;
+                        if (position > 0) {
+                            newPosition = position - 1;
+                        }
+                        current = ratios.get(newPosition);
+                        pictureSettings.setVideoArcType(current.getId());
+                        ((TextView) ratio.findViewById(R.id.text)).setText(current.getString());
                     }
-                    int position = ratios.indexOf(current);
-                    int newPosition = ratios.size() - 1;
-                    if (position > 0) {
-                        newPosition = position - 1;
-                    }
-                    current = ratios.get(newPosition);
-                    pictureManager.setVideoArcType(current.getId());
-                    ((TextView) ratio.findViewById(R.id.text)).setText(current.getString());
                 })
         );
-        if (!isHaveChannel) {
-            actions.get(ratio)
-                    .addAction(KeyEvent.KEYCODE_DPAD_RIGHT, () -> {
-
-                        optimization.requestFocus();
-
-                    });
-        }
 
 
         ratio.setOnKeyListener(this);
     }
 
     HashMap<View, KeyActions> actions = new HashMap<>();
-
 
     @Override
     public boolean onKey(View v, int keyCode, KeyEvent event) {
@@ -811,8 +909,7 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
             case KeyEvent.KEYCODE_DPAD_RIGHT:
             case KeyEvent.KEYCODE_DPAD_LEFT:
                 if (actions.get(v) != null && actions.get(v).containsKeyCode(keyCode)) {
-                    if (event.getAction() == actions.get(v).action)
-                        actions.get(v).doAction(keyCode);
+                    actions.get(v).doAction(keyCode, event.getAction());
                     return true;
                 } else return false;
 
@@ -849,47 +946,27 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
     }
 
 
-    private boolean isPlay() {
-        String string = getSystemProp("Storage_Video_Status", "Finalize");
-        // Log.e("isSafe", "string " + string);
-        return "inited".equals(string);
-    }
-
     private boolean isSafe() {
-        int mInputSource = TvCommonManager.getInstance().getCurrentTvInputSource();
-        return !isUHD || (isPlay() || (mInputSource != TvCommonManager.INPUT_SOURCE_STORAGE));
+        return pictureSettings.isSafe();
     }
 
-    private String getSystemProp(String prop, String value) {
-        String string = "";
-        try {
-
-            Class properties = Class.forName("android.os.SystemProperties");
-            Method setProp = properties.getMethod("get", new Class[]{String.class, String.class});
-            string = (String) setProp.invoke(properties, new Object[]{prop, value});
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return string;
-    }
 
     private class KeyActions {
-        HashMap<Integer, Runnable> focusRunnable = new HashMap<>();
-        int action = KeyEvent.ACTION_DOWN;
+        HashMap<Integer, ActionCode> focusRunnable = new HashMap<>();
+//        int action = KeyEvent.ACTION_DOWN;
+//
+//        public KeyActions setAction(int action) {
+//            this.action = action;
+//            return this;
+//        }
 
-        public KeyActions setAction(int action) {
-            this.action = action;
-            return this;
-        }
-
-        KeyActions addAction(int keyCode, Runnable run) {
+        KeyActions addAction(int keyCode, ActionCode run) {
             focusRunnable.put(keyCode, run);
             return this;
         }
 
-        void doAction(int keyCode) {
-            focusRunnable.get(keyCode).run();
+        void doAction(int keyCode, int actionCode) {
+            focusRunnable.get(keyCode).doAction(actionCode);
         }
 
         public boolean containsKeyCode(int keyCode) {
@@ -897,9 +974,7 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
         }
     }
 
-    String getStringTime(int time) {
-        int minutes = time / (60 * 1000);
-        int seconds = (time / 1000) % 60;
-        return String.format("%d:%02d", minutes, seconds);
+    interface ActionCode {
+        void doAction(int action);
     }
 }

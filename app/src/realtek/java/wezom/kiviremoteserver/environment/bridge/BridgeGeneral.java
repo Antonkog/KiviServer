@@ -1,12 +1,9 @@
 package wezom.kiviremoteserver.environment.bridge;
 
-import android.app.Activity;
-import android.content.ComponentName;
-import android.content.Intent;
 import android.util.Log;
 
+import com.android.inputmethod.pinyin.util.Manufacture;
 import com.realtek.tv.PQ;
-import com.wezom.kiviremoteserver.App;
 import com.wezom.kiviremoteserver.environment.EnvironmentFactory;
 
 import java.lang.reflect.Method;
@@ -14,18 +11,12 @@ import java.lang.reflect.Method;
 
 public class BridgeGeneral {
     public static final int ENVIRONMENT = EnvironmentFactory.ENVIRONMENT_REALTEC;
-
-    public static boolean isOptimization = false;
-
-    public static String getBrowsPkg() {
-        return "com.android.browser";//"com.android.browser"
-    }
-
+   public static final Manufacture MANUFACTURE = Manufacture.REALTEK;
 
     public boolean isRUMarket() {
         String country = getProperty("ro.product.country");
-        return country != null && !"UKRAINE".equalsIgnoreCase(country.trim());
-
+        return country == null || !("UKRAINE".equalsIgnoreCase(country.trim())
+                || "UA".equalsIgnoreCase(country.trim()));
     }
 
     public static String getProperty(String value) {
@@ -43,15 +34,6 @@ public class BridgeGeneral {
         return result;
     }
 
-    public void voiceBtn(Activity activity) {
-        //lastStartVoiceAssistent = System.currentTimeMillis();
-        if (!App.isRUMarket()) {
-            Intent intent2 = new Intent();
-            intent2.putExtra("search_type", 1);
-            intent2.setComponent(new ComponentName("com.google.android.katniss", "com.google.android.katniss.search.SearchActivity"));
-            activity.startActivity(intent2);
-        }
-    }
 
     public void inStore(boolean isAdd) {
         new PQ().setLocationMode(isAdd ? 0 : 1);
