@@ -3,6 +3,7 @@ package com.wezom.kiviremoteserver.net.server.threads
 import com.crashlytics.android.Crashlytics
 import com.wezom.kiviremoteserver.bus.NewMessageEvent
 import com.wezom.kiviremoteserver.common.RxBus
+import io.fabric.sdk.android.Fabric
 import timber.log.Timber
 import java.io.BufferedReader
 import java.io.IOException
@@ -23,7 +24,9 @@ class ReceivingThread(private val socket: Socket) : Thread() {
                 message?.takeIf { it.isNotEmpty() }?.let { RxBus.publish(NewMessageEvent(it)) }
             }
         } catch (e: IOException) {
-            Crashlytics.logException(e)
+            if(Fabric.isInitialized()) {
+                Crashlytics.logException(e);
+            }
             Timber.e(e, e.message)
         }
     }

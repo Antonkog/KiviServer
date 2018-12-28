@@ -63,14 +63,10 @@ public class App extends Application {
                 .applicationModule(new ApplicationModule(this))
                 .build();
 
-        switch (BuildConfig.BUILD_TYPE) {
-            case "crash":
-            case "release":
-                Fabric.with(this, new Crashlytics());
-                break;
-            case "debug":
-                Timber.plant(new Timber.DebugTree());
-                break;
+        if ("release".equals(BuildConfig.BUILD_TYPE)) {
+            Fabric.with(this, new Crashlytics());
+        } else {
+            Timber.plant(new Timber.DebugTree());
         }
 
         startService(new Intent(this, KiviRemoteService.class));

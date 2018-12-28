@@ -6,6 +6,7 @@ import com.wezom.kiviremoteserver.net.server.model.WriteThreadedModel;
 import java.io.PrintWriter;
 import java.net.Socket;
 
+import io.fabric.sdk.android.Fabric;
 import timber.log.Timber;
 
 /**
@@ -41,7 +42,9 @@ public class SendingThread extends Thread {
             }
         } catch (Exception e) {
             Timber.e(e, e.getMessage());
-            Crashlytics.logException(e);
+            if(Fabric.isInitialized()) {
+                Crashlytics.logException(e);
+            }
         }
     }
 

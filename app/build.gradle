@@ -18,6 +18,9 @@ buildscript {
 }
 
 android {
+    lintOptions {
+        abortOnError true
+    }
     compileSdkVersion versions.compileSdk
     buildToolsVersion versions.buildTools
     defaultConfig {
