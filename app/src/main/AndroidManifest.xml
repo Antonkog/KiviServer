@@ -46,6 +46,7 @@
         android:name="android.hardware.microphone"
         android:required="false" />
     <application
+        android:persistent="true"
         android:name=".App"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"

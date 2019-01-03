@@ -19,7 +19,7 @@ buildscript {
 
 android {
     lintOptions {
-        abortOnError true
+        abortOnError false
     }
     compileSdkVersion versions.compileSdk
     buildToolsVersion versions.buildTools
@@ -27,7 +27,7 @@ android {
         applicationId "com.wezom.kiviremoteserver"
         minSdkVersion versions.minSdk
         targetSdkVersion versions.targetSdk
-        versionCode 14
+        versionCode 16
         multiDexEnabled true
         versionName "1.2.14"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
