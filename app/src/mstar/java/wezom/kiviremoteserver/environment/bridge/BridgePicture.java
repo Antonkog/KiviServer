@@ -94,6 +94,10 @@ public class BridgePicture {
         return saturation;
     }
 
+    public int getSharpness() {
+        return sharpness;
+    }
+
     public int getBacklight() {
         return TvPictureManager.getInstance().getBacklight();
     }

@@ -59,9 +59,14 @@ public class BridgePicture {
         return picturePreference.getBrightness();
     }
 
+    public int getSharpness() {
+        Log.e("pic", "getSharpness " + picturePreference.getSharpness());
+        return picturePreference.getSharpness();
+    }
+
+
     public int getSaturation() {
         Log.e("pic", "getSaturation " + picturePreference.getSaturation());
-
         return picturePreference.getSaturation();
     }
 

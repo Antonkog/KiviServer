@@ -3,6 +3,7 @@ package com.wezom.kiviremoteserver.interfaces;
 import android.content.Context;
 
 import com.wezom.kiviremoteserver.App;
+import com.wezom.kiviremoteserver.environment.EnvironmentInputsHelper;
 import com.wezom.kiviremoteserver.service.inputs.InputSourceHelper;
 
 import java.util.HashMap;
@@ -34,8 +35,7 @@ public class AspectAvailable {
     //https://www.stubbornjava.com/posts/java-enum-lookup-by-name-or-field-without-throwing-exceptions
 
 
-
-    public void setValues(Context context) {
+    public void setValues(Context context, InputSourceHelper inputSourceHelper, EnvironmentInputsHelper inputsHelper) {
         /*
 
        !!! THIS VALUES IS DEFINED BY MANUFACTURE AND CAN CHANGE !!!
@@ -50,9 +50,9 @@ TemperatureValues	1,2,3,4,5	1,2,3,4,5
      */
 
 
-        if(settings!= null && !settings.isEmpty()){
+        if (settings != null && !settings.isEmpty()) {
             return;
-        }else {
+        } else {
             HashMap<String, int[]> currentSettings = new HashMap<>();
 
             if (App.isTVRealtek()) {
@@ -78,13 +78,12 @@ TemperatureValues	1,2,3,4,5	1,2,3,4,5
             }
             this.settings = currentSettings;
 
-            InputSourceHelper helper = new InputSourceHelper();
-            List<InputSourceHelper.INPUT_PORT> sources = helper.getPortsList(context);
-            int[] ports = new int[sources.size()];
-
+            List<InputSourceHelper.INPUT_PORT> sources = inputSourceHelper.getPortsList(context);
+            int[] ports = new int[sources.size() + 1]; //current is last
             for (int i = 0; i < sources.size(); i++) {
                 ports[i] = sources.get(i).getId();
             }
+            ports[ports.length -1] = inputsHelper.getCurrentTvInputSource(); //current port
             settings.put(VALUE_TYPE.INPUT_PORT.name(), ports);
             context = null;
         }

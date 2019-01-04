@@ -13,7 +13,6 @@ public class EnvironmentPictureSettings {
     private int blueColor;
     private int pictureMode;
     private int brightness;
-    public int getSharpness;
     private int saturation;
     private int backlight;
     private int temperature;
@@ -71,6 +70,9 @@ public class EnvironmentPictureSettings {
         return bridgePicture.getBrightness();
     }
 
+    public int getSharpness() {
+        return bridgePicture.getSharpness();
+    }
     public int getSaturation() {
         return bridgePicture.getSaturation();
     }
