@@ -9,5 +9,5 @@ public class Constants {
 
     public static final String APPLICATION_UID = "app_uid";
     public static final String LAST_VOLUME_REALTEK = "last_volume_realtek";
-    private final int DEFAULT_PREF_VOLUME = -2;
+    public static final int NO_VALUE = -1;
 }

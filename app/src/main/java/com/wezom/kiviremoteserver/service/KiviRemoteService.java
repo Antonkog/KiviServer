@@ -15,6 +15,7 @@ import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
 import android.provider.Settings;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
@@ -35,11 +36,13 @@ import com.wezom.kiviremoteserver.bus.SendToSettingsEvent;
 import com.wezom.kiviremoteserver.bus.SendVolumeEvent;
 import com.wezom.kiviremoteserver.bus.ShowKeyboardEvent;
 import com.wezom.kiviremoteserver.bus.StopReceivingEvent;
+import com.wezom.kiviremoteserver.common.Constants;
 import com.wezom.kiviremoteserver.common.DeviceUtils;
 import com.wezom.kiviremoteserver.common.ImeUtils;
 import com.wezom.kiviremoteserver.common.KiviProtocolStructure;
 import com.wezom.kiviremoteserver.common.RxBus;
 import com.wezom.kiviremoteserver.common.Utils;
+import com.wezom.kiviremoteserver.environment.EnvironmentInputsHelper;
 import com.wezom.kiviremoteserver.environment.EnvironmentPictureSettings;
 import com.wezom.kiviremoteserver.interfaces.AspectAvailable;
 import com.wezom.kiviremoteserver.interfaces.AspectMessage;
@@ -49,6 +52,7 @@ import com.wezom.kiviremoteserver.mvp.view.ServiceMvpView;
 import com.wezom.kiviremoteserver.net.nsd.NsdUtil;
 import com.wezom.kiviremoteserver.net.server.KiviServer;
 import com.wezom.kiviremoteserver.net.server.model.ServerApplicationInfo;
+import com.wezom.kiviremoteserver.service.inputs.InputSourceHelper;
 import com.wezom.kiviremoteserver.service.protocol.ServerEventStructure;
 import com.wezom.kiviremoteserver.ui.activity.HomeActivity;
 
@@ -77,6 +81,12 @@ public class KiviRemoteService extends Service implements ServiceMvpView {
 
     @Inject
     NsdUtil autoDiscoveryUtil;
+
+
+    private EnvironmentInputsHelper inputsHelper = null;
+    private InputSourceHelper inputSourceHelper = null;
+    private EnvironmentPictureSettings pictureSettings = null;
+
 
     private final static int SERVER_ID = 123;
     public static boolean isStarted = false;
@@ -138,8 +148,11 @@ public class KiviRemoteService extends Service implements ServiceMvpView {
 
 
         disposables.add(bus.listen(SendAspectEvent.class).subscribe(
-                sendAspectEvent -> server.sendAspect(new AspectMessage(new EnvironmentPictureSettings()), AspectAvailable.getInstance()),
-                Timber:: e));
+                sendAspectEvent -> {
+                    AspectMessage msg = prepareAspect();
+                    server.sendAspect(msg, AspectAvailable.getInstance());
+                },
+                Timber::e));
 
         disposables.add(bus
                 .listen(NewMessageEvent.class)
@@ -148,7 +161,6 @@ public class KiviRemoteService extends Service implements ServiceMvpView {
                     Timber.d("Handle message " + event.getMessage());
                     return gson.fromJson(event.getMessage(), DataStructure.class);
                 }).subscribe(request -> {
-                    AspectAvailable.getInstance().setValues(getApplicationContext());
                     if (request.getAction() != null && request.getAction() == OPEN_SETTINGS) {
                         openSettings();
                         return;
@@ -235,6 +247,8 @@ public class KiviRemoteService extends Service implements ServiceMvpView {
         disposables.add(bus.listen(PingEvent.class).subscribe(event -> server.sendPong(), Timber::e));
     }
 
+
+
     private void syncAspectWithPhone(AspectMessage message) {
         EnvironmentPictureSettings pictureSettings = new EnvironmentPictureSettings();
         Timber.i("got aspect : " + message.toString() + "picture " + pictureSettings.isSafe());
@@ -281,7 +295,14 @@ public class KiviRemoteService extends Service implements ServiceMvpView {
                             case VIDEOARCTYPE:
                                 pictureSettings.setVideoArcType(pair.getValue());
                                 break;
-
+                            case INPUT_PORT:
+                                if (pair.getValue() != Constants.NO_VALUE)
+                                    new InputSourceHelper().changeInput(pair.getValue(), getApplicationContext());
+                                break;
+                            case SERVER_VERSION_CODE:
+                                break;
+                            default:
+                                Timber.e("wrong aspect value");
                         }
                     } catch (IllegalArgumentException e) {
                         Timber.e("wrong aspect key: " + e.getMessage());
@@ -296,7 +317,6 @@ public class KiviRemoteService extends Service implements ServiceMvpView {
             }
         }
     }
-
 
 
     /**
@@ -430,6 +450,19 @@ public class KiviRemoteService extends Service implements ServiceMvpView {
                 .setOngoing(true)
                 .build();
     }
+
+    @NonNull
+    private AspectMessage prepareAspect() {
+        if (inputsHelper == null) inputsHelper = new EnvironmentInputsHelper();
+        if (inputSourceHelper == null) inputSourceHelper = new InputSourceHelper();
+        if (pictureSettings == null) pictureSettings = new EnvironmentPictureSettings();
+        pictureSettings.initSettings(getApplicationContext());
+        pictureSettings.initColors();
+        AspectMessage msg = new AspectMessage(pictureSettings, inputsHelper);
+        AspectAvailable.getInstance().setValues(getApplicationContext(), inputSourceHelper, inputsHelper);
+        return msg;
+    }
+
 
     private PendingIntent prepareIntent() {
         Intent nextIntent = new Intent(this, HomeActivity.class);

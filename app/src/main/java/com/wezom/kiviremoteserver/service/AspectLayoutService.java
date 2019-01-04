@@ -421,7 +421,7 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
 
         brightness = pictureSettings.getBrightness();
         contrast = pictureSettings.getContrast();
-        sharpness = pictureSettings.getSharpness;
+        sharpness = pictureSettings.getSharpness();
         saturation = pictureSettings.getSaturation();
         backlight = pictureSettings.getBacklight();
         if (isSafe()) {
