@@ -78,6 +78,7 @@
                 android:resource="@xml/method" />
         </service>
 
+        <service android:name=".service.aspect.Alarm"/>
 
         <service
             android:name=".service.AspectLayoutService"

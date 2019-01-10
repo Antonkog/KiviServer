@@ -296,6 +296,7 @@ public class KiviRemoteService extends Service implements ServiceMvpView {
                                 pictureSettings.setVideoArcType(pair.getValue());
                                 break;
                             case INPUT_PORT:
+                                if(message.settings.size() == 1) //todo: for remote verion 1.1.14  remove later only this row
                                 if (pair.getValue() != Constants.NO_VALUE)
                                     new InputSourceHelper().changeInput(pair.getValue(), getApplicationContext());
                                 break;

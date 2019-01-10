@@ -24,8 +24,8 @@ public class KiviProtocolStructure {
         PING,
         SWITCH_OFF,
         SCROLL, //for old version
-        SCROLL_TOP_TO_BOTTOM,
-        SCROLL_BOTTOM_TO_TOP,
+        SCROLL_TOP_TO_BOTTOM, //todo: for remote verion 1.1.14  remove later
+        SCROLL_BOTTOM_TO_TOP,//todo: for remote verion 1.1.14  remove later
         OPEN_SETTINGS,
         HOME_DOWN,
         HOME_UP,

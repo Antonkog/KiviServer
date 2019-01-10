@@ -26,6 +26,7 @@ import com.wezom.kiviremoteserver.bus.SendAppsListEvent;
 import com.wezom.kiviremoteserver.bus.SendAspectEvent;
 import com.wezom.kiviremoteserver.bus.SendVolumeEvent;
 import com.wezom.kiviremoteserver.bus.ShowKeyboardEvent;
+import com.wezom.kiviremoteserver.common.Constants;
 import com.wezom.kiviremoteserver.common.DeviceUtils;
 import com.wezom.kiviremoteserver.common.MotionRelay;
 import com.wezom.kiviremoteserver.common.RxBus;
@@ -65,6 +66,7 @@ public class ExecutorServiceIME extends PinyinIME implements EventProtocolExecut
     private CompositeDisposable disposables;
     private final Instrumentation instrumentation = new Instrumentation();
     private SharedPreferences prefs;
+    private long scrollTime = System.currentTimeMillis();
 
     @Override
     public void onWindowShown() {
@@ -182,7 +184,7 @@ public class ExecutorServiceIME extends PinyinIME implements EventProtocolExecut
         }
 
         if (keyCode == KeyEvent.KEYCODE_VOLUME_MUTE) {
-            if(App.isTVRealtek()){
+            if (App.isTVRealtek()) {
                 realtekVolumeWorkAround();
             } else {
                 keyDownUp(KeyEvent.KEYCODE_VOLUME_MUTE);
@@ -225,15 +227,15 @@ public class ExecutorServiceIME extends PinyinIME implements EventProtocolExecut
         int oldVolume = prefs.getInt(LAST_VOLUME_REALTEK, DEFAULT_PREF_VOLUME);
         int currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
 
-        if(currentVolume != 0){
+        if (currentVolume != 0) {
             prefs.edit().putInt(LAST_VOLUME_REALTEK, currentVolume).apply();
-            while (currentVolume != 0){
+            while (currentVolume != 0) {
                 keyDownUp(KeyEvent.KEYCODE_VOLUME_DOWN);
-                currentVolume --;
+                currentVolume--;
             }
         } else {
-            if(oldVolume!= DEFAULT_PREF_VOLUME){
-                while (currentVolume != oldVolume ){
+            if (oldVolume != DEFAULT_PREF_VOLUME) {
+                while (currentVolume != oldVolume) {
                     keyDownUp(KeyEvent.KEYCODE_VOLUME_UP);
                     currentVolume++;
                 }
@@ -379,16 +381,24 @@ public class ExecutorServiceIME extends PinyinIME implements EventProtocolExecut
                     //   launchApp("com.funshion.poweroffdialog");
                     break;
 
-                case SCROLL: //for old version of remoteControl versionCode<20
-                    scroll(dataStructure.getMotion().get(1));
+                case SCROLL: //for old version of remoteControl versionCode<20\
+                    float dy = dataStructure.getMotion().get(1);
+                    if (isBrowserCurrent()) {
+                        scroll(dy);
+                    } else {
+                        if(System.currentTimeMillis() - scrollTime > Constants.SCROLL_VELOCITY_MS){
+                            scrollTime = System.currentTimeMillis();
+                            if (dy > 0) executeCommand(KeyEvent.KEYCODE_DPAD_DOWN);
+                            else executeCommand(KeyEvent.KEYCODE_DPAD_UP);
+                        }
+                    }
                     break;
-
-                case SCROLL_BOTTOM_TO_TOP:
-                    if(isBrowserCurrent()) scroll(-150);
+                case SCROLL_BOTTOM_TO_TOP: //todo: for remote verion 1.1.14 versionCode52 remove later
+                    if (isBrowserCurrent()) scroll(-dataStructure.getMotion().get(1));
                     else executeCommand(KeyEvent.KEYCODE_DPAD_DOWN);
                     break;
-                case SCROLL_TOP_TO_BOTTOM:
-                    if(isBrowserCurrent()) scroll(150);
+                case SCROLL_TOP_TO_BOTTOM://todo: for remote verion 1.1.14 versionCode52 remove later
+                    if (isBrowserCurrent()) scroll(dataStructure.getMotion().get(1));
                     else executeCommand(KeyEvent.KEYCODE_DPAD_UP);
                     break;
                 case HOME_DOWN:
@@ -441,7 +451,7 @@ public class ExecutorServiceIME extends PinyinIME implements EventProtocolExecut
         } else {
             packageName = mActivityManager.getRunningTasks(1).get(0).topActivity.getPackageName();
         }
-        Timber.e("current package : " +packageName);
+        Timber.e("current package : " + packageName);
         if (packageName.contains("browser")) return true;
         return false;
     }
