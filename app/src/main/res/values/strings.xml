@@ -1,52 +1,51 @@
 <resources>
-    <string name="app_name">Kivi Remote Server</string>
+    <string name="app_name" translatable="false">Kivi Remote Server</string>
 
 
-    <string name="ok">ОК</string>
-    <string name="network_failure_message">Сеть недоступна. Проверьте интернет соединение.</string>
+    <string name="ok" translatable="false">ОК</string>
+    <string name="network_failure_message">Network unavailable</string>
 
 
-    <string name="start_server">start server</string>
-    <string name="terminate_server">terminate</string>
-    <string name="settings_open">settings</string>
-    <string name="set_kivi_ime">Set IME NOW!</string>
+    <string name="start_server" translatable="false">start server</string>
+    <string name="terminate_server" translatable="false">terminate</string>
+    <string name="settings_open" translatable="false">settings</string>
+    <string name="set_kivi_ime" translatable="false">Set IME NOW!</string>
 
     <!--CLIENT SIDE strings-->
-    <string name="mess_server_at" formatted="false">Server at IP: %s, port: %s</string>
-    <string name="server_terminate_message">"Servet terminated"</string>
+    <string name="mess_server_at" formatted="false" translatable="false">Server at IP: %s, port: %s</string>
+    <string name="server_terminate_message" translatable="false">"Servet terminated"</string>
 
 
     <!-- Title for Latin keyboard  -->
 
     <!-- Symbols that are commonly considered word separators in this language -->
-    <string name="word_separators">\u0020.,;:!?\n()[]*&amp;@{}/&lt;&gt;_+=|&quot;</string>
+    <string name="word_separators" translatable="false">\u0020.,;:!?\n()[]*&amp;@{}/&lt;&gt;_+=|&quot;</string>
 
     <!-- Labels on soft keys -->
-    <string name="label_go_key">Go</string>
-    <string name="label_next_key">Next</string>
-    <string name="label_send_key">Send</string>
+    <string name="label_go_key" translatable="false">Go</string>
+    <string name="label_next_key" translatable="false">Next</string>
+    <string name="label_send_key" translatable="false">Send</string>
 
     <!-- Labels for subtype -->
 
     <!-- Titles for ImePreference -->
 
-    <string name="overlay_was_denied">Приложение не может продолжать работу без разрешения</string>
-    <string name="ip">Device IP:</string>
-    <string name="running_on">Running on AndroidTV:</string>
+    <string name="ip" translatable="false">Device IP:</string>
+    <string name="running_on" translatable="false">Running on AndroidTV:</string>
 
 
-    <string name="wifi">Wi-Fi</string>
+    <string name="wifi" translatable="false">Wi-Fi</string>
     <string name="video_sound">Video/Sound</string>
     <string name="info">INFO</string>
-    <string name="vga">VGA</string>
+    <string name="vga" translatable="false">VGA</string>
     <string name="atv">ATV</string>
-    <string name="hdmi">HDMI 1</string>
-    <string name="hdmi2">HDMI 2</string>
-    <string name="hdmi3">HDMI 3</string>
-    <string name="hdmi4">HDMI 4</string>
+    <string name="hdmi" translatable="false">HDMI 1</string>
+    <string name="hdmi2" translatable="false">HDMI 2</string>
+    <string name="hdmi3" translatable="false">HDMI 3</string>
+    <string name="hdmi4" translatable="false">HDMI 4</string>
     <string name="dtv">DTV</string>
-    <string name="dvi">DVI</string>
-    <string name="av">AV</string>
+    <string name="dvi" translatable="false">DVI</string>
+    <string name="av" translatable="false">AV</string>
     <string name="hide">Hide</string>
     <string name="show">Show</string>
     <string name="to_hide">Hidden apps</string>
@@ -60,7 +59,7 @@
     <string name="inputs">Inputs</string>
     <string name="my_apps">My apps</string>
     <string name="kivi_apps">Recommended by KIVI</string>
-    <string name="empty_text" />
+    <string name="empty_text" translatable="false" />
     <string name="background">Background</string>
     <string name="apps_list">Applications</string>
     <string name="clock">Clock</string>
@@ -74,7 +73,7 @@
     <string name="app">App</string>
     <string name="settings_android">Android</string>
     <string name="old_preference">Legacy</string>
-    <string name="to_usb">USB</string>
+    <string name="to_usb" translatable="false">USB</string>
     <string name="ypbpr">YPBPR</string>
     <string name="accessibility_service_description">accessibility_service_description</string>
     <string name="small">Small</string>
@@ -98,9 +97,9 @@
     <string name="vivid">Vivid</string>
     <string name="auto">Auto</string>
     <string name="user">User</string>
-    <string name="r_16x9">16x9</string>
+    <string name="r_16x9" translatable="false">16x9</string>
     <string name="default_r">Default</string>
-    <string name="r_4x3">4x3</string>
+    <string name="r_4x3" translatable="false">4x3</string>
     <string name="picture_des">Picture settings *Video content required</string>
     <string name="sleep_desc">Turn off in %s</string>
     <string name="temperature_des">Temperature</string>
@@ -125,7 +124,7 @@
     <string name="high">High</string>
     <string name="middle">Middle</string>
     <string name="low">Low</string>
-    <string name="hdr">HDR</string>
+    <string name="hdr" translatable="false">HDR</string>
     <string name="notifications" translatable="false">notifications</string>
     <string name="warmer">Warmer</string>
     <string name="cooler">Cooler</string>
@@ -371,4 +370,5 @@ or through the website </string>
     <string name="number_log">Report number</string>
     <string name="error">Error</string>
     <string name="picture_mode">Picture mode</string>
+    <string name="overlay_was_denied">App can\'t work without permissions</string>
 </resources>

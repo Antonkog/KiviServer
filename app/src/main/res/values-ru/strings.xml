@@ -1,17 +1,9 @@
 <resources>
 
-    <string name="wifi">Wi-Fi</string>
     <string name="video_sound">Видео и Звук</string>
     <string name="info">Про устройство</string>
-    <string name="vga">VGA</string>
     <string name="atv">АТВ</string>
-    <string name="hdmi">HDMI 1</string>
-    <string name="hdmi2">HDMI 2</string>
-    <string name="hdmi3">HDMI 3</string>
-    <string name="hdmi4">HDMI 4</string>
     <string name="dtv">Телевидение</string>
-    <string name="dvi">DVI</string>
-    <string name="av">AV</string>
     <string name="hide">Спрятать</string>
     <string name="show">Показать</string>
     <string name="to_hide">Скрытые приложения</string>
@@ -38,7 +30,6 @@
     <string name="app">Приложения</string>
     <string name="settings_android">Android</string>
     <string name="old_preference">Устаревшее</string>
-    <string name="to_usb">USB</string>
     <string name="ypbpr">Компонент</string>
     <string name="base_settings">Базовые</string>
     <string name="accessibility_service_description">accessibility_service_description</string>
@@ -64,9 +55,7 @@
     <string name="vivid">Яркий</string>
     <string name="auto">Авто</string>
     <string name="user">Пользовательский</string>
-    <string name="r_16x9">16x9</string>
     <string name="default_r">По умолчанию</string>
-    <string name="r_4x3">4x3</string>
     <string name="picture_des">Изображение (только для видео)</string>
     <string name="sleep_desc">Выключить через %s</string>
     <string name="temperature_des">Температура</string>
@@ -90,7 +79,6 @@
     <string name="high">Высокий</string>
     <string name="middle">Средний</string>
     <string name="low">Низкий</string>
-    <string name="hdr">HDR</string>
     <string name="warmer">Теплый 2</string>
     <string name="cooler">Холодный 2</string>
     <string name="movie">Кино</string>
@@ -119,4 +107,6 @@
     <string name="number_log">Номер отчета</string>
     <string name="error">Ошибка</string>
     <string name="picture_mode">Режим изображения</string>
+    <string name="network_failure_message">Сеть недоступна. Проверьте интернет соединение.</string>
+    <string name="overlay_was_denied">Приложение не может продолжать работу без разрешения</string>
 </resources>

@@ -29,7 +29,7 @@ android {
         targetSdkVersion versions.targetSdk
         versionCode 16
         multiDexEnabled true
-        versionName "1.2.15"
+        versionName "1.2.16"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }
