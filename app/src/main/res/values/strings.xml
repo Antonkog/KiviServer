@@ -115,7 +115,7 @@
     <string name="mode_desc">Mode *Video content required</string>
     <string name="ratio_desc">Ratio *Video content required</string>
     <string name="timer_off">Timer off</string>
-    <string name="double_dot">:</string>
+    <string name="double_dot" translatable="false">:</string>
     <string name="off">Off</string>
     <string name="minutes">" min"</string>
     <string name="hours">" h"</string>
@@ -126,7 +126,7 @@
     <string name="middle">Middle</string>
     <string name="low">Low</string>
     <string name="hdr">HDR</string>
-    <string name="notifications">notifications</string>
+    <string name="notifications" translatable="false">notifications</string>
     <string name="warmer">Warmer</string>
     <string name="cooler">Cooler</string>
     <string name="movie">Movie</string>
@@ -356,18 +356,19 @@ or through the website </string>
     <string name="online_support">Remote Connect</string>
     <string name="back">Back</string>
     <string name="system">System</string>
-    <string name="dvbs">DVB-S2</string>
+    <string name="dvbs" translatable="false">DVB-S2</string>
 
     <string name="store">Store mode</string>
-    <string name="dvbc">DVB-C</string>
+    <string name="dvbc" translatable="false">DVB-C</string>
     <string name="recommended_apps">Advise</string>
     <string name="other">Other</string>
     <string name="voice">voice</string>
     <string name="keyboard">keyboard</string>
     <string name="version">Version</string>
     <string name="send_log">Send log</string>
-    <string name="title_activity_main2">Main2Activity</string>
+    <string name="title_activity_main2" translatable="false">Main2Activity</string>
     <string name="please_wait">Please wait</string>
     <string name="number_log">Report number</string>
     <string name="error">Error</string>
+    <string name="picture_mode">Picture mode</string>
 </resources>

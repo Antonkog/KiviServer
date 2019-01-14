@@ -154,4 +154,5 @@
     <string name="please_wait">Будь ласка зачекайте</string>
     <string name="number_log">Номер звіту</string>
     <string name="error">Помилка</string>
+    <string name="picture_mode">Режим зображення</string>
 </resources>

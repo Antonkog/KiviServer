@@ -58,6 +58,13 @@ import wezom.kiviremoteserver.environment.bridge.driver_set.TemperatureValues;
 
 public class AspectLayoutService extends Service implements View.OnKeyListener {
 
+    private final static String KEY_PIC_BRIGHTNESS = "psdBrightness";
+    private final static String KEY_PIC_CONTRAST = "psdContrast";
+    private final static String KEY_PIC_SATURATION = "psdSaturation";
+    private final static String KEY_PIC_HDR = "psdHDR";
+    private final static String KEY_PIC_TEMPERATURE = "psdTemperature";
+    private final static String KEY_PIC_BACKLIGHT = "psdBacklight";
+
     private int generalType = BridgePicture.LAYER_TYPE;//WindowManager.LayoutParams.TYPE_TOAST;
     private WindowManager wmgr;
     private int alarmPosition = 0;
@@ -249,8 +256,8 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
         addInputs(headerContainer);
         addSeparator(headerContainer);
         addSleep(headerContainer);
-        addSeparator(headerContainer);
-        addPictureMode(headerContainer);
+//        addSeparator(headerContainer);
+//        addPictureMode(headerContainer);
         addSeparator(headerContainer);
         addRatio(headerContainer);
         addSeparator(headerContainer);
@@ -415,6 +422,8 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
 
     }
 
+    List<View> picturesView = new ArrayList<>();
+
     private void pictureDetailSettings(LinearLayout body) {
 
         pictureSettings.initSettings(this);
@@ -425,19 +434,18 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
         saturation = pictureSettings.getSaturation();
         backlight = pictureSettings.getBacklight();
         if (isSafe()) {
-            psdBrightness(body);//+
-            psdContrast(body);//+
-            psdSaturation(body);//+
+            picturesView.add(psdBrightness(body));//+
+            picturesView.add(psdContrast(body));//+
+            picturesView.add(psdSaturation(body));//+
             //psdSharpness(body);//+
-            psdHDR(body);//+
-            psdTemperature(body);//+
+            picturesView.add(psdHDR(body));//+
+            picturesView.add(psdTemperature(body));//+
+            addPictureModeRow(body);//+
         }
         psdBacklight(body);//+
-
-
     }
 
-    private void psdTemperature(LinearLayout body) {
+    private View  psdTemperature(LinearLayout body) {
         TemperatureValues current = TemperatureValues.getByID(pictureSettings.getTemperature());
         LRTextSwitcher lrTextSwitcher = new LRTextSwitcher(this);
         lrTextSwitcher.setUpValues(TemperatureValues.getSet());
@@ -448,11 +456,11 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
         lrTextSwitcher.setIcon(R.drawable.color_temper_focus);
         lrTextSwitcher.setProgressListener(progress -> pictureSettings.setTemperature(progress));
         body.addView(lrTextSwitcher);
-
-
+        lrTextSwitcher.setKey(KEY_PIC_TEMPERATURE);
+        return lrTextSwitcher;
     }
 
-    private void psdHDR(LinearLayout body) {
+    private View psdHDR(LinearLayout body) {
         LRTextSwitcher lrTextSwitcher = new LRTextSwitcher(this);
         HDRValues current = HDRValues.getByID(pictureSettings.getHDR());
         lrTextSwitcher.setUpValues(pictureSettings.getHDRSet());
@@ -465,7 +473,8 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
             pictureSettings.setHDR(progress);
         });
         body.addView(lrTextSwitcher);
-
+        lrTextSwitcher.setKey(KEY_PIC_HDR);
+        return lrTextSwitcher;
     }
 
     private void psdGreen(LinearLayout body) {
@@ -508,7 +517,7 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
         body.addView(screenProgress);
     }
 
-    private void psdSaturation(LinearLayout body) {
+    private View psdSaturation(LinearLayout body) {
         ScreenProgress screenProgress = new ScreenProgress(this);
         screenProgress.setOnKeyListener(this);
         screenProgress.setProgress(saturation);
@@ -517,9 +526,11 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
         screenProgress.setProgressListener(progress ->
                 pictureSettings.setSaturation(progress));
         body.addView(screenProgress);
+        screenProgress.setKey(KEY_PIC_SATURATION);
+        return screenProgress;
     }
 
-    private void psdContrast(LinearLayout body) {
+    private View psdContrast(LinearLayout body) {
         ScreenProgress screenProgress = new ScreenProgress(this);
         screenProgress.setOnKeyListener(this);
         screenProgress.setProgress(contrast);
@@ -528,9 +539,11 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
         screenProgress.setProgressListener(progress ->
                 pictureSettings.setContrast(progress));
         body.addView(screenProgress);
+        screenProgress.setKey(KEY_PIC_CONTRAST);
+        return screenProgress;
     }
 
-    private void psdBrightness(LinearLayout body) {
+    private View psdBrightness(LinearLayout body) {
         ScreenProgress screenProgress = new ScreenProgress(this);
         screenProgress.setOnKeyListener(this);
         screenProgress.setProgress(brightness);
@@ -539,6 +552,8 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
         screenProgress.setProgressListener(progress ->
                 pictureSettings.setBrightness(progress));
         body.addView(screenProgress);
+        screenProgress.setKey(KEY_PIC_BRIGHTNESS);
+        return screenProgress;
     }
 
     private void psdBacklight(LinearLayout body) {
@@ -550,11 +565,78 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
         screenProgress.setProgressListener(progress ->
                 pictureSettings.setBacklight(progress));
         body.addView(screenProgress);
-
+//        screenProgress.setKey(KEY_PIC_BACKLIGHT);
+//        return screenProgress;
     }
 
     private void pdsColorTemperature(LinearLayout body) {
         //TvPictureManager.getInstance().setColorTempratureEx();
+    }
+
+    private void addPictureModeRow(LinearLayout body) {
+        LRTextSwitcher lrTextSwitcher = new LRTextSwitcher(this);
+        PictureMode current = PictureMode.getByID(pictureSettings.getPictureMode());
+        PictureMode[] picArr = new PictureMode[PictureMode.getModes().size()];
+        lrTextSwitcher.setUpValues(PictureMode.getModes().toArray(picArr));
+        lrTextSwitcher.setOnKeyListener(this);
+        if (current != null) {
+            lrTextSwitcher.setValue(current);
+            enablePicturesSettings(current == PictureMode.PICTURE_MODE_USER, false);
+        }
+        lrTextSwitcher.setLable(R.string.picture_mode);
+        lrTextSwitcher.setIcon(R.drawable.ic_image_w_24dp);
+        lrTextSwitcher.setProgressListener(progress -> {
+            pictureSettings.setPictureMode(progress);
+            enablePicturesSettings(progress == PictureMode.PICTURE_MODE_USER.getID(), true);
+        });
+        body.addView(lrTextSwitcher);
+    }
+
+    private void enablePicturesSettings(boolean enable, boolean updateData) {
+        if (updateData)
+            pictureSettings.initSettings(this);
+        for (View v : picturesView) {
+            v.setEnabled(enable);
+            v.setFocusable(enable);
+            v.setAlpha(enable ? 1 : 0.3f);
+            updateViewData(v);
+        }
+    }
+
+    private void updateViewData(View v) {
+        if (v instanceof ScreenProgress) {
+            ScreenProgress screenProgress = (ScreenProgress) v;
+            switch (screenProgress.getKey()) {
+                case KEY_PIC_BACKLIGHT:
+                    screenProgress.setProgress(pictureSettings.getBacklight());
+                    break;
+                case KEY_PIC_BRIGHTNESS:
+                    screenProgress.setProgress(pictureSettings.getBrightness());
+                    break;
+                case KEY_PIC_CONTRAST:
+                    screenProgress.setProgress(pictureSettings.getContrast());
+                    break;
+                case KEY_PIC_SATURATION:
+                    screenProgress.setProgress(pictureSettings.getSaturation());
+                    break;
+            }
+        } else if (v instanceof LRTextSwitcher) {
+            LRTextSwitcher lrTextSwitcher = (LRTextSwitcher) v;
+            switch (lrTextSwitcher.getKey()) {
+                case KEY_PIC_HDR:
+                    lrTextSwitcher.setValue(pictureSettings.getBacklight());
+                    HDRValues current = HDRValues.getByID(pictureSettings.getHDR());
+                    if (current != null)
+                        lrTextSwitcher.setValue(current);
+                    break;
+                case KEY_PIC_TEMPERATURE:
+                    lrTextSwitcher.setValue(pictureSettings.getBacklight());
+                    TemperatureValues temp = TemperatureValues.getByID(pictureSettings.getTemperature());
+                    if (temp != null)
+                        lrTextSwitcher.setValue(temp);
+                    break;
+            }
+        }
     }
 
 
@@ -590,7 +672,7 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
                                 newPosition = position + 1;
                             }
                             current = PictureMode.getModes().get(newPosition);
-                            pictureSettings.setPictureMode(current.getId());
+                            pictureSettings.setPictureMode(current.getID());
                             ((TextView) view.findViewById(R.id.text)).setText(current.getString());
                         }
                 })
@@ -607,7 +689,7 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
                                 newPosition = position - 1;
                             }
                             current = PictureMode.getModes().get(newPosition);
-                            pictureSettings.setPictureMode(current.getId());
+                            pictureSettings.setPictureMode(current.getID());
                             ((TextView) view.findViewById(R.id.text)).setText(current.getString());
                         }
                 })

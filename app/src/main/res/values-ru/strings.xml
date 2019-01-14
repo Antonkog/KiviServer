@@ -118,4 +118,5 @@
     <string name="please_wait">Пожалуйста подождите</string>
     <string name="number_log">Номер отчета</string>
     <string name="error">Ошибка</string>
+    <string name="picture_mode">Режим изображения</string>
 </resources>

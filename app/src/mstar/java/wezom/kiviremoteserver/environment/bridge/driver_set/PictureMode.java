@@ -9,7 +9,7 @@ import java.util.Arrays;
 import java.util.List;
 
 
-public enum PictureMode {
+public enum PictureMode implements TextTypedValues {
 
     PICTURE_MODE_NORMAL(1, R.string.normal),
     PICTURE_MODE_SOFT(2, R.string.soft),
@@ -24,7 +24,7 @@ public enum PictureMode {
 //    PICTURE_MODE_SPORT(5, R.string.sport),
 //    PICTURE_MODE_GAME(6, R.string.game),
 //    PICTURE_MODE_VIVID(1, R.string.vivid);
-   // PICTURE_MODE_ECONOMY(10, R.string.economy);
+    // PICTURE_MODE_ECONOMY(10, R.string.economy);
 
 
     int id;
@@ -33,6 +33,16 @@ public enum PictureMode {
     PictureMode(int id, int string) {
         this.id = id;
         this.string = string;
+    }
+
+    @Override
+    public int getStringResourceID() {
+        return string;
+    }
+
+    @Override
+    public int getID() {
+        return id;
     }
 
     public int getId() {
