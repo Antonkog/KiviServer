@@ -34,3 +34,5 @@
 
 -dontobfuscate
 -dontwarn com.mstar.android.**
+-dontwarn com.realtek.server.**
+-dontwarn com.realtek.tv.**

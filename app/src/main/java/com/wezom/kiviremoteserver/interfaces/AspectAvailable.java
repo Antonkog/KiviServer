@@ -59,12 +59,12 @@ TemperatureValues	1,2,3,4,5	1,2,3,4,5
                 int[] picture = {0, 1, 2, 3, 4, 5, 6, 7, 9};
                 int[] ratio = {1, 5, 9, 10};
                 int[] temperatureValues = {1, 2, 3, 4, 5};
-                int[] hdrValues = {0, 1, 2, 3, 4};
+//                int[] hdrValues = {0, 1, 2, 3, 4}; //seems like hdr works only with hdm3 on Realtek - need to change logic
 
                 currentSettings.put(VALUE_TYPE.RATIO.name(), ratio);
                 currentSettings.put(VALUE_TYPE.TEMPERATUREVALUES.name(), picture);
                 currentSettings.put(VALUE_TYPE.PICTUREMODE.name(), temperatureValues);
-                currentSettings.put(VALUE_TYPE.HDR.name(), hdrValues);
+//                currentSettings.put(VALUE_TYPE.HDR.name(), hdrValues); //seems like hdr works only with hdm3  - need to change logic
             } else {
                 int[] picture = {1, 2, 3, 5, 7};
                 int[] ratio = {0, 1, 2, 3};

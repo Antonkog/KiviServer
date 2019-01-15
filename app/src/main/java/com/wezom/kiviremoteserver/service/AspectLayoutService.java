@@ -438,14 +438,15 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
             picturesView.add(psdContrast(body));//+
             picturesView.add(psdSaturation(body));//+
             //psdSharpness(body);//+
-            picturesView.add(psdHDR(body));//+
+            if (BridgeGeneral.ENVIRONMENT != EnvironmentFactory.ENVIRONMENT_REALTEC)
+                picturesView.add(psdHDR(body));//+
             picturesView.add(psdTemperature(body));//+
             addPictureModeRow(body);//+
         }
         psdBacklight(body);//+
     }
 
-    private View  psdTemperature(LinearLayout body) {
+    private View psdTemperature(LinearLayout body) {
         TemperatureValues current = TemperatureValues.getByID(pictureSettings.getTemperature());
         LRTextSwitcher lrTextSwitcher = new LRTextSwitcher(this);
         lrTextSwitcher.setUpValues(TemperatureValues.getSet());
@@ -624,13 +625,11 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
             LRTextSwitcher lrTextSwitcher = (LRTextSwitcher) v;
             switch (lrTextSwitcher.getKey()) {
                 case KEY_PIC_HDR:
-                    lrTextSwitcher.setValue(pictureSettings.getBacklight());
                     HDRValues current = HDRValues.getByID(pictureSettings.getHDR());
                     if (current != null)
                         lrTextSwitcher.setValue(current);
                     break;
                 case KEY_PIC_TEMPERATURE:
-                    lrTextSwitcher.setValue(pictureSettings.getBacklight());
                     TemperatureValues temp = TemperatureValues.getByID(pictureSettings.getTemperature());
                     if (temp != null)
                         lrTextSwitcher.setValue(temp);

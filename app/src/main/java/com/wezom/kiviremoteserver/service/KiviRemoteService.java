@@ -166,7 +166,11 @@ public class KiviRemoteService extends Service implements ServiceMvpView {
                         return;
                     }
                     if (request.getAspectMessage() != null) {
-                        syncAspectWithPhone(request.getAspectMessage());
+                        try {
+                            syncAspectWithPhone(request.getAspectMessage());
+                        } catch (Exception e) {
+                            Timber.e("error while syncing aspect with phone " + e.getMessage());
+                        }
                         return;
                     }
 
@@ -248,16 +252,24 @@ public class KiviRemoteService extends Service implements ServiceMvpView {
     }
 
 
-
     private void syncAspectWithPhone(AspectMessage message) {
-        EnvironmentPictureSettings pictureSettings = new EnvironmentPictureSettings();
         Timber.i("got aspect : " + message.toString() + "picture " + pictureSettings.isSafe());
-        if (pictureSettings != null && pictureSettings.isSafe()) {
-            if (message.settings != null) {
-                Iterator it = message.settings.entrySet().iterator();
-                while (it.hasNext()) {
-                    Map.Entry<String, Integer> pair = (Map.Entry) it.next();
-                    try {
+        if (message.settings != null) {
+            Iterator it = message.settings.entrySet().iterator();
+            while (it.hasNext()) {
+                Map.Entry<String, Integer> pair = (Map.Entry) it.next();
+
+                if (AspectMessage.ASPECT_VALUE.valueOf(pair.getKey()) == AspectMessage.ASPECT_VALUE.INPUT_PORT) {
+                    if (message.settings.size() == 1 //todo: for remote verion 1.1.14  remove later only this row
+                            && pair.getValue() != Constants.NO_VALUE) {
+                        if (inputSourceHelper == null)
+                            inputSourceHelper = new InputSourceHelper();
+                        inputSourceHelper.changeInput(pair.getValue(), getApplicationContext());
+                    }
+                } else {
+                    if (pictureSettings == null)
+                        pictureSettings = new EnvironmentPictureSettings();
+                    if (pictureSettings.isSafe())
                         switch (AspectMessage.ASPECT_VALUE.valueOf(pair.getKey())) {
                             case PICTUREMODE:
                                 pictureSettings.setPictureMode(pair.getValue());
@@ -295,26 +307,13 @@ public class KiviRemoteService extends Service implements ServiceMvpView {
                             case VIDEOARCTYPE:
                                 pictureSettings.setVideoArcType(pair.getValue());
                                 break;
-                            case INPUT_PORT:
-                                if(message.settings.size() == 1) //todo: for remote verion 1.1.14  remove later only this row
-                                if (pair.getValue() != Constants.NO_VALUE)
-                                    new InputSourceHelper().changeInput(pair.getValue(), getApplicationContext());
-                                break;
                             case SERVER_VERSION_CODE:
                                 break;
                             default:
                                 Timber.e("wrong aspect value");
                         }
-                    } catch (IllegalArgumentException e) {
-                        Timber.e("wrong aspect key: " + e.getMessage());
-                    } catch (ClassCastException e) {
-                        Timber.e("wrong aspect key: " + e.getMessage());
-                    }
-                    System.out.println(pair.getKey() + " = " + pair.getValue());
-                    it.remove(); // avoids a ConcurrentModificationException
                 }
-
-
+                it.remove(); // avoids a ConcurrentModificationException
             }
         }
     }
@@ -421,6 +420,7 @@ public class KiviRemoteService extends Service implements ServiceMvpView {
         public String getIpAddress() {
             return messIp;
         }
+
     }
 
     private void openSettings() {

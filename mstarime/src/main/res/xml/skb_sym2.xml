@@ -35,9 +35,9 @@
         <keys
             labels="©|£|€|^|®"
             splitter="|" />
-        <key label="℃">
+        <key label="&amp;">
             <toggle_state
-                label="℉"
+                label="&amp;"
                 state_id="@string/toggle_en_sym2" />
         </key>
         <keys
