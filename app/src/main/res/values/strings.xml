@@ -371,4 +371,13 @@ or through the website </string>
     <string name="error">Error</string>
     <string name="picture_mode">Picture mode</string>
     <string name="overlay_was_denied">App can\'t work without permissions</string>
+    <string name="sound">Sound</string>
+    <string name="sound_standard">Standard</string>
+    <string name="sound_film">Film</string>
+    <string name="sound_music">Music</string>
+    <string name="sound_user">User</string>
+    <string name="sound_type">Sound mode</string>
+    <string name="sound_low">Bass</string>
+    <string name="sound_height">Treble</string>
+
 </resources>

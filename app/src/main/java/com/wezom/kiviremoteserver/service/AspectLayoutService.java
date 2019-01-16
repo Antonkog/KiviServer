@@ -49,6 +49,7 @@ import wezom.kiviremoteserver.environment.bridge.BridgeGeneral;
 import wezom.kiviremoteserver.environment.bridge.BridgePicture;
 import wezom.kiviremoteserver.environment.bridge.driver_set.PictureMode;
 import wezom.kiviremoteserver.environment.bridge.driver_set.Ratio;
+import wezom.kiviremoteserver.environment.bridge.driver_set.SoundValues;
 import wezom.kiviremoteserver.environment.bridge.driver_set.TemperatureValues;
 
 //com.wezom.kiviremoteserver.mstar.java.com.wezom.kiviremoteserver.environment.bridge.driver_set.
@@ -59,6 +60,7 @@ import wezom.kiviremoteserver.environment.bridge.driver_set.TemperatureValues;
 public class AspectLayoutService extends Service implements View.OnKeyListener {
 
     private final static String KEY_PIC_BRIGHTNESS = "psdBrightness";
+    private final static String KEY_SOUND_DEPRECATED = "KEY_SOUND_DEPRECATED";
     private final static String KEY_PIC_CONTRAST = "psdContrast";
     private final static String KEY_PIC_SATURATION = "psdSaturation";
     private final static String KEY_PIC_HDR = "psdHDR";
@@ -251,6 +253,10 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
         addSeparator(headerContainer);
         addPictureSetting(headerContainer);
         addSeparator(headerContainer);
+        if (EnvironmentFactory.ENVIRONMENT_REALTEC == BridgeGeneral.ENVIRONMENT) {
+            addSoundSetting(headerContainer);
+            addSeparator(headerContainer);
+        }
 //        addTemperatureSetting(headerContainer);
 //        addSeparator(headerContainer);
         addInputs(headerContainer);
@@ -284,6 +290,107 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
 
         initCarousel(headerContainer);
     }
+
+    private void addSoundSetting(LinearLayout headerContainer) {
+        View view = layoutInflater.inflate(R.layout.aspect_header_img, generalView, false);
+        ((ImageView) view.findViewById(R.id.image)).setImageResource(R.drawable.ic_music_note_black_24dp);
+
+        LinearLayout bodySoundSettings = (LinearLayout) layoutInflater.inflate(R.layout.picture_settings, bodyContainer, false);
+        view.setOnFocusChangeListener((v, hasFocus) -> {
+//
+            if (hasFocus) {
+                bodyContainer.removeAllViews();
+                bodyContainer.addView(bodySoundSettings);
+                description.setText(R.string.sound);
+            }
+        });
+        soundDetailSettings(bodySoundSettings);
+        List<View> list = new ArrayList<>();
+        KeyListener listener = new KeyListener(list, view);
+        for (int i = bodySoundSettings.getChildCount() - 1; i >= 0; i--) {
+            list.add(bodySoundSettings.getChildAt(i));
+            bodySoundSettings.getChildAt(i).setOnKeyListener(listener);
+        }
+        actions.put(view, new KeyActions()
+                .addAction(KeyEvent.KEYCODE_DPAD_UP, (action) -> {
+                    if (action == KeyEvent.ACTION_UP) {
+                        list.get(0).requestFocus();
+                        list.get(0).requestFocus();
+                    }
+                })
+        );
+        headerContainer.addView(view);
+        view.setOnKeyListener(this);
+    }
+
+    ScreenProgress soundBass;
+    ScreenProgress soundTreble;
+    private void updateSoundValue(boolean isUser) {
+        soundBass.setEnabled(isUser);
+        soundBass.setFocusable(isUser);
+        soundBass.setAlpha(isUser ? 1 : 0.3f);
+        soundBass.setProgress(pictureSettings.getBassLevel());
+        soundTreble.setEnabled(isUser);
+        soundTreble.setFocusable(isUser);
+        soundTreble.setAlpha(isUser ? 1 : 0.3f);
+        soundTreble.setProgress(pictureSettings.getTrebleLevel());
+    }
+
+    private void soundDetailSettings(LinearLayout bodyPictureSettings) {
+        soundTreble = soundHeight(bodyPictureSettings);
+        soundBass = soundLow(bodyPictureSettings);
+        soundType(bodyPictureSettings);
+    }
+
+    private ScreenProgress soundHeight(LinearLayout body) {
+        ScreenProgress screenProgress = new ScreenProgress(this);
+        screenProgress.setOnKeyListener(this);
+        screenProgress.setProgress(pictureSettings.getTrebleLevel());
+        screenProgress.setLable(R.string.sound_height);
+        screenProgress.setIcon(R.drawable.ic_hight_sound);
+        screenProgress.setProgressListener(progress ->
+        {
+            pictureSettings.setTrebleLevel(progress);
+        });
+        body.addView(screenProgress);
+        screenProgress.setKey(KEY_SOUND_DEPRECATED);
+        return screenProgress;
+    }
+
+    private ScreenProgress soundLow(LinearLayout body) {
+        ScreenProgress screenProgress = new ScreenProgress(this);
+        screenProgress.setOnKeyListener(this);
+        screenProgress.setProgress(pictureSettings.getBassLevel());
+        screenProgress.setLable(R.string.sound_low);
+        screenProgress.setIcon(R.drawable.ic_low_sound);
+        screenProgress.setProgressListener(progress ->
+        {
+            pictureSettings.setBassLevel(progress);
+        });
+        body.addView(screenProgress);
+        screenProgress.setKey(KEY_SOUND_DEPRECATED);
+        return screenProgress;
+    }
+
+    private View soundType(LinearLayout body) {
+        SoundValues current = SoundValues.getByID(pictureSettings.getSoundType());
+        LRTextSwitcher lrTextSwitcher = new LRTextSwitcher(this);
+        lrTextSwitcher.setUpValues(SoundValues.getSet());
+        lrTextSwitcher.setOnKeyListener(this);
+        if (current != null)
+            lrTextSwitcher.setValue(current);
+        lrTextSwitcher.setLable(R.string.sound_type);
+        lrTextSwitcher.setIcon(R.drawable.ic_treble_24dp);
+        lrTextSwitcher.setProgressListener(progress -> {
+            pictureSettings.setSoundType(progress);
+            updateSoundValue(progress == SoundValues.SOUND_TYPE_USER.getID());
+        });
+        body.addView(lrTextSwitcher);
+        lrTextSwitcher.setKey(KEY_SOUND_DEPRECATED);
+        return lrTextSwitcher;
+    }
+
+
 
     private void initCarousel(LinearLayout headerContainer) {
         int i = 0;

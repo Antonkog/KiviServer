@@ -107,6 +107,14 @@
     <string name="number_log">Номер отчета</string>
     <string name="error">Ошибка</string>
     <string name="picture_mode">Режим изображения</string>
+    <string name="sound">Звук</string>
+    <string name="sound_standard">Cтандарт</string>
+    <string name="sound_film">Фильм</string>
+    <string name="sound_music">Музыка</string>
+    <string name="sound_user">Пользователь</string>
+    <string name="sound_type">Режим звука</string>
+    <string name="sound_low">Низкие</string>
+    <string name="sound_height">Высокие</string>
     <string name="network_failure_message">Сеть недоступна. Проверьте интернет соединение.</string>
     <string name="overlay_was_denied">Приложение не может продолжать работу без разрешения</string>
 </resources>

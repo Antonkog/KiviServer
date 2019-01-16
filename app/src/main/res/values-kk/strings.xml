@@ -103,4 +103,13 @@
     <string name="network_failure_message">Network unavailable</string>
     <string name="overlay_was_denied">Приложение не может продолжать работу без разрешения</string>
     <string name="atv">АТВ</string>
+    <string name="sound_standard">Стандартты</string>
+    <string name="sound_film">Фильм</string>
+    <string name="sound_music">Музыка</string>
+    <string name="sound_user">Пайдаланушы</string>
+    <string name="sound_type">Дыбыс режимі</string>
+    <string name="sound_low">Басс</string>
+    <string name="sound_height">Жоғары жиілік</string>
+    <string name="sound">Звук</string>
+
 </resources>

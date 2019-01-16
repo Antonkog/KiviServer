@@ -171,4 +171,28 @@ public class EnvironmentPictureSettings {
     public int getContrast() {
         return bridgePicture.getContrast();
     }
+
+    public int getSoundType() {
+        return bridgePicture.getSoundType();
+    }
+
+    public void setSoundType(int progress) {
+        bridgePicture.setSoundType(progress);
+    }
+
+    public void setBassLevel(int progress) {
+        bridgePicture.setBassLevel(progress);
+    }
+
+    public int getBassLevel() {
+        return bridgePicture.getBassLevel();
+    }
+
+    public void setTrebleLevel(int progress) {
+        bridgePicture.setTrebleLevel(progress);
+    }
+
+    public int getTrebleLevel() {
+        return bridgePicture.getTrebleLevel();
+    }
 }
