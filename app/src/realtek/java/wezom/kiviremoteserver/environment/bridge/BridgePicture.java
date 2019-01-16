@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.Log;
 import android.view.WindowManager;
 
+import com.realtek.tv.AQ;
 import com.realtek.tv.ColorTempInfo;
 import com.realtek.tv.PQ;
 import com.realtek.tv.VSC;
@@ -11,12 +12,14 @@ import com.wezom.kiviremoteserver.service.aspect.HDRValues;
 
 public class BridgePicture {
     private PQ picturePreference;
+    private AQ audioPreference;
     private VSC widthMode;
 
     public BridgePicture() {
         widthMode = new VSC();
+        audioPreference = new AQ();
         picturePreference = new PQ();//picturePreference.getColorTempBias()
-
+        // audioPreference.setlevel()
     }
 
     public void setPictureMode(int pictureMode) {
@@ -27,7 +30,7 @@ public class BridgePicture {
     }
 
     public int getPictureMode() {
-    //    Log.e("pic", "mode " + picturePreference.getPictureMode());
+        //    Log.e("pic", "mode " + picturePreference.getPictureMode());
         return picturePreference.getPictureMode();
     }
 
@@ -145,5 +148,34 @@ public class BridgePicture {
 
     public boolean isSafe() {
         return true;
+    }
+
+    public int getSoundType() {
+        return audioPreference.getAudioMode();
+    }
+
+    public void setSoundType(int progress) {
+        audioPreference.setAudioMode(progress);
+    }
+
+    private int maxValue = 20;
+    private int minValue = -20;
+    private int delta = maxValue - minValue;
+
+    public void setBassLevel(int progress) {
+        audioPreference.setBassLevel((progress * delta) / 100 - delta / 2);
+    }
+
+    public int getBassLevel() {
+        return (audioPreference.getBassLevel() + delta / 2) * 100 / delta;
+    }
+
+    public void setTrebleLevel(int progress) {
+        audioPreference.setTrebleLevel((progress * delta) / 100 - delta / 2);
+
+    }
+
+    public int getTrebleLevel() {
+        return (audioPreference.getTrebleLevel() + delta / 2) * 100 / delta;
     }
 }

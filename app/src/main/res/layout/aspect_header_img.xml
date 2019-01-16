@@ -10,7 +10,7 @@
     android:paddingLeft="10dp"
     android:scaleType="fitCenter"
     android:paddingRight="10dp"
-    android:tint="@color/tint_img"
+
     android:paddingTop="15dp">
 
 </ImageView>

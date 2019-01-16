@@ -155,4 +155,12 @@
     <string name="number_log">Номер звіту</string>
     <string name="error">Помилка</string>
     <string name="picture_mode">Режим зображення</string>
+    <string name="sound">Звук</string>
+    <string name="sound_standard">Cтандарт</string>
+    <string name="sound_film">Фільм</string>
+    <string name="sound_music">Музика</string>
+    <string name="sound_user">Користувач</string>
+    <string name="sound_type">Режим звуку</string>
+    <string name="sound_low">Бас</string>
+    <string name="sound_height">Високі</string>
 </resources>

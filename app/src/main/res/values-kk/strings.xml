@@ -113,4 +113,13 @@
     <string name="number_log">Есеп номері</string> 
     <string name="error">Қателік</string>
     <string name="picture_mode">Сурет режимі</string>
+    <string name="sound_standard">Стандартты</string>
+    <string name="sound_film">Фильм</string>
+    <string name="sound_music">Музыка</string>
+    <string name="sound_user">Пайдаланушы</string>
+    <string name="sound_type">Дыбыс режимі</string>
+    <string name="sound_low">Басс</string>
+    <string name="sound_height">Жоғары жиілік</string>
+    <string name="sound">Звук</string>
+
 </resources>
