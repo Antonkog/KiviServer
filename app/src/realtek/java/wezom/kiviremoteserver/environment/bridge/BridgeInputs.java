@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.media.tv.TvContract;
 import android.net.Uri;
 import android.os.Build;
+import android.util.Log;
 import android.view.KeyEvent;
 
 import com.realtek.tv.Tv;
@@ -155,6 +156,7 @@ public class BridgeInputs {
 
     public int getCurrentTvInputSource() {
         final String s = App.getProperty(Constants.REALTEK_INPUT_SOURCE);
+       // Log.e("currentInput", "input = " + s);
         InputSourceHelper.INPUT_PORT current = InputSourceHelper.INPUT_PORT.getPortByRealtekID(s);
         if (current != INPUT_SOURCE_NONE) {
             return current.getId();
@@ -168,6 +170,6 @@ public class BridgeInputs {
     }
 
     public boolean isTV(int i) {
-        return i == 1 || i == 2;
+        return i == 1 || i == 2 || i == 28;
     }
 }
