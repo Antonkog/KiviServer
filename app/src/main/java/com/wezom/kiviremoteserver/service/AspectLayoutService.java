@@ -266,6 +266,7 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
 
 
         int current = inputsHelper.getCurrentTvInputSource();
+       // Log.e("currentInput", "input = " + current);
         if (inputsHelper.isTV(current)) {
             addSeparator(headerContainer);
             addChannelSelector(headerContainer);
@@ -373,8 +374,10 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
         LRTextSwitcher lrTextSwitcher = new LRTextSwitcher(this);
         lrTextSwitcher.setUpValues(SoundValues.getSet());
         lrTextSwitcher.setOnKeyListener(this);
-        if (current != null)
+        if (current != null) {
             lrTextSwitcher.setValue(current);
+            updateSoundValue(current.getID() == SoundValues.SOUND_TYPE_USER.getID());
+        }
         lrTextSwitcher.setLable(R.string.sound_type);
         lrTextSwitcher.setIcon(R.drawable.ic_treble_24dp);
         lrTextSwitcher.setProgressListener(progress -> {
@@ -385,8 +388,6 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
         lrTextSwitcher.setKey(KEY_SOUND_DEPRECATED);
         return lrTextSwitcher;
     }
-
-
 
     private void initCarousel(LinearLayout headerContainer) {
         int i = 0;
