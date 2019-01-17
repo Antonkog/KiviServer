@@ -27,9 +27,9 @@ android {
         applicationId "com.wezom.kiviremoteserver"
         minSdkVersion versions.minSdk
         targetSdkVersion versions.targetSdk
-        versionCode 17
+        versionCode 18
         multiDexEnabled true
-        versionName "1.2.17"
+        versionName "1.2.18"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }

@@ -95,7 +95,7 @@ public class InputSourceHelper {
         String realtekID2841;
         boolean isConnected;
         INPUT_PORT(int id, String baseName, @StringRes int visibleName, @DrawableRes int res, int weight, String realtekID, String realtekID2841) {
-            this(id, baseName, visibleName, res, weight, realtekID);
+            this(id, baseName, visibleName, res, weight, realtekID2841);
             this.realtekID2841 = realtekID2841;
         }
 

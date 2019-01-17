@@ -5,10 +5,14 @@ import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 
 import com.wezom.kiviremoteserver.R;
+import com.wezom.kiviremoteserver.service.aspect.AvailableValues;
 import com.wezom.kiviremoteserver.service.aspect.TextTypedValues;
 
+import java.util.Arrays;
+import java.util.List;
 
-public enum SoundValues implements TextTypedValues {
+
+public enum SoundValues implements TextTypedValues, AvailableValues {
 
     SOUND_TYPE_STANDARD(1, R.string.sound_standard),
     SOUND_TYPE_VIDEO(2, R.string.sound_film),
@@ -51,5 +55,18 @@ public enum SoundValues implements TextTypedValues {
     @Override
     public int getID() {
         return id;
+    }
+
+    public static SoundValues getInstance() {
+        return SOUND_TYPE_STANDARD;
+    }
+    @Override
+    public int[] getIds() {
+        List<SoundValues> modes = Arrays.asList(getSet());
+        int[] result = new int[modes.size()];
+        for (int i = 0; i < modes.size(); i++) {
+            result[i]= modes.get(i).getID();
+        }
+        return result;
     }
 }

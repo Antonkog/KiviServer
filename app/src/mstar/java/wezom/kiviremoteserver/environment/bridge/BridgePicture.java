@@ -8,7 +8,6 @@ import android.view.WindowManager;
 import com.mstar.android.tv.TvCommonManager;
 import com.mstar.android.tv.TvPictureManager;
 import com.mstar.android.tvapi.common.vo.ColorTemperatureExData;
-import com.wezom.kiviremoteserver.service.aspect.HDRValues;
 
 import java.lang.reflect.Method;
 
@@ -191,14 +190,6 @@ public class BridgePicture {
             e.printStackTrace();
         }
         return string;
-    }
-
-    public HDRValues[] getHDRSet() {
-        return new HDRValues[]{HDRValues.HDR_OPEN_LEVEL_AUTO,
-                HDRValues.HDR_OPEN_LEVEL_LOW,
-                HDRValues.HDR_OPEN_LEVEL_MIDDLE,
-                HDRValues.HDR_OPEN_LEVEL_HIGH,
-                HDRValues.HDR_OPEN_LEVEL_OFF};
     }
 
     public int getContrast() {

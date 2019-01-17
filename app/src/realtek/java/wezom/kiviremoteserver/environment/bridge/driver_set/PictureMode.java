@@ -4,13 +4,14 @@ package wezom.kiviremoteserver.environment.bridge.driver_set;
 import android.support.annotation.Nullable;
 
 import com.wezom.kiviremoteserver.R;
+import com.wezom.kiviremoteserver.service.aspect.AvailableValues;
 import com.wezom.kiviremoteserver.service.aspect.TextTypedValues;
 
 import java.util.Arrays;
 import java.util.List;
 
 
-public enum PictureMode implements TextTypedValues {
+public enum PictureMode implements TextTypedValues, AvailableValues {
 
     PICTURE_MODE_NORMAL(2, R.string.normal),
     PICTURE_MODE_SOFT(10, R.string.soft),//standard
@@ -76,7 +77,19 @@ public enum PictureMode implements TextTypedValues {
                 PICTURE_MODE_VIVID);
     }
 
+    public static PictureMode getInstance() {
+        return PICTURE_MODE_NORMAL;
+    }
 
+    @Override
+    public int[] getIds() {
+        List<PictureMode> modes = getModes();
+        int[] result = new int[modes.size()];
+        for (int i = 0; i < modes.size(); i++) {
+            result[i]= modes.get(i).getID();
+        }
+        return result;
+    }
 }
 
 //Arrays.asList(new PictureMode[]{PICTURE_MODE_NORMAL,

@@ -5,8 +5,11 @@ import android.support.annotation.StringRes;
 
 import com.wezom.kiviremoteserver.R;
 
+import java.util.Arrays;
+import java.util.List;
 
-public enum HDRValues implements TextTypedValues {
+
+public enum HDRValues implements TextTypedValues, AvailableValues {
     HDR_OPEN_LEVEL_OFF(0, R.string.off),
     HDR_OPEN_LEVEL_AUTO(1, R.string.auto),
     HDR_OPEN_LEVEL_LOW(2, R.string.low),
@@ -37,5 +40,27 @@ public enum HDRValues implements TextTypedValues {
     @Override
     public int getID() {
         return id;
+    }
+
+    public static HDRValues getInstance() {
+        return HDR_OPEN_LEVEL_AUTO;
+    }
+
+    @Override
+    public int[] getIds() {
+        List<HDRValues> modes = Arrays.asList(getHDRSet());
+        int[] result = new int[modes.size()];
+        for (int i = 0; i < modes.size(); i++) {
+            result[i]= modes.get(i).getID();
+        }
+        return result;
+    }
+
+    public HDRValues[] getHDRSet() {
+        return new HDRValues[]{HDR_OPEN_LEVEL_AUTO,
+                HDR_OPEN_LEVEL_LOW,
+                HDR_OPEN_LEVEL_MIDDLE,
+                HDR_OPEN_LEVEL_HIGH,
+                HDR_OPEN_LEVEL_OFF};
     }
 }

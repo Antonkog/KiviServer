@@ -458,7 +458,7 @@ public class KiviRemoteService extends Service implements ServiceMvpView {
         if (inputSourceHelper == null) inputSourceHelper = new InputSourceHelper();
         if (pictureSettings == null) pictureSettings = new EnvironmentPictureSettings();
         pictureSettings.initSettings(getApplicationContext());
-        pictureSettings.initColors();
+        if(App.isTVRealtek()) pictureSettings.initColors(); //not working for MStar
         AspectMessage msg = new AspectMessage(pictureSettings, inputsHelper);
         AspectAvailable.getInstance().setValues(getApplicationContext(), inputSourceHelper, inputsHelper);
         return msg;

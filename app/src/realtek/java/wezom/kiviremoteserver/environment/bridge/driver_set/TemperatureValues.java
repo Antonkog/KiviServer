@@ -4,9 +4,13 @@ import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 
 import com.wezom.kiviremoteserver.R;
+import com.wezom.kiviremoteserver.service.aspect.AvailableValues;
 import com.wezom.kiviremoteserver.service.aspect.TextTypedValues;
 
-public enum TemperatureValues implements TextTypedValues {
+import java.util.Arrays;
+import java.util.List;
+
+public enum TemperatureValues implements TextTypedValues , AvailableValues {
 
     COLOR_TEMP_NATURE(1, R.string.nature),
     COLOR_TEMP_WARMER(2, R.string.warmer),
@@ -47,6 +51,19 @@ public enum TemperatureValues implements TextTypedValues {
     @Override
     public int getID() {
         return id;
+    }
+
+    public static TemperatureValues getInstance() {
+        return COLOR_TEMP_NATURE;
+    }
+    @Override
+    public int[] getIds() {
+        List<TemperatureValues> modes = Arrays.asList(getSet());
+        int[] result = new int[modes.size()];
+        for (int i = 0; i < modes.size(); i++) {
+            result[i]= modes.get(i).getID();
+        }
+        return result;
     }
 }
 // COLOR_TEMP_COOL(0, R.string.cool),

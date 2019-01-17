@@ -4,13 +4,14 @@ package wezom.kiviremoteserver.environment.bridge.driver_set;
 import android.support.annotation.Nullable;
 
 import com.wezom.kiviremoteserver.R;
+import com.wezom.kiviremoteserver.service.aspect.AvailableValues;
 import com.wezom.kiviremoteserver.service.aspect.TextTypedValues;
 
 import java.util.Arrays;
 import java.util.List;
 
 
-public enum PictureMode implements TextTypedValues {
+public enum PictureMode implements TextTypedValues, AvailableValues {
 
     PICTURE_MODE_NORMAL(1, R.string.normal),
     PICTURE_MODE_SOFT(2, R.string.soft),
@@ -75,15 +76,18 @@ public enum PictureMode implements TextTypedValues {
 //                PICTURE_MODE_GAME,
                 PICTURE_MODE_VIVID);
     }
-}
 
-//Arrays.asList(new PictureMode[]{PICTURE_MODE_NORMAL,
-//            PICTURE_MODE_SOFT,
-//            PICTURE_MODE_USER,
-//            PICTURE_MODE_AUTO,
-//            PICTURE_MODE_VIVID})
-//PICTURE_MODE_NORMAL(1, R.string.normal),
-//    PICTURE_MODE_SOFT(2, R.string.soft),
-//    PICTURE_MODE_USER(3, R.string.user),
-//    PICTURE_MODE_AUTO(5, R.string.economy),
-//    PICTURE_MODE_VIVID(7, R.string.vivid);
+    public static PictureMode getInstance() {
+        return PICTURE_MODE_NORMAL;
+    }
+
+    @Override
+    public int[] getIds() {
+        List<PictureMode> modes = getModes();
+        int[] result = new int[modes.size()];
+        for (int i = 0; i < modes.size(); i++) {
+            result[i]= modes.get(i).getID();
+        }
+        return result;
+    }
+}

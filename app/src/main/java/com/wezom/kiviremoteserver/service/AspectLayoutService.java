@@ -140,11 +140,7 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
     //    PictureMode[] modes = ;
 
     //      PictureMode.PICTURE_MODE_ECONOMY);
-    List<Ratio> ratios = Arrays.asList(
-            Ratio.VIDEO_ARC_DEFAULT,
-            Ratio.VIDEO_ARC_16x9,
-            Ratio.VIDEO_ARC_4x3,
-            Ratio.VIDEO_ARC_AUTO);
+    List<Ratio> ratios = Ratio.getInstance().getRatios();
     List<Integer> shutDownTimers = Arrays.asList(-1, 10, 20, 30, 60, 120);
     private boolean sleepFocused;
     // boolean isUHD = false;

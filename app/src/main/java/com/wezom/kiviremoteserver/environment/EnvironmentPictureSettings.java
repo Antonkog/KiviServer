@@ -164,8 +164,7 @@ public class EnvironmentPictureSettings {
     }
 
     public HDRValues[] getHDRSet() {
-
-        return bridgePicture.getHDRSet();
+        return HDRValues.getInstance().getHDRSet();
     }
 
     public int getContrast() {

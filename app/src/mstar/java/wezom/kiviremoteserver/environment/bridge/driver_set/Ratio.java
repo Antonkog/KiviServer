@@ -3,9 +3,13 @@ package wezom.kiviremoteserver.environment.bridge.driver_set;
 import android.support.annotation.Nullable;
 
 import com.wezom.kiviremoteserver.R;
+import com.wezom.kiviremoteserver.service.aspect.AvailableValues;
+
+import java.util.Arrays;
+import java.util.List;
 
 
-public enum Ratio {
+public enum Ratio implements AvailableValues {
 
     VIDEO_ARC_DEFAULT(0, R.string.default_r),
     VIDEO_ARC_16x9(1, R.string.r_16x9),
@@ -36,9 +40,26 @@ public enum Ratio {
         }
         return null;
     }
-}
 
-//VIDEO_ARC_DEFAULT(0, R.string.default_r),
-//    VIDEO_ARC_16x9(1, R.string.r_16x9),
-//    VIDEO_ARC_4x3(2, R.string.r_4x3),
-//    VIDEO_ARC_AUTO(3, R.string.auto);
+    public static Ratio getInstance() {
+        return VIDEO_ARC_DEFAULT;
+    }
+
+    @Override
+    public int[] getIds() {
+        List<Ratio> modes = getRatios();
+        int[] result = new int[modes.size()];
+        for (int i = 0; i < modes.size(); i++) {
+            result[i]= modes.get(i).getId();
+        }
+        return result;
+    }
+
+    public List<Ratio> getRatios (){
+        return Arrays.asList(
+                Ratio.VIDEO_ARC_DEFAULT,
+                Ratio.VIDEO_ARC_16x9,
+                Ratio.VIDEO_ARC_4x3,
+                Ratio.VIDEO_ARC_AUTO);
+    }
+}
