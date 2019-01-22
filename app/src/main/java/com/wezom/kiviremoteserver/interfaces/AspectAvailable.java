@@ -38,8 +38,8 @@ public class AspectAvailable {
         } else {
             HashMap<String, int[]> currentSettings = new HashMap<>();
             currentSettings.put(VALUE_TYPE.RATIO.name(), Ratio.getInstance().getIds());
-            currentSettings.put(VALUE_TYPE.TEMPERATUREVALUES.name(), PictureMode.getInstance().getIds());
-            currentSettings.put(VALUE_TYPE.PICTUREMODE.name(), TemperatureValues.getInstance().getIds());
+            currentSettings.put(VALUE_TYPE.TEMPERATUREVALUES.name(), TemperatureValues.getInstance().getIds());
+            currentSettings.put(VALUE_TYPE.PICTUREMODE.name(), PictureMode.getInstance().getIds());
             currentSettings.put(VALUE_TYPE.HDR.name(), HDRValues.getInstance().getIds());
             this.settings = currentSettings;
 
