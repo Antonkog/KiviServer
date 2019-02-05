@@ -10,9 +10,19 @@ public class Constants {
     public static final String APPLICATION_UID = "app_uid";
     public static final String LAST_VOLUME_REALTEK = "last_volume_realtek";
     public static final int NO_VALUE = -1;
+    public static final int SERV_REALTEK = 1;
+    public static final int SERV_MSTAR = 0;
+
     public static final int SCROLL_VELOCITY_MS = 300;
 
     //realtek chanels
+    public static final String SCREEN = "screen";
+    public static final String MODEL = "model";
+    public static final String BOARD = "board";
+    public static final String PANEL = "panel";
+    public static final String DEVICE = "device";
+    public static final String NAME = "name";
+    public static final String INCREMENTAL = "incremental";
     public static final String REALTEK_INPUT_SOURCE = "persist.sys.current_input";
     public static final String SOURCE_DVB_T = "com.realtek.dtv/.tvinput.DTVTvInputService/HW33685505";
     public static final String SOURCE_DVB_C = "com.realtek.dtv/.tvinput.DTVTvInputService/HW33685504";

@@ -4,6 +4,7 @@ import com.google.gson.annotations.SerializedName;
 import com.wezom.kiviremoteserver.common.KiviProtocolStructure;
 import com.wezom.kiviremoteserver.interfaces.AspectAvailable;
 import com.wezom.kiviremoteserver.interfaces.AspectMessage;
+import com.wezom.kiviremoteserver.interfaces.InitialMessage;
 import com.wezom.kiviremoteserver.net.server.model.ServerApplicationInfo;
 
 import java.util.List;
@@ -19,10 +20,13 @@ public class ServerEventStructure {
     private Integer volume;
     private AspectMessage aspectMessage;
     private AspectAvailable availableAspectValues;
+    private InitialMessage initialMessage;
 
-    public ServerEventStructure(AspectMessage aspectMessage, AspectAvailable aspectAvailable) {
+    public ServerEventStructure(AspectMessage aspectMessage, AspectAvailable aspectAvailable, InitialMessage initialMsg, KiviProtocolStructure.ServerEventType event) {
         this.aspectMessage = aspectMessage;
         this.availableAspectValues = aspectAvailable;
+        this.initialMessage = initialMsg;
+        this.event = event;
     }
 
     public ServerEventStructure(KiviProtocolStructure.ServerEventType event) {

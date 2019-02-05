@@ -1,11 +1,14 @@
 package com.wezom.kiviremoteserver.service.aspect;
 
+import android.content.Context;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 
 import com.wezom.kiviremoteserver.R;
+import com.wezom.kiviremoteserver.interfaces.DriverValue;
 
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 
@@ -54,6 +57,22 @@ public enum HDRValues implements TextTypedValues, AvailableValues {
             result[i]= modes.get(i).getID();
         }
         return result;
+    }
+
+    @Override
+    public List<DriverValue> getAsDriverList(Context context) {
+        List<HDRValues> modes = Arrays.asList(getHDRSet());
+        LinkedList<DriverValue> linkedList = new LinkedList<>();
+        for (int i = 0; i < modes.size(); i++) {
+            HDRValues temp = modes.get(i);
+            linkedList.add(new DriverValue(
+                    HDRValues.class.getName(),
+                    context.getResources().getString(temp.getStringResourceID()),
+                    temp.getID()+""
+                    , temp.getID(),
+                    false));
+        }
+        return linkedList;
     }
 
     public HDRValues[] getHDRSet() {

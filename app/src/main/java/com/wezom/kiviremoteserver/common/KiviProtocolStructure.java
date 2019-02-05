@@ -17,15 +17,16 @@ public class KiviProtocolStructure {
         LEFT_CLICK,
         @Deprecated rightClick,
         RIGHT_CLICK,
+        @Deprecated SCROLL_TOP_TO_BOTTOM, //remote 1.1.14
+        @Deprecated SCROLL_BOTTOM_TO_TOP,//remote  1.1.14
         REQUEST_APPS,
         REQUEST_ASPECT,
+        REQUEST_INITIAL,
         LAUNCH_APP,
         REQUEST_VOLUME,
         PING,
         SWITCH_OFF,
         SCROLL, //for old version
-        SCROLL_TOP_TO_BOTTOM, //todo: for remote verion 1.1.14  remove later
-        SCROLL_BOTTOM_TO_TOP,//todo: for remote verion 1.1.14  remove later
         OPEN_SETTINGS,
         HOME_DOWN,
         HOME_UP,
@@ -44,6 +45,8 @@ public class KiviProtocolStructure {
         RECONNECTION_NEED,
         OK200,
         CONN_ESTABLISHED,
-        COORDINATES
+        COORDINATES,
+        ASPECT,
+        INITIAL
     }
 }

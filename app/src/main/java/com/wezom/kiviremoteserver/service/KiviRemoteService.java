@@ -31,7 +31,8 @@ import com.wezom.kiviremoteserver.bus.NewMessageEvent;
 import com.wezom.kiviremoteserver.bus.PingEvent;
 import com.wezom.kiviremoteserver.bus.SendAppsListEvent;
 import com.wezom.kiviremoteserver.bus.SendAspectEvent;
-import com.wezom.kiviremoteserver.bus.SendInitVolumeEvent;
+import com.wezom.kiviremoteserver.bus.SendInitialEvent;
+import com.wezom.kiviremoteserver.bus.SocketAcceptedEvent;
 import com.wezom.kiviremoteserver.bus.SendToSettingsEvent;
 import com.wezom.kiviremoteserver.bus.SendVolumeEvent;
 import com.wezom.kiviremoteserver.bus.ShowKeyboardEvent;
@@ -47,6 +48,7 @@ import com.wezom.kiviremoteserver.environment.EnvironmentPictureSettings;
 import com.wezom.kiviremoteserver.interfaces.AspectAvailable;
 import com.wezom.kiviremoteserver.interfaces.AspectMessage;
 import com.wezom.kiviremoteserver.interfaces.DataStructure;
+import com.wezom.kiviremoteserver.interfaces.InitialMessage;
 import com.wezom.kiviremoteserver.interfaces.RemoteServer;
 import com.wezom.kiviremoteserver.mvp.view.ServiceMvpView;
 import com.wezom.kiviremoteserver.net.nsd.NsdUtil;
@@ -114,6 +116,19 @@ public class KiviRemoteService extends Service implements ServiceMvpView {
         gson = new Gson();
     }
 
+    private void sentInitValues() {
+        new Thread(() -> {
+            try {
+                InitialMessage message = InitialMessage.getInstance();
+                message.setDriverValueList(getApplicationContext());
+                server.sendInitialMsg(prepareAspect(), AspectAvailable.getInstance(), InitialMessage.getInstance());
+//                Timber.e("12345" + message.toString());
+            } catch (Exception e) {
+                Timber.e(e.getMessage());
+            }
+        }).start();
+    }
+
 
     //endregion
 
@@ -143,15 +158,18 @@ public class KiviRemoteService extends Service implements ServiceMvpView {
                 .subscribe(event -> openSettings(), Timber::e));
 
         disposables.add(bus
-                .listen(SendInitVolumeEvent.class)
-                .subscribe(event -> sendVolume(), Timber::e));
-
+                .listen(SocketAcceptedEvent.class)
+                .subscribe(event -> {
+                    sendVolume();
+                    sentInitValues();
+                }, Timber::e));
 
         disposables.add(bus.listen(SendAspectEvent.class).subscribe(
-                sendAspectEvent -> {
-                    AspectMessage msg = prepareAspect();
-                    server.sendAspect(msg, AspectAvailable.getInstance());
-                },
+                sendAspectEvent -> server.sendAspect(prepareAspect(), AspectAvailable.getInstance()),
+                Timber::e));
+
+        disposables.add(bus.listen(SendInitialEvent.class).subscribe(
+                sendAspectEvent -> sentInitValues(),
                 Timber::e));
 
         disposables.add(bus
@@ -458,7 +476,7 @@ public class KiviRemoteService extends Service implements ServiceMvpView {
         if (inputSourceHelper == null) inputSourceHelper = new InputSourceHelper();
         if (pictureSettings == null) pictureSettings = new EnvironmentPictureSettings();
         pictureSettings.initSettings(getApplicationContext());
-        if(App.isTVRealtek()) pictureSettings.initColors(); //not working for MStar
+        if (App.isTVRealtek()) pictureSettings.initColors(); //not working for MStar
         AspectMessage msg = new AspectMessage(pictureSettings, inputsHelper);
         AspectAvailable.getInstance().setValues(getApplicationContext(), inputSourceHelper, inputsHelper);
         return msg;

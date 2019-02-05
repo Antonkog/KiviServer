@@ -1,13 +1,16 @@
 package wezom.kiviremoteserver.environment.bridge.driver_set;
 
 
+import android.content.Context;
 import android.support.annotation.Nullable;
 
 import com.wezom.kiviremoteserver.R;
+import com.wezom.kiviremoteserver.interfaces.DriverValue;
 import com.wezom.kiviremoteserver.service.aspect.AvailableValues;
 import com.wezom.kiviremoteserver.service.aspect.TextTypedValues;
 
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 
@@ -86,8 +89,25 @@ public enum PictureMode implements TextTypedValues, AvailableValues {
         List<PictureMode> modes = getModes();
         int[] result = new int[modes.size()];
         for (int i = 0; i < modes.size(); i++) {
-            result[i]= modes.get(i).getID();
+            result[i] = modes.get(i).getID();
         }
         return result;
     }
+
+    @Override
+    public List<DriverValue> getAsDriverList(Context context) {
+        List<PictureMode> modes = getModes();
+        LinkedList<DriverValue> linkedList = new LinkedList<>();
+        for (int i = 0; i < modes.size(); i++) {
+            PictureMode temp = modes.get(i);
+
+            linkedList.add(new DriverValue(PictureMode.class.getSimpleName(),
+                    context.getResources().getString(temp.getStringResourceID()),
+                    getId()+""
+                    , temp.getID(),
+                    false));
+        }
+        return linkedList;
+    }
+
 }

@@ -24,7 +24,9 @@ public interface RemoteServer {
 
     void sendPong();
 
-    void sendAspect(AspectMessage aspectMessage, AspectAvailable availableValuesJson);
+    void sendAspect(AspectMessage aspectMessage, AspectAvailable available);
+
+    void sendInitialMsg(AspectMessage aspectMessage, AspectAvailable available, InitialMessage initialMessage);
 
     void disposeResources();
 

@@ -24,6 +24,7 @@ import com.wezom.kiviremoteserver.bus.NewDataEvent;
 import com.wezom.kiviremoteserver.bus.PingEvent;
 import com.wezom.kiviremoteserver.bus.SendAppsListEvent;
 import com.wezom.kiviremoteserver.bus.SendAspectEvent;
+import com.wezom.kiviremoteserver.bus.SendInitialEvent;
 import com.wezom.kiviremoteserver.bus.SendVolumeEvent;
 import com.wezom.kiviremoteserver.bus.ShowKeyboardEvent;
 import com.wezom.kiviremoteserver.common.Constants;
@@ -393,11 +394,11 @@ public class ExecutorServiceIME extends PinyinIME implements EventProtocolExecut
                         }
                     }
                     break;
-                case SCROLL_BOTTOM_TO_TOP: //todo: for remote verion 1.1.14 versionCode52 remove later
+                case SCROLL_BOTTOM_TO_TOP:  //todo: for remote verion 1.1.14 versionCode52 remove later
                     if (isBrowserCurrent()) scroll(-dataStructure.getMotion().get(1));
                     else executeCommand(KeyEvent.KEYCODE_DPAD_DOWN);
                     break;
-                case SCROLL_TOP_TO_BOTTOM://todo: for remote verion 1.1.14 versionCode52 remove later
+                case SCROLL_TOP_TO_BOTTOM: //todo: for remote verion 1.1.14 versionCode52 remove later
                     if (isBrowserCurrent()) scroll(dataStructure.getMotion().get(1));
                     else executeCommand(KeyEvent.KEYCODE_DPAD_UP);
                     break;
@@ -421,6 +422,9 @@ public class ExecutorServiceIME extends PinyinIME implements EventProtocolExecut
                     break;
                 case REQUEST_ASPECT:
                     RxBus.INSTANCE.publish(new SendAspectEvent());
+                    break;
+                case REQUEST_INITIAL:
+                    RxBus.INSTANCE.publish(new SendInitialEvent());
                     break;
                 default:
                     Timber.e("some not handled action in IME => %s", dataStructure.getAction());

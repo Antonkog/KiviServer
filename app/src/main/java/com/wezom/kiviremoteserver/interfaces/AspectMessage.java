@@ -1,6 +1,8 @@
 package com.wezom.kiviremoteserver.interfaces;
 
+import com.wezom.kiviremoteserver.App;
 import com.wezom.kiviremoteserver.BuildConfig;
+import com.wezom.kiviremoteserver.common.Constants;
 import com.wezom.kiviremoteserver.environment.EnvironmentInputsHelper;
 import com.wezom.kiviremoteserver.environment.EnvironmentPictureSettings;
 
@@ -11,7 +13,7 @@ public class AspectMessage {
     public HashMap<String, Integer> settings;
 
     public AspectMessage(EnvironmentPictureSettings pictureSettings, EnvironmentInputsHelper environmentInputsHelper) {
-        if(settings == null) settings = new HashMap<>();
+        if (settings == null) settings = new HashMap<>();
         settings.clear();
         settings.put(ASPECT_VALUE.PICTUREMODE.name(), pictureSettings.getPictureMode());
         settings.put(ASPECT_VALUE.BACKLIGHT.name(), pictureSettings.getBacklight());
@@ -21,8 +23,9 @@ public class AspectMessage {
         settings.put(ASPECT_VALUE.CONTRAST.name(), pictureSettings.getContrast());
         settings.put(ASPECT_VALUE.HDR.name(), pictureSettings.getHDR());
         settings.put(ASPECT_VALUE.VIDEOARCTYPE.name(), pictureSettings.getVideoArcType());
-        settings.put(ASPECT_VALUE.INPUT_PORT.name(),  environmentInputsHelper.getCurrentTvInputSource());
+        settings.put(ASPECT_VALUE.INPUT_PORT.name(), environmentInputsHelper.getCurrentTvInputSource());
         settings.put(ASPECT_VALUE.SERVER_VERSION_CODE.name(), BuildConfig.VERSION_CODE);
+        settings.put(ASPECT_VALUE.MANUFACTURE.name(), App.isTVRealtek() ? Constants.SERV_REALTEK : Constants.SERV_MSTAR);
     }
 
     public enum ASPECT_VALUE {
@@ -39,7 +42,8 @@ public class AspectMessage {
         CONTRAST,
         VIDEOARCTYPE,
         INPUT_PORT,
-        SERVER_VERSION_CODE
+        SERVER_VERSION_CODE,
+        MANUFACTURE
     }
 
     @Override

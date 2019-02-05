@@ -1,13 +1,16 @@
 package wezom.kiviremoteserver.environment.bridge.driver_set;
 
+import android.content.Context;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 
 import com.wezom.kiviremoteserver.R;
+import com.wezom.kiviremoteserver.interfaces.DriverValue;
 import com.wezom.kiviremoteserver.service.aspect.AvailableValues;
 import com.wezom.kiviremoteserver.service.aspect.TextTypedValues;
 
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 public enum TemperatureValues implements TextTypedValues , AvailableValues {
@@ -65,6 +68,21 @@ public enum TemperatureValues implements TextTypedValues , AvailableValues {
         }
         return result;
     }
+    @Override
+    public List<DriverValue> getAsDriverList(Context context) {
+        List<TemperatureValues> modes = Arrays.asList(getSet());
+        LinkedList<DriverValue> linkedList = new LinkedList<>();
+        for (int i = 0; i < modes.size(); i++) {
+            TemperatureValues temp = modes.get(i);
+            linkedList.add(new DriverValue(TemperatureValues.class.getSimpleName(),
+                    context.getResources().getString(temp.getStringResourceID()),
+                    temp.getID() +""
+                    , temp.getID(),
+                    false));
+        }
+        return linkedList;
+    }
+
 }
 // COLOR_TEMP_COOL(0, R.string.cool),
 //    COLOR_TEMP_NATURE(1, R.string.nature),

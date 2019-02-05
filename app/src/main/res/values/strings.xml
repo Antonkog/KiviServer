@@ -1,7 +1,18 @@
 <resources>
     <string name="app_name" translatable="false">Kivi Remote Server</string>
 
-
+    <string name="input_none" translatable="false">UNKNOWN</string>
+    <string name="input_vga" translatable="false">VGA</string>
+    <string name="input_svideo" translatable="false">S VIDEO</string>
+    <string name="input_scart" translatable="false">SCART</string>
+    <string name="input_cvbs" translatable="false">CVBS</string>
+    <string name="input_dtv" translatable="false">DTV</string>
+    <string name="input_storage" translatable="false">STORAGE</string>
+    <string name="input_ktv" translatable="false">KTV</string>
+    <string name="input_jpeg" translatable="false">JPEG</string>
+    <string name="input_num" translatable="false">NUM</string>
+    <string name="input_scaler_op" translatable="false">SCALER OP</string>
+    <string name="input_ruv" translatable="false">RUV</string>
     <string name="ok" translatable="false">ОК</string>
     <string name="network_failure_message">Network unavailable</string>
 

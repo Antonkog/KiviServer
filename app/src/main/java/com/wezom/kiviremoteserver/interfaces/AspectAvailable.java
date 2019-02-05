@@ -9,6 +9,7 @@ import com.wezom.kiviremoteserver.service.inputs.InputSourceHelper;
 import java.util.HashMap;
 import java.util.List;
 
+import timber.log.Timber;
 import wezom.kiviremoteserver.environment.bridge.driver_set.PictureMode;
 import wezom.kiviremoteserver.environment.bridge.driver_set.Ratio;
 import wezom.kiviremoteserver.environment.bridge.driver_set.TemperatureValues;
@@ -17,6 +18,7 @@ public class AspectAvailable {
     private static class InstanceHolder {
         private static final AspectAvailable INSTANCE = new AspectAvailable();
     }
+
     public static AspectAvailable getInstance() {
         return InstanceHolder.INSTANCE;
     }
@@ -33,9 +35,7 @@ public class AspectAvailable {
     public HashMap<String, int[]> settings;
 
     public void setValues(Context context, InputSourceHelper inputSourceHelper, EnvironmentInputsHelper inputsHelper) {
-        if (settings != null && !settings.isEmpty()) {
-            return;
-        } else {
+        try {
             HashMap<String, int[]> currentSettings = new HashMap<>();
             currentSettings.put(VALUE_TYPE.RATIO.name(), Ratio.getInstance().getIds());
             currentSettings.put(VALUE_TYPE.TEMPERATUREVALUES.name(), TemperatureValues.getInstance().getIds());
@@ -44,13 +44,14 @@ public class AspectAvailable {
             this.settings = currentSettings;
 
             List<InputSourceHelper.INPUT_PORT> sources = inputSourceHelper.getPortsList(context);
-            int[] ports = new int[sources.size() + 1]; //current is last
+            int[] ports = new int[sources.size() + 1];
             for (int i = 0; i < sources.size(); i++) {
                 ports[i] = sources.get(i).getId();
             }
-            ports[ports.length -1] = inputsHelper.getCurrentTvInputSource(); //current port
+            ports[ports.length - 1] = inputsHelper.getCurrentTvInputSource(); //current port
             settings.put(VALUE_TYPE.INPUT_PORT.name(), ports);
-            context = null;
+        } catch (Exception e) {
+            Timber.e("exception while collecting dricers value set aspect: " + e.getMessage());
         }
     }
 }

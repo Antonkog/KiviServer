@@ -9,13 +9,14 @@ import android.os.Message;
 import android.util.Pair;
 
 import com.google.gson.Gson;
-import com.wezom.kiviremoteserver.bus.SendInitVolumeEvent;
+import com.wezom.kiviremoteserver.bus.SocketAcceptedEvent;
 import com.wezom.kiviremoteserver.bus.SendToSettingsEvent;
 import com.wezom.kiviremoteserver.common.ImeUtils;
 import com.wezom.kiviremoteserver.common.KiviProtocolStructure;
 import com.wezom.kiviremoteserver.common.RxBus;
 import com.wezom.kiviremoteserver.interfaces.AspectAvailable;
 import com.wezom.kiviremoteserver.interfaces.AspectMessage;
+import com.wezom.kiviremoteserver.interfaces.InitialMessage;
 import com.wezom.kiviremoteserver.interfaces.RemoteServer;
 import com.wezom.kiviremoteserver.mvp.view.ServiceMvpView;
 import com.wezom.kiviremoteserver.net.server.model.WriteThreadedModel;
@@ -135,7 +136,7 @@ public class KiviServer implements RemoteServer {
         try {
             Socket clientSocket = serverSocket.accept();
             launchReadWriteThreads(clientSocket);
-            RxBus.INSTANCE.publish(new SendInitVolumeEvent());
+            RxBus.INSTANCE.publish(new SocketAcceptedEvent());
         } catch (IOException e) {
             Timber.e(e, e.getMessage());
         }
@@ -195,9 +196,14 @@ public class KiviServer implements RemoteServer {
 
 
     @Override
-    public void sendAspect(AspectMessage aspectMessage, AspectAvailable availableValues) {
-        postMessage(new ServerEventStructure(aspectMessage, availableValues));
-  }
+    public void sendAspect(AspectMessage aspectMessage, AspectAvailable available) {
+        postMessage(new ServerEventStructure(aspectMessage, available,  null, KiviProtocolStructure.ServerEventType.ASPECT));
+    }
+
+    @Override
+    public void sendInitialMsg(AspectMessage aspectMessage, AspectAvailable available, InitialMessage msg) {
+        postMessage(new ServerEventStructure(aspectMessage, available,  msg, KiviProtocolStructure.ServerEventType.INITIAL));
+    }
 
     private class ServerThread extends Thread {
         @Override

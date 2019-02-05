@@ -1,5 +1,5 @@
 package com.wezom.kiviremoteserver.bus;
 
 
-public class SendInitVolumeEvent {
+public class SocketAcceptedEvent {
 }
