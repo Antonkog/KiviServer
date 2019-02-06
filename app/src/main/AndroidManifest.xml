@@ -4,7 +4,7 @@
     package="com.wezom.kiviremoteserver"
     android:sharedUserId="android.uid.system">
 
-    <!---->
+    <!--  -->
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
@@ -12,16 +12,17 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-    <uses-permission android:name="android.permission.WRITE_SETTINGS"
+    <uses-permission
+        android:name="android.permission.WRITE_SETTINGS"
         tools:ignore="ProtectedPermissions" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.INJECT_EVENTS"
+    <uses-permission
+        android:name="android.permission.INJECT_EVENTS"
         tools:ignore="ProtectedPermissions" />
 
     <uses-feature android:name="android.hardware.usb.host" />
-
     <uses-feature
         android:name="android.software.leanback"
         android:required="true" />
@@ -45,12 +46,13 @@
     <uses-feature
         android:name="android.hardware.microphone"
         android:required="false" />
+
     <application
-        android:persistent="true"
         android:name=".App"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:persistent="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:sharedUserId="android.uid.system"
         android:supportsRtl="true"
@@ -59,13 +61,13 @@
         <activity android:name=".ui.activity.HomeActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
         <service android:name=".service.KiviRemoteService" />
         <service android:name=".service.CursorService" />
-
         <service
             android:name=".service.ExecutorServiceIME"
             android:label="@string/ime_name"
@@ -73,19 +75,17 @@
             <intent-filter>
                 <action android:name="android.view.InputMethod" />
             </intent-filter>
+
             <meta-data
                 android:name="android.view.im"
                 android:resource="@xml/method" />
         </service>
-
-        <service android:name=".service.aspect.Alarm"/>
-
+        <service android:name=".service.aspect.Alarm" />
         <service
             android:name=".service.AspectLayoutService"
             android:enabled="true"
             android:exported="true"
             android:theme="@style/MyLeanback" />
-
 
         <receiver android:name=".receiver.BootCompleteReceiver">
             <intent-filter>
@@ -93,22 +93,24 @@
                 <action android:name="android.intent.action.QUICKBOOT_POWERON" />
             </intent-filter>
         </receiver>
-
         <receiver android:name=".receiver.WifiStateChangesReceiver">
             <intent-filter>
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
             </intent-filter>
         </receiver>
-
         <receiver android:name=".receiver.ImeChangesBroadcast">
             <intent-filter>
                 <action android:name="android.intent.action.INPUT_METHOD_CHANGED" />
             </intent-filter>
         </receiver>
 
-
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="6eddfee507118a93a974b45240a1f6d5ffe5fdb3" />
+
+        <service
+            android:name=".service.communication.DelegatePlatformsService"
+            android:exported="true"></service>
     </application>
+
 </manifest>
