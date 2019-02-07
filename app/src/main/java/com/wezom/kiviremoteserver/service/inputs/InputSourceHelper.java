@@ -5,6 +5,7 @@ import android.support.annotation.DrawableRes;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 
+import com.wezom.kiviremoteserver.App;
 import com.wezom.kiviremoteserver.R;
 import com.wezom.kiviremoteserver.common.Constants;
 import com.wezom.kiviremoteserver.environment.EnvironmentInputsHelper;
@@ -115,9 +116,6 @@ public class InputSourceHelper {
             this.weight = weight;
         }
 
-        public String getBaseName() {
-            return baseName;
-        }
 
         public static INPUT_PORT getInstance() {
             return INPUT_SOURCE_NONE;
@@ -150,7 +148,7 @@ public class InputSourceHelper {
             return INPUT_SOURCE_NONE;
         }
 
-        public static INPUT_PORT getPortByID(int id) {
+        static INPUT_PORT getPortByID(int id) {
             for (INPUT_PORT port : values()) {
                 if (port.id == id) {
                     return port;
@@ -159,7 +157,13 @@ public class InputSourceHelper {
             return INPUT_SOURCE_NONE;
         }
 
-        public static INPUT_PORT getPortByRealtekID(String id) {
+        public static INPUT_PORT getPortByRealtekID(String id) { //todo: moke fix
+            String str = App.getProperty("ro.ota.modelname");
+            boolean is2841 = "2841".equals(str.trim());
+            if(is2841){
+                if(Constants.SOURCE_HDMI1.equals(id)) return INPUT_PORT.INPUT_SOURCE_HDMI3;
+                if(Constants.SOURCE_HDMI3.equals(id)) return INPUT_PORT.INPUT_SOURCE_HDMI;
+            }
             for (INPUT_PORT port : values()) {
                 if (port.realtekID != null && port.realtekID.equals(id)) {
                     return port;
