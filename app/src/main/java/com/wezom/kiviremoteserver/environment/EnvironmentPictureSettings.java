@@ -1,7 +1,9 @@
 package com.wezom.kiviremoteserver.environment;
 
 import android.content.Context;
+import android.preference.PreferenceManager;
 
+import com.wezom.kiviremoteserver.common.Constants;
 import com.wezom.kiviremoteserver.service.aspect.HDRValues;
 
 import wezom.kiviremoteserver.environment.bridge.BridgePicture;
@@ -139,9 +141,10 @@ public class EnvironmentPictureSettings {
         bridgePicture.setContrast(contrast);
     }
 
-    public void setBrightness(int brightness) {
+    public void setBrightness(int brightness, Context context) {
         this.brightness = brightness;
         bridgePicture.setBrightness(brightness);
+        PreferenceManager.getDefaultSharedPreferences(context).edit().putInt(Constants.LAST_BRIGHTNESS, brightness).commit();
     }
 
     public void setBacklight(int backlight) {

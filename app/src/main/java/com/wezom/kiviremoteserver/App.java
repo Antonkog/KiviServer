@@ -19,9 +19,11 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 
 import com.crashlytics.android.Crashlytics;
+import com.wezom.kiviremoteserver.common.Constants;
 import com.wezom.kiviremoteserver.di.components.ApplicationComponent;
 import com.wezom.kiviremoteserver.di.components.DaggerApplicationComponent;
 import com.wezom.kiviremoteserver.di.modules.ApplicationModule;
+import com.wezom.kiviremoteserver.environment.EnvironmentPictureSettings;
 import com.wezom.kiviremoteserver.service.CursorService;
 import com.wezom.kiviremoteserver.service.KiviRemoteService;
 
@@ -84,6 +86,17 @@ public class App extends Application {
             filter.addAction(UsbManager.ACTION_USB_ACCESSORY_ATTACHED);
             filter.addAction(UsbManager.ACTION_USB_DEVICE_ATTACHED);
             registerReceiver(mUsbReceiver, filter);
+        }
+
+        setInitialTvValues();
+
+    }
+
+    private void setInitialTvValues() {
+        int progress = PreferenceManager.getDefaultSharedPreferences(getBaseContext()).getInt(Constants.LAST_BRIGHTNESS, Constants.NO_VALUE);
+        if(progress != Constants.NO_VALUE){
+            EnvironmentPictureSettings pictureSettings =  new EnvironmentPictureSettings();
+            pictureSettings.setBrightness(progress, getBaseContext());
         }
     }
 

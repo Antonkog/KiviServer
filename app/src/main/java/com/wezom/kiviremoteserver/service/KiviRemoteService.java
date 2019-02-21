@@ -293,7 +293,7 @@ public class KiviRemoteService extends Service implements ServiceMvpView {
                                 pictureSettings.setPictureMode(pair.getValue());
                                 break;
                             case BRIGHTNESS:
-                                pictureSettings.setBrightness(pair.getValue());
+                                pictureSettings.setBrightness(pair.getValue(),getBaseContext());
                                 break;
                             case SHARPNESS:
                                 pictureSettings.setSharpness(pair.getValue());
