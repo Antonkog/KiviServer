@@ -3,8 +3,10 @@ package com.wezom.kiviremoteserver.service;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -32,10 +34,10 @@ import com.wezom.kiviremoteserver.bus.PingEvent;
 import com.wezom.kiviremoteserver.bus.SendAppsListEvent;
 import com.wezom.kiviremoteserver.bus.SendAspectEvent;
 import com.wezom.kiviremoteserver.bus.SendInitialEvent;
-import com.wezom.kiviremoteserver.bus.SocketAcceptedEvent;
 import com.wezom.kiviremoteserver.bus.SendToSettingsEvent;
 import com.wezom.kiviremoteserver.bus.SendVolumeEvent;
 import com.wezom.kiviremoteserver.bus.ShowKeyboardEvent;
+import com.wezom.kiviremoteserver.bus.SocketAcceptedEvent;
 import com.wezom.kiviremoteserver.bus.StopReceivingEvent;
 import com.wezom.kiviremoteserver.common.Constants;
 import com.wezom.kiviremoteserver.common.DeviceUtils;
@@ -54,6 +56,7 @@ import com.wezom.kiviremoteserver.mvp.view.ServiceMvpView;
 import com.wezom.kiviremoteserver.net.nsd.NsdUtil;
 import com.wezom.kiviremoteserver.net.server.KiviServer;
 import com.wezom.kiviremoteserver.net.server.model.ServerApplicationInfo;
+import com.wezom.kiviremoteserver.receiver.ScreenOnReceiver;
 import com.wezom.kiviremoteserver.service.inputs.InputSourceHelper;
 import com.wezom.kiviremoteserver.service.protocol.ServerEventStructure;
 import com.wezom.kiviremoteserver.ui.activity.HomeActivity;
@@ -96,6 +99,7 @@ public class KiviRemoteService extends Service implements ServiceMvpView {
     private RemoteServer server;
 
     private Handler handler = new Handler();
+    private BroadcastReceiver screenOnReceiver = new ScreenOnReceiver();
 
     private String messIp = "";
     private final ServiceBinder binder;
@@ -150,7 +154,14 @@ public class KiviRemoteService extends Service implements ServiceMvpView {
         isStarted = true;
         audioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
 
+        receiveScreenOn();
         initObservers();
+    }
+
+    private void receiveScreenOn() {
+        IntentFilter filter = new IntentFilter(Intent.ACTION_SCREEN_ON);
+        filter.addAction(Intent.ACTION_SCREEN_OFF);
+        registerReceiver(screenOnReceiver, filter);
     }
 
     private void initObservers() {
@@ -302,7 +313,7 @@ public class KiviRemoteService extends Service implements ServiceMvpView {
                                 pictureSettings.setSaturation(pair.getValue());
                                 break;
                             case BACKLIGHT:
-                                pictureSettings.setBacklight(pair.getValue());
+                                pictureSettings.setBacklight(pair.getValue(),getBaseContext());
                                 break;
                             case GREEN:
                                 pictureSettings.setGreen(pair.getValue());
@@ -359,6 +370,7 @@ public class KiviRemoteService extends Service implements ServiceMvpView {
         isStarted = false;
         handler.removeCallbacksAndMessages(null);
         server.disposeResources();
+        unregisterReceiver(screenOnReceiver);
         dispose();
         Log.d("Log_ STOP ", "serverService stopped!!!");
         super.onDestroy();

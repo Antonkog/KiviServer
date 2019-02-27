@@ -655,7 +655,7 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
         screenProgress.setLable(R.string.brightness);
         screenProgress.setIcon(R.drawable.bright_focus);
         screenProgress.setProgressListener(progress ->
-                pictureSettings.setBrightness(progress,getBaseContext()));
+                pictureSettings.setBrightness(progress, getBaseContext()));
         body.addView(screenProgress);
         screenProgress.setKey(KEY_PIC_BRIGHTNESS);
         return screenProgress;
@@ -668,7 +668,7 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
         screenProgress.setLable(R.string.backlight);
         screenProgress.setIcon(R.drawable.backlight_focus);
         screenProgress.setProgressListener(progress ->
-                pictureSettings.setBacklight(progress));
+                pictureSettings.setBacklight(progress, getBaseContext()));
         body.addView(screenProgress);
 //        screenProgress.setKey(KEY_PIC_BACKLIGHT);
 //        return screenProgress;

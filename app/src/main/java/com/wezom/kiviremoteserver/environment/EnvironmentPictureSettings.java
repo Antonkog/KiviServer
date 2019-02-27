@@ -147,9 +147,10 @@ public class EnvironmentPictureSettings {
         PreferenceManager.getDefaultSharedPreferences(context).edit().putInt(Constants.LAST_BRIGHTNESS, brightness).commit();
     }
 
-    public void setBacklight(int backlight) {
+    public void setBacklight(int backlight, Context context) {
         this.backlight = backlight;
         bridgePicture.setBacklight(backlight);
+        PreferenceManager.getDefaultSharedPreferences(context).edit().putInt(Constants.LAST_BACKLIGHT, backlight).commit();
     }
 
     public int getVideoArcType() {
