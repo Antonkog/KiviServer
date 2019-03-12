@@ -173,6 +173,7 @@ public class BridgeInputs {
         if (i == InputSourceHelper.INPUT_PORT.INPUT_SOURCE_VGA.getId() ||
                 i == InputSourceHelper.INPUT_PORT.INPUT_SOURCE_ATV.getId() ||
                 i == InputSourceHelper.INPUT_PORT.INPUT_SOURCE_DTV.getId() ||
+                i == InputSourceHelper.INPUT_PORT.INPUT_SOURCE_DVBS.getId() ||
                 i == InputSourceHelper.INPUT_PORT.INPUT_SOURCE_DVBC.getId()) {
             return true;
         }
