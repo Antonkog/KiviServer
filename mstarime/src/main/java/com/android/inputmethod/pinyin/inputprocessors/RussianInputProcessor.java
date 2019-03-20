@@ -10,50 +10,12 @@ import com.android.inputmethod.pinyin.keymap.CyrillicKeyMap;
 /**
  * Class to handle Russian input.
  */
-public class RussianInputProcessor {
+public class RussianInputProcessor implements ProcessorStrategy {
     public boolean processKey(InputConnection inputContext, KeyEvent event,
                               boolean upperCase, boolean realAction) {
         if (null == inputContext || null == event) return false;
 
         int keyCode = event.getKeyCode();
-//        int keyChar;
-//        keyChar = 0;
-//        if (keyCode >= KeyEvent.KEYCODE_A && keyCode <= KeyEvent.KEYCODE_Z) {
-//            keyChar = keyCode - KeyEvent.KEYCODE_A + 'a';
-//            if (upperCase) {
-//                keyChar = keyChar + 'A' - 'a';
-//            }
-//        } else if (keyCode == KeyEvent.KEYCODE_COMMA)
-//            keyChar = ',';
-//        else if (keyCode == KeyEvent.KEYCODE_PERIOD)
-//            keyChar = '.';
-//        else if (keyCode == KeyEvent.KEYCODE_APOSTROPHE)
-//            keyChar = '\'';
-//        else if (keyCode == KeyEvent.KEYCODE_AT)
-//            keyChar = '@';
-//        else if ((keyCode == KeyEvent.KEYCODE_SLASH) && event.isShiftPressed()) {
-//            keyChar = '?';
-//        } else if ((keyCode == KeyEvent.KEYCODE_1) && event.isShiftPressed()) {
-//            keyChar = '!';
-//        } else if ((keyCode == KeyEvent.KEYCODE_3) && event.isShiftPressed()) {
-//            keyChar = '#';
-//        } else if ((keyCode == KeyEvent.KEYCODE_4) && event.isShiftPressed()) {
-//            keyChar = '$';
-//        } else if ((keyCode == KeyEvent.KEYCODE_5) && event.isShiftPressed()) {
-//            keyChar = '%';
-//        } else if ((keyCode == KeyEvent.KEYCODE_7) && event.isShiftPressed()) {
-//            keyChar = '&';
-//        } else if ((keyCode == KeyEvent.KEYCODE_8) && event.isShiftPressed()) {
-//            keyChar = '*';
-//        } else if ((keyCode == KeyEvent.KEYCODE_9) && event.isShiftPressed()) {
-//            keyChar = '(';
-//        } else if ((keyCode == KeyEvent.KEYCODE_0) && event.isShiftPressed()) {
-//            keyChar = ')';
-//        } else if (keyCode == KeyEvent.KEYCODE_SLASH)
-//            keyChar = '/';
-//        else if ((keyCode >= KeyEvent.KEYCODE_0
-//                && keyCode <= KeyEvent.KEYCODE_9) && !event.isShiftPressed())
-//            keyChar = keyCode - KeyEvent.KEYCODE_0 + '0';
 
         Integer ruKey;
         if (keyCode >= RussianKeyCodes.RUSSIAN_F && keyCode <= RussianKeyCodes.RUSSIAN_Z) {

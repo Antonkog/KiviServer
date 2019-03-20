@@ -17,18 +17,16 @@
 package com.android.inputmethod.pinyin;
 
 import android.content.res.Resources;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 import android.util.Pair;
 import android.view.inputmethod.EditorInfo;
 
 import com.android.inputmethod.pinyin.SoftKeyboard.KeyRow;
 import com.android.inputmethod.pinyin.util.Country;
 
-import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Switcher used to switching input mode between Chinese, English, symbol,etc.
@@ -477,25 +475,7 @@ public class InputModeSwitcher {
 
         if (USERDEF_KEYCODE_LANG_2 == userKey) {
             KeySelector.INSTANCE.setKeysToSelect(new Pair<>(3, 1));
-            if (MODE_SKB_ENGLISH_UPPER == mInputMode
-                    || MODE_SKB_ENGLISH_LOWER == mInputMode) {
-                //  newInputMode = MODE_SKB_RUSSIAN_LOWER;
-                newInputMode = currentCountry.getNextLanguage(MODE_SKB_ENGLISH_LOWER);
-            }
-
-            // Set this to MODE_SKB_ENGLISH_LOWER
-            // to lock out Ukrainian input
-            if (MODE_SKB_RUSSIAN_UPPER == mInputMode
-                    || MODE_SKB_RUSSIAN_LOWER == mInputMode) {
-                //newInputMode = MODE_SKB_UKRAINIAN_LOWER;
-                newInputMode = currentCountry.getNextLanguage(MODE_SKB_RUSSIAN_LOWER);
-            }
-
-            if (MODE_SKB_UKRAINIAN_LOWER == mInputMode
-                    || MODE_SKB_UKRAINIAN_UPPER == mInputMode) {
-                //newInputMode = MODE_SKB_ENGLISH_LOWER;
-                newInputMode = currentCountry.getNextLanguage(MODE_SKB_UKRAINIAN_LOWER);
-            }
+            newInputMode = getNewInputMode(mInputMode);
         } else if (USERDEF_KEYCODE_SYM_3 == userKey) {
             if (MODE_SKB_ENGLISH_UPPER == mInputMode
                     || MODE_SKB_ENGLISH_LOWER == mInputMode
@@ -509,23 +489,7 @@ public class InputModeSwitcher {
                 newInputMode = mRecentLanguageInputMode;
             }
         } else if (USERDEF_KEYCODE_SHIFT_1 == userKey) {
-            if (MODE_SKB_ENGLISH_LOWER == mInputMode) {
-                newInputMode = MODE_SKB_ENGLISH_UPPER;
-            } else if (MODE_SKB_ENGLISH_UPPER == mInputMode) {
-                newInputMode = MODE_SKB_ENGLISH_LOWER;
-            }
-
-            if (MODE_SKB_RUSSIAN_LOWER == mInputMode) {
-                newInputMode = MODE_SKB_RUSSIAN_UPPER;
-            } else if (MODE_SKB_RUSSIAN_UPPER == mInputMode) {
-                newInputMode = MODE_SKB_RUSSIAN_LOWER;
-            }
-
-            if (MODE_SKB_UKRAINIAN_LOWER == mInputMode) {
-                newInputMode = MODE_SKB_UKRAINIAN_UPPER;
-            } else if (MODE_SKB_UKRAINIAN_UPPER == mInputMode) {
-                newInputMode = MODE_SKB_UKRAINIAN_LOWER;
-            }
+            newInputMode = switchCaseMode(mInputMode);
         } else if (USERDEF_KEYCODE_MORE_SYM_5 == userKey) {
             int sym = (MASK_SKB_LAYOUT & mInputMode);
             if (MASK_SKB_LAYOUT_SYMBOL1 == sym) {
@@ -552,63 +516,57 @@ public class InputModeSwitcher {
     }
 
     public void switchLanguage() {
-        int newInputMode = MODE_UNSET;
-
-        if (MODE_SKB_ENGLISH_UPPER == mInputMode
-                || MODE_SKB_ENGLISH_LOWER == mInputMode) {
-            newInputMode = currentCountry.getNextLanguage(MODE_SKB_ENGLISH_LOWER);
-            //newInputMode = MODE_SKB_RUSSIAN_LOWER;
-        }
-
-        if (MODE_SKB_RUSSIAN_UPPER == mInputMode
-                || MODE_SKB_RUSSIAN_LOWER == mInputMode) {
-            // Set this to MODE_SKB_ENGLISH_LOWER
-            // to lock out Ukrainian input
-            //newInputMode = MODE_SKB_UKRAINIAN_LOWER;
-            newInputMode = currentCountry.getNextLanguage(MODE_SKB_RUSSIAN_LOWER);
-        }
-
-        if (MODE_SKB_UKRAINIAN_LOWER == mInputMode
-                || MODE_SKB_UKRAINIAN_UPPER == mInputMode) {
-            //  newInputMode = MODE_SKB_ENGLISH_LOWER;
-            newInputMode = currentCountry.getNextLanguage(MODE_SKB_UKRAINIAN_LOWER);
-        }
-
+        int newInputMode = getNewInputMode(mInputMode);
         saveInputMode(newInputMode);
         prepareToggleStates(true);
     }
 
-    // Return the icon to update.
-    public int requestInputWithHkb(EditorInfo editorInfo) {
-        mShortMessageField = false;
-        boolean english = false;
-        int newInputMode = MODE_HKB_ENGLISH;
-
-        switch (editorInfo.inputType & EditorInfo.TYPE_MASK_CLASS) {
-            case EditorInfo.TYPE_CLASS_NUMBER:
-            case EditorInfo.TYPE_CLASS_PHONE:
-            case EditorInfo.TYPE_CLASS_DATETIME:
-                english = true;
+    private int getNewInputMode(int oldMode) {
+        int newInputMode;
+        switch (oldMode) {
+            case MODE_SKB_ENGLISH_LOWER:
+                newInputMode = MODE_SKB_ENGLISH_UPPER;
                 break;
-            case EditorInfo.TYPE_CLASS_TEXT:
-                int v = editorInfo.inputType & EditorInfo.TYPE_MASK_VARIATION;
-                if (v == EditorInfo.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
-                        || v == EditorInfo.TYPE_TEXT_VARIATION_PASSWORD
-                        || v == EditorInfo.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
-                        || v == EditorInfo.TYPE_TEXT_VARIATION_URI) {
-                    english = true;
-                } else if (v == EditorInfo.TYPE_TEXT_VARIATION_SHORT_MESSAGE) {
-                    mShortMessageField = true;
-                }
+            case MODE_SKB_ENGLISH_UPPER:
+                newInputMode = MODE_SKB_RUSSIAN_LOWER;
+                break;
+            case MODE_SKB_RUSSIAN_LOWER:
+                newInputMode = MODE_SKB_RUSSIAN_UPPER;
+                break;
+            case MODE_SKB_RUSSIAN_UPPER:
+                newInputMode = MODE_SKB_UKRAINIAN_LOWER;
+                if (Country.getCountry() == Country.UKRAINE) break;
+            case MODE_SKB_UKRAINIAN_LOWER:
+                newInputMode = MODE_SKB_UKRAINIAN_UPPER;
+                if (Country.getCountry() == Country.UKRAINE) break;
+            case MODE_SKB_UKRAINIAN_UPPER:
+                newInputMode = MODE_SKB_ENGLISH_LOWER;
                 break;
             default:
+                newInputMode = MODE_SKB_ENGLISH_UPPER;
         }
+        return newInputMode;
+    }
 
+    private int switchCaseMode(int oldMode) {
+        Map<Integer, Integer> modeMap = new HashMap<>();
+        modeMap.put(MODE_SKB_ENGLISH_LOWER, MODE_SKB_ENGLISH_UPPER);
+        modeMap.put(MODE_SKB_RUSSIAN_LOWER, MODE_SKB_RUSSIAN_UPPER);
+        modeMap.put(MODE_SKB_UKRAINIAN_LOWER, MODE_SKB_UKRAINIAN_UPPER);
+        if (modeMap.containsKey(oldMode))
+            return modeMap.get(oldMode);
 
-        // MStar Android Patch End
-        saveInputMode(newInputMode);
-        prepareToggleStates(false);
-        return mInputIcon;
+        if (modeMap.containsValue(oldMode)) {
+//          int k  = modeMap.entrySet().stream().filter(entry -> value.equals(entry.getValue())).map(Map.Entry::getKey);
+            for (Map.Entry<Integer, Integer> entry : modeMap.entrySet()) {
+                if (entry.getValue().equals(oldMode)) {
+                    return entry.getKey();
+                }
+            }
+
+        }
+        if(MODE_UNSET == oldMode) return MODE_SKB_ENGLISH_UPPER;
+        return oldMode;
     }
 
     // Return the icon to update.
@@ -689,79 +647,12 @@ public class InputModeSwitcher {
         return MODE_HKB_ENGLISH == mInputMode;
     }
 
-    public boolean isEnglishWithSkb() {
-        return MODE_SKB_ENGLISH_LOWER == mInputMode
-                || MODE_SKB_ENGLISH_UPPER == mInputMode;
+    public boolean isUpperCaseWithSkb() {
+        return MODE_SKB_ENGLISH_UPPER == mInputMode||
+                MODE_SKB_RUSSIAN_UPPER == mInputMode||
+                MODE_SKB_UKRAINIAN_UPPER == mInputMode;
     }
 
-    public boolean isRussianWithSkb() {
-        return MODE_SKB_RUSSIAN_LOWER == mInputMode || MODE_SKB_RUSSIAN_UPPER == mInputMode;
-    }
-
-    boolean isUkrainianWithSkb() {
-        return MODE_SKB_UKRAINIAN_LOWER == mInputMode || MODE_SKB_UKRAINIAN_UPPER == mInputMode;
-    }
-
-    public boolean isEnglishUpperCaseWithSkb() {
-        return MODE_SKB_ENGLISH_UPPER == mInputMode;
-    }
-
-    public boolean isRussianText() {
-        int skbLayout = (mInputMode & MASK_SKB_LAYOUT);
-        if (MASK_SKB_LAYOUT_QWERTY == skbLayout || 0 == skbLayout) {
-            int language = (mInputMode & MASK_LANGUAGE);
-            if (MASK_LANGUAGE_RU == language) return true;
-        }
-        return false;
-    }
-
-    boolean isRussianUpperCaseWithSkb() {
-        return MODE_SKB_RUSSIAN_UPPER == mInputMode;
-    }
-
-    boolean isUkrainianUpperCaseWithSkb() {
-        return MODE_SKB_UKRAINIAN_UPPER == mInputMode;
-    }
-
-//    public boolean isChineseText() {
-//        int skbLayout = (mInputMode & MASK_SKB_LAYOUT);
-//        if (MASK_SKB_LAYOUT_QWERTY == skbLayout || 0 == skbLayout) {
-//            int language = (mInputMode & MASK_LANGUAGE);
-//            if (MASK_LANGUAGE_CN == language) return true;
-//        }
-//        return false;
-//    }
-//
-//    public boolean isChineseTextWithHkb() {
-//        int skbLayout = (mInputMode & MASK_SKB_LAYOUT);
-//        if (0 == skbLayout) {
-//            int language = (mInputMode & MASK_LANGUAGE);
-//            if (MASK_LANGUAGE_CN == language) return true;
-//        }
-//        return false;
-//    }
-//
-//    public boolean isChineseTextWithSkb() {
-//        int skbLayout = (mInputMode & MASK_SKB_LAYOUT);
-//        if (MASK_SKB_LAYOUT_QWERTY == skbLayout) {
-//            int language = (mInputMode & MASK_LANGUAGE);
-//            if (MASK_LANGUAGE_CN == language) return true;
-//        }
-//        return false;
-//    }
-
-    public boolean isSymbolWithSkb() {
-        int skbLayout = (mInputMode & MASK_SKB_LAYOUT);
-        if (MASK_SKB_LAYOUT_SYMBOL1 == skbLayout
-                || MASK_SKB_LAYOUT_SYMBOL2 == skbLayout) {
-            return true;
-        }
-        return false;
-    }
-
-    public boolean isEnterNoramlState() {
-        return mEnterKeyNormal;
-    }
 
     public boolean tryHandleLongPressSwitch(int keyCode) {
         if (USERDEF_KEYCODE_LANG_2 == keyCode

@@ -22,7 +22,7 @@ import android.view.inputmethod.InputConnection;
 /**
  * Class to handle English input.
  */
-public class EnglishInputProcessor {
+public class EnglishInputProcessor implements ProcessorStrategy {
     public boolean processKey(InputConnection inputContext, KeyEvent event,
                               boolean upperCase, boolean realAction) {
         if (null == inputContext || null == event) return false;
@@ -37,37 +37,6 @@ public class EnglishInputProcessor {
                 keyChar = keyChar + 'A' - 'a';
             }
         }
-//        else if (keyCode == KeyEvent.KEYCODE_COMMA)
-//            keyChar = ',';
-//        else if (keyCode == KeyEvent.KEYCODE_PERIOD)
-//            keyChar = '.';
-//        else if (keyCode == KeyEvent.KEYCODE_APOSTROPHE)
-//            keyChar = '\'';
-//        else if (keyCode == KeyEvent.KEYCODE_AT)
-//            keyChar = '@';
-//        else if ((keyCode == KeyEvent.KEYCODE_SLASH) && event.isShiftPressed()) {
-//            keyChar = '?';
-//        } else if ((keyCode == KeyEvent.KEYCODE_1) && event.isShiftPressed()) {
-//            keyChar = '!';
-//        } else if ((keyCode == KeyEvent.KEYCODE_3) && event.isShiftPressed()) {
-//            keyChar = '#';
-//        } else if ((keyCode == KeyEvent.KEYCODE_4) && event.isShiftPressed()) {
-//            keyChar = '$';
-//        } else if ((keyCode == KeyEvent.KEYCODE_5) && event.isShiftPressed()) {
-//            keyChar = '%';
-//        } else if ((keyCode == KeyEvent.KEYCODE_7) && event.isShiftPressed()) {
-//            keyChar = '&';
-//        } else if ((keyCode == KeyEvent.KEYCODE_8) && event.isShiftPressed()) {
-//            keyChar = '*';
-//        } else if ((keyCode == KeyEvent.KEYCODE_9) && event.isShiftPressed()) {
-//            keyChar = '(';
-//        } else if ((keyCode == KeyEvent.KEYCODE_0) && event.isShiftPressed()) {
-//            keyChar = ')';
-//        } else if (keyCode == KeyEvent.KEYCODE_SLASH)
-//            keyChar = '/';
-//        else if (keyCode >= KeyEvent.KEYCODE_0
-//                && keyCode <= KeyEvent.KEYCODE_9)
-//            keyChar = keyCode - KeyEvent.KEYCODE_0 + '0';
 
         if (0 == keyChar) {
             String insert = null;

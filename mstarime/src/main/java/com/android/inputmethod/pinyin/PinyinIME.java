@@ -43,11 +43,7 @@ import android.view.inputmethod.InputConnection;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 
-import com.android.inputmethod.pinyin.inputprocessors.EnglishInputProcessor;
-import com.android.inputmethod.pinyin.inputprocessors.RussianInputProcessor;
-import com.android.inputmethod.pinyin.inputprocessors.UkrainianInputProcessor;
-import com.android.inputmethod.pinyin.keycode.RussianKeyCodes;
-import com.android.inputmethod.pinyin.keycode.UkrainianKeyCodes;
+import com.android.inputmethod.pinyin.inputprocessors.InputProcessor;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -170,20 +166,7 @@ public class PinyinIME extends InputMethodService {
      */
     private DecodingInfo mDecInfo = new DecodingInfo();
 
-    /**
-     * For English input.
-     */
-    private EnglishInputProcessor mImEn;
-
-    /**
-     * For Russian input.
-     */
-    private RussianInputProcessor mImRu;
-
-    /**
-     * For Ukrainian input.
-     */
-    private UkrainianInputProcessor mImUa;
+    private InputProcessor inputProcessor;
 
     private static long oldTime = 0;
     private static long curTime = 0;
@@ -210,9 +193,7 @@ public class PinyinIME extends InputMethodService {
         }
         super.onCreate();
 
-        mImEn = new EnglishInputProcessor();
-        mImRu = new RussianInputProcessor();
-        mImUa = new UkrainianInputProcessor();
+        inputProcessor = new InputProcessor();
 
         Settings.getInstance(PreferenceManager
                 .getDefaultSharedPreferences(getApplicationContext()));
@@ -264,78 +245,69 @@ public class PinyinIME extends InputMethodService {
         resetToIdleState(false);
     }
 
-    public boolean isNavigationKey(int keyCode) {
-        if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER || keyCode == KeyEvent.KEYCODE_ENTER ||
-                keyCode == KeyEvent.KEYCODE_DPAD_UP || keyCode == KeyEvent.KEYCODE_DPAD_DOWN ||
-                keyCode == KeyEvent.KEYCODE_DPAD_LEFT || keyCode == KeyEvent.KEYCODE_DPAD_RIGHT ||
-                keyCode == KeyEvent.KEYCODE_BACK) {
-            return true;
-        }
-        return false;
-    }
-
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_CAPS_LOCK) {
-            switchLanguage();
-            return true;
-        }
-
-        if (mSkbContainer == null) {
-            return super.onKeyDown(keyCode, event);
-        }
-        curTime = System.currentTimeMillis();
-        if ((keyCode == KeyEvent.KEYCODE_DPAD_CENTER || keyCode == KeyEvent.KEYCODE_ENTER)
-                && !isSimulate) {
-            if ((curTime - oldTime < 400) && oldKeycode == keyCode) {
-                isRepeat = true;
-                return true;
-            } else {
-                isRepeat = false;
-            }
-        }
-
-        isSimulateEnterUp = false;
-        if ((curTime - oldTime < 250) && !isSimulate && counter >= 1) {
-            isRepeat = true;
-            isSimulate = false;
-            counter = 0;
-            return true;
-        } else {
-            isSimulate = false;
-            isRepeat = false;
-            if ((keyCode == KeyEvent.KEYCODE_DPAD_CENTER || keyCode == KeyEvent.KEYCODE_ENTER) && event.getRepeatCount() > 0) {
-                isSimulateEnterUp = true;
-            }
-            if (oldKeycode == keyCode) {
-                counter++;
-            } else {
-                counter = 0;
-            }
-        }
-
-        isAfter = false;
-        skbFocusEnable = mSkbContainer.getInputViewFocusable();
-        candFocusEnable = (null != mCandidatesContainer) && (mCandidatesContainer.isShown());
-
-        if (!candFocusEnable) {
-            skbFocusEnable = true;
-            mSkbContainer.setInputViewFocusable(true);
-        }
-
-        oldTime = curTime;
-
-        if (processKey(event, 0 != event.getRepeatCount())) {
-            return true;
-        }
-
-        if (event.isCtrlPressed()) {
-            if ((keyCode == KeyEvent.KEYCODE_SHIFT_LEFT || keyCode == KeyEvent.KEYCODE_SHIFT_RIGHT)) {
+        switch (keyCode) {
+            case KeyEvent.KEYCODE_CAPS_LOCK:
                 switchLanguage();
                 return true;
-            }
+            case KeyEvent.KEYCODE_SHIFT_LEFT:
+            case KeyEvent.KEYCODE_SHIFT_RIGHT:
+                if (event.isCtrlPressed()) {
+                    switchLanguage();
+                    return true;
+                } else break;
         }
 
+        if (mSkbContainer != null) {
+            curTime = System.currentTimeMillis();
+            if ((keyCode == KeyEvent.KEYCODE_DPAD_CENTER || keyCode == KeyEvent.KEYCODE_ENTER)
+                    && !isSimulate) {
+                if ((curTime - oldTime < 400) && oldKeycode == keyCode) {
+                    isRepeat = true;
+                    return true;
+                } else {
+                    isRepeat = false;
+                }
+            }
+
+            isSimulateEnterUp = false;
+            if ((curTime - oldTime < 250) && !isSimulate && counter >= 1) {
+                isRepeat = true;
+                isSimulate = false;
+                counter = 0;
+                return true;
+            } else {
+                isSimulate = false;
+                isRepeat = false;
+                if ((keyCode == KeyEvent.KEYCODE_DPAD_CENTER || keyCode == KeyEvent.KEYCODE_ENTER) && event.getRepeatCount() > 0) {
+                    isSimulateEnterUp = true;
+                }
+                if (oldKeycode == keyCode) {
+                    counter++;
+                } else {
+                    counter = 0;
+                }
+            }
+
+            isAfter = false;
+            skbFocusEnable = mSkbContainer.getInputViewFocusable();
+            candFocusEnable = (null != mCandidatesContainer) && (mCandidatesContainer.isShown());
+
+            if (!candFocusEnable) {
+                skbFocusEnable = true;
+                mSkbContainer.setInputViewFocusable(true);
+            }
+
+            oldTime = curTime;
+
+            if (processKey(event, 0 != event.getRepeatCount())) {
+                return true;
+            }
+        }
+//        else {
+//            return super.onKeyDown(mapkeyForHKB(event), event);
+//        }
         return super.onKeyDown(keyCode, event);
     }
 
@@ -348,27 +320,81 @@ public class PinyinIME extends InputMethodService {
         }
     }
 
+    /**
+     * when keyboard is shown
+     * imput processor works
+     * and give same values, as soft keyboard shown,
+     * will make output same as for soft keyboard.
+     * But not sure, that is right way see google docs:
+     * https://source.android.com/devices/input/key-character-map-files.html
+     * hardware keyboard should have hard Key Mapping for extra languages.
+     */
+//    @Override
+//    public boolean onEvaluateInputViewShown() {
+//        return languageSwitched; //true
+//    }
+
+/*this is wrong and should not be used:
+as hardKeyboarrd is hard, not soft.
+see:  https://source.android.com/devices/input/key-character-map-files.html
+
+private int mapkeyForHKB(KeyEvent event) {
+        int keyCode = event.getKeyCode();
+        int keyCodeMapped = keyCode;
+
+        switch (mInputModeSwitcher.getInputMode()) {
+//            case InputModeSwitcher.MODE_SKB_ENGLISH_LOWER:
+//            case  InputModeSwitcher.MODE_SKB_ENGLISH_UPPER:
+//                break;
+            case InputModeSwitcher.MODE_SKB_RUSSIAN_LOWER:
+            case InputModeSwitcher.MODE_SKB_RUSSIAN_UPPER:
+                if (keyCode >= RussianKeyCodes.RUSSIAN_F && keyCode <= RussianKeyCodes.RUSSIAN_Z) {
+                    keyCodeMapped = keyCode;
+                } else {
+                    keyCodeMapped = CyrillicKeyMap.getRussianKeys().get(keyCode);
+                }
+                break;
+            case InputModeSwitcher.MODE_SKB_UKRAINIAN_LOWER:
+            case InputModeSwitcher.MODE_SKB_UKRAINIAN_UPPER:
+
+                if (keyCode >= RussianKeyCodes.RUSSIAN_F && keyCode <= UkrainianKeyCodes.UKRAINIAN_G) {
+                    keyCodeMapped = keyCode;
+                } else {
+                    keyCodeMapped = CyrillicKeyMap.getUkrainanKeys().get(keyCode);
+                }
+                break;
+        }
+        return keyCodeMapped;
+    }
+ */
+
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_CAPS_LOCK)
-            return false;
-
-        if (mSkbContainer == null) {
-            return super.onKeyUp(keyCode, event);
+        switch (keyCode) {
+            case KeyEvent.KEYCODE_CAPS_LOCK://k1 -keycode115
+                return false;
+            case KeyEvent.KEYCODE_SHIFT_LEFT:
+            case KeyEvent.KEYCODE_SHIFT_RIGHT:
+                if (event.isCtrlPressed()) {
+                    return false;
+                } else break;
         }
-        if (isRepeat) {
-            isRepeat = false;
-            return true;
+        if (mSkbContainer != null) {
+            if (isRepeat) {
+                isRepeat = false;
+                return true;
+            }
+
+            isAfter = true;
+            if (isShowInputView) {
+                isShowInputView = false;
+                return true;
+            }
+            if (processKey(event, true)) return true;
         }
-
-        isAfter = true;
-        if (isShowInputView) {
-            isShowInputView = false;
-            return true;
-        }
-
-        if (processKey(event, true)) return true;
-
+//        else {
+//            return super.onKeyUp(mapkeyForHKB(event), event);
+//        }
         return super.onKeyUp(keyCode, event);
     }
 
@@ -395,27 +421,13 @@ public class PinyinIME extends InputMethodService {
             getCurrentInputConnection().clearMetaKeyStates(allMetaState);
             return true;
         }
-
+        //switch not working on HKB - antonio 19mar2019 is this still mstar patch?
         // If HKB is on to input English, by-pass the key event so that
         // default key listener will handle it.
         if (mInputModeSwitcher.isEnglishWithHkb()) {
+            Log.e(TAG, " mstar patch end mInputModeSwitcher.isEnglishWithHkb() return false");
             return false;
         }
-
-        // If SKB is on to input English but input from HKB(deviceId!=0) except navigation key, by-pass the key event so that
-        // default key listener will handle it.
-//        if (mInputModeSwitcher.isEnglishWithSkb() && event.getDeviceId() != 0 && !isNavigationKey(keyCode)
-//                && !processKey(getCurrentInputConnection(), event, false, realAction)
-//                || mInputModeSwitcher.isRussianWithSkb() && event.getDeviceId() != 0 && !isNavigationKey(keyCode)
-//                && !processRussianKey(getCurrentInputConnection(), event, false, realAction)
-//                || mInputModeSwitcher.isUkrainianWithSkb() && event.getDeviceId() != 0 && !isNavigationKey(keyCode)
-//                && !processUkrainianKey(getCurrentInputConnection(), event, false, realAction)) {
-//            return false;
-//        }
-
-//        if (mInputModeSwitcher.isEnglishWithSkb() && event.getDeviceId() != 0 && !isNavigationKey(keyCode)) {
-//            return false;
-//        }
 
         if (processFunctionKeys(keyCode, realAction)) {
             return true;
@@ -439,226 +451,8 @@ public class PinyinIME extends InputMethodService {
                 return false;
             }
         }
-
-        int keyChar = 0;
-        if (keyCode >= KeyEvent.KEYCODE_A && keyCode <= KeyEvent.KEYCODE_Z) {
-            keyChar = keyCode - KeyEvent.KEYCODE_A + 'a';
-        } else if (keyCode >= KeyEvent.KEYCODE_0
-                && keyCode <= KeyEvent.KEYCODE_9) {
-            keyChar = keyCode - KeyEvent.KEYCODE_0 + '0';
-        } else if (keyCode == KeyEvent.KEYCODE_COMMA) {
-            keyChar = ',';
-        } else if (keyCode == KeyEvent.KEYCODE_PERIOD) {
-            keyChar = '.';
-        } else if (keyCode == KeyEvent.KEYCODE_SPACE) {
-            keyChar = ' ';
-        } else if (keyCode == KeyEvent.KEYCODE_APOSTROPHE) {
-            keyChar = '\'';
-        }
-
-        if (mInputModeSwitcher.isEnglishWithSkb()) {
-            return mImEn.processKey(getCurrentInputConnection(), event,
-                    mInputModeSwitcher.isEnglishUpperCaseWithSkb(), realAction);
-        } else if (mInputModeSwitcher.isRussianWithSkb()) {
-            return mImRu.processKey(getCurrentInputConnection(), event,
-                    mInputModeSwitcher.isRussianUpperCaseWithSkb(), realAction);
-        } else if (mInputModeSwitcher.isUkrainianWithSkb()) {
-            return mImUa.processKey(getCurrentInputConnection(), event,
-                    mInputModeSwitcher.isUkrainianUpperCaseWithSkb(), realAction);
-        } else {
-            if (0 != keyChar && realAction) {
-                commitResultText(String.valueOf((char) keyChar));
-            }
-        }
-
-        if (keyCode == KeyEvent.KEYCODE_BACK) return false;
-
-        return true;
-    }
-
-    public boolean processKey(InputConnection inputContext, KeyEvent event,
-                              boolean upperCase, boolean realAction) {
-        if (null == inputContext || null == event) return false;
-
-        int keyCode = event.getKeyCode();
-        int keyChar;
-        keyChar = 0;
-
-        if (keyCode >= KeyEvent.KEYCODE_A && keyCode <= KeyEvent.KEYCODE_Z) {
-            keyChar = keyCode - KeyEvent.KEYCODE_A + 'a';
-            if (upperCase) {
-                keyChar = keyChar + 'A' - 'a';
-            }
-        } else if (keyCode == KeyEvent.KEYCODE_COMMA)
-            keyChar = ',';
-        else if (keyCode == KeyEvent.KEYCODE_PERIOD)
-            keyChar = '.';
-        else if (keyCode == KeyEvent.KEYCODE_APOSTROPHE)
-            keyChar = '\'';
-        else if (keyCode == KeyEvent.KEYCODE_AT)
-            keyChar = '@';
-        else if ((keyCode == KeyEvent.KEYCODE_SLASH) && event.isShiftPressed()) {
-            keyChar = '?';
-        } else if ((keyCode == KeyEvent.KEYCODE_1) && event.isShiftPressed()) {
-            keyChar = '!';
-        } else if ((keyCode == KeyEvent.KEYCODE_3) && event.isShiftPressed()) {
-            keyChar = '#';
-        } else if ((keyCode == KeyEvent.KEYCODE_4) && event.isShiftPressed()) {
-            keyChar = '$';
-        } else if ((keyCode == KeyEvent.KEYCODE_5) && event.isShiftPressed()) {
-            keyChar = '%';
-        } else if ((keyCode == KeyEvent.KEYCODE_6) && event.isShiftPressed()) {
-            keyChar = ':';
-        } else if ((keyCode == KeyEvent.KEYCODE_7) && event.isShiftPressed()) {
-            keyChar = '&';
-        } else if ((keyCode == KeyEvent.KEYCODE_8) && event.isShiftPressed()) {
-            keyChar = '*';
-        } else if ((keyCode == KeyEvent.KEYCODE_9) && event.isShiftPressed()) {
-            keyChar = '(';
-        } else if ((keyCode == KeyEvent.KEYCODE_0) && event.isShiftPressed()) {
-            keyChar = ')';
-        } else if (keyCode == KeyEvent.KEYCODE_SLASH)
-            keyChar = '/';
-        else if (keyCode >= KeyEvent.KEYCODE_0
-                && keyCode <= KeyEvent.KEYCODE_9)
-            keyChar = keyCode - KeyEvent.KEYCODE_0 + '0';
-
-        if (realAction)
-            return false;
-
-        if (keyChar == 0)
-            return false;
-
-        return true;
-    }
-
-    public boolean processRussianKey(InputConnection inputContext, KeyEvent event,
-                                     boolean upperCase, boolean realAction) {
-        if (null == inputContext || null == event) return false;
-
-        int keyCode = event.getKeyCode();
-        int keyChar;
-        keyChar = 0;
-
-        if (keyCode >= KeyEvent.KEYCODE_A && keyCode <= KeyEvent.KEYCODE_Z) {
-            keyChar = keyCode - KeyEvent.KEYCODE_A + 'a';
-            if (upperCase) {
-                keyChar = keyChar + 'A' - 'a';
-            }
-        } else if (keyCode == KeyEvent.KEYCODE_COMMA)
-            keyChar = ',';
-        else if (keyCode == KeyEvent.KEYCODE_PERIOD)
-            keyChar = '.';
-        else if (keyCode == KeyEvent.KEYCODE_APOSTROPHE)
-            keyChar = '\'';
-        else if (keyCode == KeyEvent.KEYCODE_AT)
-            keyChar = '@';
-        else if ((keyCode == KeyEvent.KEYCODE_SLASH) && event.isShiftPressed()) {
-            keyChar = '?';
-        } else if ((keyCode == KeyEvent.KEYCODE_1) && event.isShiftPressed()) {
-            keyChar = '!';
-        } else if ((keyCode == KeyEvent.KEYCODE_3) && event.isShiftPressed()) {
-            keyChar = '#';
-        } else if ((keyCode == KeyEvent.KEYCODE_4) && event.isShiftPressed()) {
-            keyChar = '$';
-        } else if ((keyCode == KeyEvent.KEYCODE_5) && event.isShiftPressed()) {
-            keyChar = '%';
-        } else if ((keyCode == KeyEvent.KEYCODE_7) && event.isShiftPressed()) {
-            keyChar = '&';
-        } else if ((keyCode == KeyEvent.KEYCODE_8) && event.isShiftPressed()) {
-            keyChar = '*';
-        } else if ((keyCode == KeyEvent.KEYCODE_9) && event.isShiftPressed()) {
-            keyChar = '(';
-        } else if ((keyCode == KeyEvent.KEYCODE_0) && event.isShiftPressed()) {
-            keyChar = ')';
-        } else if (keyCode == KeyEvent.KEYCODE_SLASH)
-            keyChar = '/';
-        else if (keyCode >= KeyEvent.KEYCODE_0
-                && keyCode <= KeyEvent.KEYCODE_9)
-            keyChar = keyCode - KeyEvent.KEYCODE_0 + '0';
-
-        if (0 == keyChar && !(keyCode >= RussianKeyCodes.RUSSIAN_F && keyCode <= RussianKeyCodes.RUSSIAN_Z)) {
-            String insert = null;
-            if (KeyEvent.KEYCODE_DEL == keyCode) {
-                if (realAction) {
-                    inputContext.deleteSurroundingText(1, 0);
-                }
-            } else if (KeyEvent.KEYCODE_ENTER == keyCode) {
-                insert = "\n";
-            } else if (KeyEvent.KEYCODE_SPACE == keyCode) {
-                insert = " ";
-            } else {
-                return false;
-            }
-
-            if (null != insert && realAction)
-                inputContext.commitText(insert, insert.length());
-
-            return true;
-        }
-
-        if (realAction)
-            return false;
-
-        if (0 == keyChar && !(keyCode >= RussianKeyCodes.RUSSIAN_F && keyCode <= RussianKeyCodes.RUSSIAN_Z))
-            return false;
-
-        return true;
-    }
-
-    public boolean processUkrainianKey(InputConnection inputContext, KeyEvent event,
-                                       boolean upperCase, boolean realAction) {
-        if (null == inputContext || null == event) return false;
-
-        int keyCode = event.getKeyCode();
-        int keyChar;
-        keyChar = 0;
-
-        if (keyCode >= KeyEvent.KEYCODE_A && keyCode <= KeyEvent.KEYCODE_Z) {
-            keyChar = keyCode - KeyEvent.KEYCODE_A + 'a';
-            if (upperCase) {
-                keyChar = keyChar + 'A' - 'a';
-            }
-        } else if (keyCode == KeyEvent.KEYCODE_COMMA)
-            keyChar = ',';
-        else if (keyCode == KeyEvent.KEYCODE_PERIOD)
-            keyChar = '.';
-        else if (keyCode == KeyEvent.KEYCODE_APOSTROPHE)
-            keyChar = '\'';
-        else if (keyCode == KeyEvent.KEYCODE_AT)
-            keyChar = '@';
-        else if ((keyCode == KeyEvent.KEYCODE_SLASH) && event.isShiftPressed()) {
-            keyChar = '?';
-        } else if ((keyCode == KeyEvent.KEYCODE_1) && event.isShiftPressed()) {
-            keyChar = '!';
-        } else if ((keyCode == KeyEvent.KEYCODE_3) && event.isShiftPressed()) {
-            keyChar = '#';
-        } else if ((keyCode == KeyEvent.KEYCODE_4) && event.isShiftPressed()) {
-            keyChar = '$';
-        } else if ((keyCode == KeyEvent.KEYCODE_5) && event.isShiftPressed()) {
-            keyChar = '%';
-        } else if ((keyCode == KeyEvent.KEYCODE_7) && event.isShiftPressed()) {
-            keyChar = '&';
-        } else if ((keyCode == KeyEvent.KEYCODE_8) && event.isShiftPressed()) {
-            keyChar = '*';
-        } else if ((keyCode == KeyEvent.KEYCODE_9) && event.isShiftPressed()) {
-            keyChar = '(';
-        } else if ((keyCode == KeyEvent.KEYCODE_0) && event.isShiftPressed()) {
-            keyChar = ')';
-        } else if (keyCode == KeyEvent.KEYCODE_SLASH)
-            keyChar = '/';
-        else if (keyCode >= KeyEvent.KEYCODE_0
-                && keyCode <= KeyEvent.KEYCODE_9)
-            keyChar = keyCode - KeyEvent.KEYCODE_0 + '0';
-
-
-        if (realAction)
-            return false;
-
-        if (0 == keyChar && !(keyCode >= RussianKeyCodes.RUSSIAN_F && keyCode <= UkrainianKeyCodes.UKRAINIAN_G))
-            return false;
-
-        return true;
+        return inputProcessor.processKey(mInputModeSwitcher.getInputMode(), getCurrentInputConnection(), event,
+                event.isShiftPressed() || mInputModeSwitcher.isUpperCaseWithSkb(), realAction, mComposingView);
     }
 
 
@@ -1738,8 +1532,7 @@ public class PinyinIME extends InputMethodService {
         }
 
         public boolean isSplStrFull() {
-            if (mSurface.length() >= PY_STRING_MAX - 1) return true;
-            return false;
+            return mSurface.length() >= PY_STRING_MAX - 1;
         }
 
         public void addSplChar(char ch, boolean reset) {
@@ -1934,11 +1727,7 @@ public class PinyinIME extends InputMethodService {
                     }
                 }
 
-                if (mSplStart.length == mFixedLen + 2) {
-                    mFinishSelection = true;
-                } else {
-                    mFinishSelection = false;
-                }
+                mFinishSelection = mSplStart.length == mFixedLen + 2;
             } catch (Exception e) {
                 mTotalChoicesNum = 0;
                 mComposingStr = "";
@@ -2014,11 +1803,7 @@ public class PinyinIME extends InputMethodService {
             if (pageNo < 0) return false;
 
             // Page pageNo's ending information is not ready.
-            if (mPageStart.size() <= pageNo + 1) {
-                return false;
-            }
-
-            return true;
+            return mPageStart.size() > pageNo + 1;
         }
 
         public boolean preparePage(int pageNo) {
@@ -2045,12 +1830,7 @@ public class PinyinIME extends InputMethodService {
 
             // Try to find if there are available new items to display.
             // If no new item, return false;
-            if (mPageStart.elementAt(pageNo) >= mCandidatesList.size()) {
-                return false;
-            }
-
-            // If there are new items, return true;
-            return true;
+            return mPageStart.elementAt(pageNo) < mCandidatesList.size();
         }
 
         public void preparePredicts(CharSequence history) {
@@ -2091,24 +1871,17 @@ public class PinyinIME extends InputMethodService {
 
         public boolean pageForwardable(int currentPage) {
             if (mPageStart.size() <= currentPage + 1) return false;
-            if (mPageStart.elementAt(currentPage + 1) >= mTotalChoicesNum) {
-                return false;
-            }
-            return true;
+            return mPageStart.elementAt(currentPage + 1) < mTotalChoicesNum;
         }
 
         public boolean pageBackwardable(int currentPage) {
-            if (currentPage > 0) return true;
-            return false;
+            return currentPage > 0;
         }
 
         public boolean charBeforeCursorIsSeparator() {
             int len = mSurface.length();
             if (mCursorPos > len) return false;
-            if (mCursorPos > 0 && mSurface.charAt(mCursorPos - 1) == '\'') {
-                return true;
-            }
-            return false;
+            return mCursorPos > 0 && mSurface.charAt(mCursorPos - 1) == '\'';
         }
 
         public int getCursorPos() {
