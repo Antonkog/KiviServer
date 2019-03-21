@@ -3,9 +3,10 @@ package com.wezom.kiviremoteserver.service.communication;
 import android.app.IntentService;
 import android.content.ComponentName;
 import android.content.Intent;
+import android.util.Log;
 
 import com.google.gson.Gson;
-import com.wezom.kiviremoteserver.environment.EnvironmentInputsHelper;
+import com.wezom.kiviremoteserver.service.AspectLayoutService;
 import com.wezom.kiviremoteserver.service.inputs.InputSourceHelper;
 
 import java.util.ArrayList;
@@ -22,24 +23,90 @@ public class DelegatePlatformsService extends IntentService {
 
     public static final String ACTION_INPUTS_LIST = "com.wezom.kiviremoteserver.service.action.getInputList";
     public static final String ACTION_CHANGE_INPUT = "com.wezom.kiviremoteserver.service.action.changeInput";
+    public static final String ACTION_REMOTE_KEY_PRESSED = "com.wezom.kiviremoteserver.service.action.remote_pressed";
+
+
+    public static final String EXTRA_KEY_ID = "com.wezom.kiviremoteserver.service.action.extra_key_id";
+    public static final int KEY_FAST_LAUNCH_MENU = 406;
+    public static final int KEY_TV = 170;
+    public static final int KEY_MEDIA = 303;
 
     public static final String EXTRA_CHANGE_INPUT_ID = "com.wezom.kiviremoteserver.service.extra.change.input.id";
 
+    private final String TV_APP_OLD = "com.android.tv";
+    private final String TV_APP = "com.kivitvplayer";
+    private final String MEDIA_APP = "com.rtk.mediabrowser";
 
     public DelegatePlatformsService() {
         super("DelegatePlatformsService");
     }
 
+//            Intent kiviKeyService = new Intent();
+//    kiviKeyService.setComponent(new ComponentName("com.wezom.kiviremoteserver",
+//                  "com.wezom.kiviremoteserver.service.communication.DelegatePlatformsService"));
+//    kiviKeyService.setAction("com.wezom.kiviremoteserver.service.action.remote_pressed");
+//    kiviKeyService.putExtra("com.wezom.kiviremoteserver.service.action.extra_key_id",keyCode);// KEY_FAST_LAUNCH_MENU = 406;KEY_TV = 170;KEY_MEDIA = 303;
+//    startService(kiviKeyService);
+
+
     @Override
     protected void onHandleIntent(Intent intent) {
         if (intent != null) {
+            Log.e("ACTION_INPUTS_LIST", "ACTION_INPUTS_LIST");
             final String action = intent.getAction();
             if (ACTION_INPUTS_LIST.equals(action)) {
                 sendInputsList();
             } else if (ACTION_CHANGE_INPUT.equals(action)) {
                 final Integer param1 = intent.getIntExtra(EXTRA_CHANGE_INPUT_ID, 0);
                 changeInput(param1);
+            } else if (ACTION_REMOTE_KEY_PRESSED.equals(action)) {
+                int keyCode = intent.getIntExtra(EXTRA_KEY_ID, -1);
+                if (keyCode >= 0) {
+                    handleBtn(keyCode);
+                }
             }
+        }
+    }
+
+    private void handleBtn(int keyCode) {
+        switch (keyCode) {
+            case KEY_FAST_LAUNCH_MENU:
+                startService(new Intent(getApplicationContext(), AspectLayoutService.class));
+                break;
+            case KEY_TV:
+                Intent tvIntent = null;
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+                    tvIntent = getPackageManager().getLeanbackLaunchIntentForPackage(TV_APP);
+                }
+                if (tvIntent == null) {
+                    tvIntent = getPackageManager().getLaunchIntentForPackage(TV_APP);
+                }
+
+                if (tvIntent == null && android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+                    tvIntent = getPackageManager().getLeanbackLaunchIntentForPackage(TV_APP_OLD);
+                }
+                if (tvIntent == null) {
+                    tvIntent = getPackageManager().getLaunchIntentForPackage(TV_APP_OLD);
+                }
+                if (tvIntent != null) {
+                    tvIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(tvIntent);
+                }
+                break;
+            case KEY_MEDIA:
+                Intent mediaIntent = null;
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+                    mediaIntent = getPackageManager().getLeanbackLaunchIntentForPackage(MEDIA_APP);
+                }
+                if (mediaIntent == null) {
+                    mediaIntent = getPackageManager().getLaunchIntentForPackage(MEDIA_APP);
+                }
+
+                if (mediaIntent != null) {
+                    mediaIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(mediaIntent);
+                }
+                break;
         }
     }
 
