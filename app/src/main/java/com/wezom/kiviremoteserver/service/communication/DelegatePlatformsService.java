@@ -7,6 +7,7 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 import com.wezom.kiviremoteserver.service.AspectLayoutService;
+import com.wezom.kiviremoteserver.service.AspectLayoutService;
 import com.wezom.kiviremoteserver.service.inputs.InputSourceHelper;
 
 import java.util.ArrayList;
@@ -27,7 +28,7 @@ public class DelegatePlatformsService extends IntentService {
 
 
     public static final String EXTRA_KEY_ID = "com.wezom.kiviremoteserver.service.action.extra_key_id";
-    public static final int KEY_FAST_LAUNCH_MENU = 406;
+    public static final int KEY_FAST_LAUNCH_MENU = 420;
     public static final int KEY_TV = 170;
     public static final int KEY_MEDIA = 303;
 
