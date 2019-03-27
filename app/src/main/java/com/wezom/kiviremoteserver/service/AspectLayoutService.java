@@ -266,7 +266,7 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
 
 
         int current = inputsHelper.getCurrentTvInputSource();
-       // Log.e("currentInput", "input = " + current);
+        // Log.e("currentInput", "input = " + current);
         if (inputsHelper.isTV(current)) {
             addSeparator(headerContainer);
             addChannelSelector(headerContainer);
@@ -322,15 +322,17 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
 
     ScreenProgress soundBass;
     ScreenProgress soundTreble;
+
     private void updateSoundValue(boolean isUser) {
         soundBass.setEnabled(isUser);
         soundBass.setFocusable(isUser);
         soundBass.setAlpha(isUser ? 1 : 0.3f);
-        soundBass.setProgress(pictureSettings.getBassLevel());
+        soundBass.setProgress(pictureSettings.getBassLevel(soundBass.getContext()));
+
         soundTreble.setEnabled(isUser);
         soundTreble.setFocusable(isUser);
         soundTreble.setAlpha(isUser ? 1 : 0.3f);
-        soundTreble.setProgress(pictureSettings.getTrebleLevel());
+        soundTreble.setProgress(pictureSettings.getTrebleLevel(soundTreble.getContext()));
     }
 
     private void soundDetailSettings(LinearLayout bodyPictureSettings) {
@@ -342,12 +344,13 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
     private ScreenProgress soundHeight(LinearLayout body) {
         ScreenProgress screenProgress = new ScreenProgress(this);
         screenProgress.setOnKeyListener(this);
-        screenProgress.setProgress(pictureSettings.getTrebleLevel());
+        screenProgress.setProgress(pictureSettings.getTrebleLevel(body.getContext()));
+
         screenProgress.setLable(R.string.sound_height);
         screenProgress.setIcon(R.drawable.ic_hight_sound);
         screenProgress.setProgressListener(progress ->
         {
-            pictureSettings.setTrebleLevel(progress);
+            pictureSettings.setTrebleLevel(body.getContext(), progress);
         });
         body.addView(screenProgress);
         screenProgress.setKey(KEY_SOUND_DEPRECATED);
@@ -357,12 +360,12 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
     private ScreenProgress soundLow(LinearLayout body) {
         ScreenProgress screenProgress = new ScreenProgress(this);
         screenProgress.setOnKeyListener(this);
-        screenProgress.setProgress(pictureSettings.getBassLevel());
+        screenProgress.setProgress(pictureSettings.getBassLevel(body.getContext()));
         screenProgress.setLable(R.string.sound_low);
         screenProgress.setIcon(R.drawable.ic_low_sound);
         screenProgress.setProgressListener(progress ->
         {
-            pictureSettings.setBassLevel(progress);
+            pictureSettings.setBassLevel(screenProgress.getContext(), progress);
         });
         body.addView(screenProgress);
         screenProgress.setKey(KEY_SOUND_DEPRECATED);
@@ -376,7 +379,7 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
         lrTextSwitcher.setOnKeyListener(this);
         if (current != null) {
             lrTextSwitcher.setValue(current);
-            updateSoundValue(current.getID() == SoundValues.SOUND_TYPE_USER.getID());
+            updateSoundValue(pictureSettings.isUserSoundMode());
         }
         lrTextSwitcher.setLable(R.string.sound_type);
         lrTextSwitcher.setIcon(R.drawable.ic_treble_24dp);
@@ -655,7 +658,7 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
         screenProgress.setLable(R.string.brightness);
         screenProgress.setIcon(R.drawable.bright_focus);
         screenProgress.setProgressListener(progress ->
-                pictureSettings.setBrightness(progress, getBaseContext()));
+                pictureSettings.setBrightness(progress));
         body.addView(screenProgress);
         screenProgress.setKey(KEY_PIC_BRIGHTNESS);
         return screenProgress;

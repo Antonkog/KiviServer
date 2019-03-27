@@ -135,7 +135,6 @@ public class KiviRemoteService extends Service implements ServiceMvpView {
 
 
     //endregion
-
     //region Override methods
     @Nullable
     @Override
@@ -304,7 +303,7 @@ public class KiviRemoteService extends Service implements ServiceMvpView {
                                 pictureSettings.setPictureMode(pair.getValue());
                                 break;
                             case BRIGHTNESS:
-                                pictureSettings.setBrightness(pair.getValue(),getBaseContext());
+                                pictureSettings.setBrightness(pair.getValue());
                                 break;
                             case SHARPNESS:
                                 pictureSettings.setSharpness(pair.getValue());

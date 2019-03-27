@@ -9,15 +9,30 @@ public class Constants {
 
     public static final String APPLICATION_UID = "app_uid";
     public static final String LAST_VOLUME_REALTEK = "last_volume_realtek";
-    public static final String LAST_BRIGHTNESS = "last_brightness";
     public static final String LAST_BACKLIGHT = "last_backlight";
+    public static final String LAST_TREBLE = "treble_level";
+    public static final String LAST_BASS = "bass_level";
 
     public static final int NO_VALUE = -1;
     public static final int SERV_REALTEK = 1;
     public static final int SERV_MSTAR = 0;
 
     public static final int SCROLL_VELOCITY_MS = 300;
-
+    public static final int FIFTY = 50;
+    public static final int REALTEK_SOUND_FIX = 50;  // that is for sound values on realtek
+    // on mstar sound is not implemented. Sound values
+    //REALTEK:
+    //Standart
+    //50 - 0
+    //50 - 0
+    //
+    //Music
+    //old70. - lib gives 8. now 58
+    //old77 -  lib gives 11   now 61
+    //
+    //Film
+    //old57 -3   lib gives - now 53
+    //old70 -8  lib gives - now 58
     //realtek chanels
     public static final String SCREEN = "screen";
     public static final String MODEL = "model";
