@@ -525,22 +525,26 @@ public class InputModeSwitcher {
         int newInputMode;
         switch (oldMode) {
             case MODE_SKB_ENGLISH_LOWER:
-                newInputMode = MODE_SKB_ENGLISH_UPPER;
-                break;
-            case MODE_SKB_ENGLISH_UPPER:
                 newInputMode = MODE_SKB_RUSSIAN_LOWER;
                 break;
             case MODE_SKB_RUSSIAN_LOWER:
+                if (Country.getCountry() == Country.UKRAINE)
+                    newInputMode = MODE_SKB_UKRAINIAN_LOWER;
+                else newInputMode = MODE_SKB_ENGLISH_LOWER;
+                break;
+            case MODE_SKB_UKRAINIAN_LOWER:
+                newInputMode = MODE_SKB_ENGLISH_LOWER;
+                break;
+            case MODE_SKB_ENGLISH_UPPER:
                 newInputMode = MODE_SKB_RUSSIAN_UPPER;
                 break;
             case MODE_SKB_RUSSIAN_UPPER:
-                newInputMode = MODE_SKB_UKRAINIAN_LOWER;
-                if (Country.getCountry() == Country.UKRAINE) break;
-            case MODE_SKB_UKRAINIAN_LOWER:
-                newInputMode = MODE_SKB_UKRAINIAN_UPPER;
-                if (Country.getCountry() == Country.UKRAINE) break;
+                if (Country.getCountry() == Country.UKRAINE)
+                    newInputMode = MODE_SKB_UKRAINIAN_UPPER;
+                else newInputMode = MODE_SKB_ENGLISH_UPPER;
+                break;
             case MODE_SKB_UKRAINIAN_UPPER:
-                newInputMode = MODE_SKB_ENGLISH_LOWER;
+                newInputMode = MODE_SKB_ENGLISH_UPPER;
                 break;
             default:
                 newInputMode = MODE_SKB_ENGLISH_UPPER;
@@ -565,7 +569,7 @@ public class InputModeSwitcher {
             }
 
         }
-        if(MODE_UNSET == oldMode) return MODE_SKB_ENGLISH_UPPER;
+        if (MODE_UNSET == oldMode) return MODE_SKB_ENGLISH_UPPER;
         return oldMode;
     }
 
@@ -648,8 +652,8 @@ public class InputModeSwitcher {
     }
 
     public boolean isUpperCaseWithSkb() {
-        return MODE_SKB_ENGLISH_UPPER == mInputMode||
-                MODE_SKB_RUSSIAN_UPPER == mInputMode||
+        return MODE_SKB_ENGLISH_UPPER == mInputMode ||
+                MODE_SKB_RUSSIAN_UPPER == mInputMode ||
                 MODE_SKB_UKRAINIAN_UPPER == mInputMode;
     }
 
