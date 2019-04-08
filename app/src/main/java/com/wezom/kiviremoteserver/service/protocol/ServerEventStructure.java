@@ -1,5 +1,7 @@
 package com.wezom.kiviremoteserver.service.protocol;
 
+import android.os.Build;
+
 import com.google.gson.annotations.SerializedName;
 import com.wezom.kiviremoteserver.common.KiviProtocolStructure;
 import com.wezom.kiviremoteserver.interfaces.AspectAvailable;
@@ -40,5 +42,25 @@ public class ServerEventStructure {
     public ServerEventStructure(KiviProtocolStructure.ServerEventType event, int volume) {
         this.event = event;
         this.volume = volume;
+    }
+
+    @Override
+    public String toString() {
+
+        StringBuilder sb = new StringBuilder();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            appInfo.stream().forEach( app ->  sb.append(app.toString()));
+        }else {
+            sb.append("apps size= " + appInfo.size() );
+        }
+        return "ServerEventStructure{" +
+                "event=" + event +
+                ", appInfo=" + sb.toString() +
+                ", volume=" + volume +
+                ", aspectMessage=" + aspectMessage +
+                ", availableAspectValues=" + availableAspectValues +
+                ", initialMessage=" + initialMessage +
+                " apps size = " + appInfo.size() +
+                '}';
     }
 }

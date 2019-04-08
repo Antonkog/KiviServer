@@ -3,8 +3,10 @@ package com.wezom.kiviremoteserver.receiver;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Handler;
 
 import com.wezom.kiviremoteserver.bus.SendAppsListEvent;
+import com.wezom.kiviremoteserver.common.Constants;
 import com.wezom.kiviremoteserver.common.DeviceUtils;
 import com.wezom.kiviremoteserver.common.RxBus;
 
@@ -19,12 +21,17 @@ import timber.log.Timber;
  */
 
 public class AppsChangeReceiver extends BroadcastReceiver {
-   private Disposable requestAppsDisposable;
+    private Disposable requestAppsDisposable;
+
     @Override
     public void onReceive(Context context, Intent intent) {
-        if(intent.getExtras()!=null && intent.getExtras().containsKey(Intent.EXTRA_REPLACING)){
+        if (intent.getExtras() != null && intent.getExtras().containsKey(Intent.EXTRA_REPLACING)) {
             return; // app's replaced, means that added will follow , so can ignore.
         }
+        new Handler().postDelayed(() -> sendApps(context), Constants.APPS_SENDING_DELAY);
+    }
+
+    private void sendApps(Context context) {
 
         if (requestAppsDisposable != null && !requestAppsDisposable.isDisposed()) {
             requestAppsDisposable.dispose();
@@ -37,6 +44,5 @@ public class AppsChangeReceiver extends BroadcastReceiver {
                 .subscribe(
                         apps -> RxBus.INSTANCE.publish(new SendAppsListEvent(apps)),
                         e -> Timber.e(e, e.getMessage()));
-
     }
 }

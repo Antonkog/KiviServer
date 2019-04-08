@@ -37,4 +37,12 @@ public class ServerApplicationInfo {
         this.applicationIcon = applicationIcon;
         return this;
     }
+
+    @Override
+    public String toString() {
+        return "ServerApplicationInfo{" +
+                "applicationName='" + applicationName + '\'' +
+                ", applicationPackage='" + applicationPackage + '\'' +
+                '}';
+    }
 }

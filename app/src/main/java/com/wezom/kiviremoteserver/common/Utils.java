@@ -7,11 +7,17 @@ import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
 import android.os.Build;
+import android.os.Environment;
 import android.support.graphics.drawable.VectorDrawableCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Calendar;
 
 import timber.log.Timber;
 
@@ -52,5 +58,33 @@ public class Utils {
         }
 
         return isMuted;
+    }
+
+
+
+    public static File getLogFile() {
+        return new File(Environment.getExternalStorageDirectory() + File.separator + Constants.LOG_FILE_PREFIX + Build.MODEL + Constants.LOG_FILE_EXTENSION);
+    }
+
+
+    public static void appendLog(String text) {
+        System.out.println(text);
+        Timber.i(text);
+        File logFile = getLogFile();
+        try {
+            if (!logFile.exists()) {
+                logFile.createNewFile();
+            }
+
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTimeInMillis(System.currentTimeMillis());
+
+            BufferedWriter buf = new BufferedWriter(new FileWriter(logFile, true));
+            buf.append(text + " " + calendar.getTime().toString()) ;
+            buf.newLine();
+            buf.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

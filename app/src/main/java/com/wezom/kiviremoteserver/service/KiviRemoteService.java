@@ -56,6 +56,7 @@ import com.wezom.kiviremoteserver.mvp.view.ServiceMvpView;
 import com.wezom.kiviremoteserver.net.nsd.NsdUtil;
 import com.wezom.kiviremoteserver.net.server.KiviServer;
 import com.wezom.kiviremoteserver.net.server.model.ServerApplicationInfo;
+import com.wezom.kiviremoteserver.receiver.AppsChangeReceiver;
 import com.wezom.kiviremoteserver.receiver.ScreenOnReceiver;
 import com.wezom.kiviremoteserver.service.inputs.InputSourceHelper;
 import com.wezom.kiviremoteserver.service.protocol.ServerEventStructure;
@@ -100,6 +101,7 @@ public class KiviRemoteService extends Service implements ServiceMvpView {
 
     private Handler handler = new Handler();
     private BroadcastReceiver screenOnReceiver = new ScreenOnReceiver();
+    private BroadcastReceiver appsChangeReveiver = new AppsChangeReceiver();
 
     private String messIp = "";
     private final ServiceBinder binder;
@@ -154,7 +156,15 @@ public class KiviRemoteService extends Service implements ServiceMvpView {
         audioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
 
         receiveScreenOn();
+        receiveAppsChange();
         initObservers();
+    }
+
+    private void receiveAppsChange() {
+        IntentFilter appsFilter = new IntentFilter(Intent.ACTION_PACKAGE_ADDED);
+        appsFilter.addAction(Intent.ACTION_PACKAGE_REMOVED);
+        appsFilter.addDataScheme("package");
+        registerReceiver(appsChangeReveiver, appsFilter);
     }
 
     private void receiveScreenOn() {
@@ -237,46 +247,49 @@ public class KiviRemoteService extends Service implements ServiceMvpView {
                 event -> server.stopReceiving(), Timber::e
         ));
 
-        disposables.add(bus.listen(SendAppsListEvent.class).subscribe(
-                event -> {
-                    if (appList == null || appList.isEmpty()) {
-                        appList = new ArrayList<>();
-
-                        for (ApplicationInfo appInfo : event.getAppInfoList()) {
-                            Drawable icon = null;
-                            try {
-                                icon = getPackageManager().getApplicationIcon(appInfo.packageName);
-                            } catch (PackageManager.NameNotFoundException e) {
-                                Timber.e(e, e.getMessage());
-                            }
-
-                            byte[] iconBytes = new byte[]{};
-
-                            if (icon != null) {
-                                Bitmap bitmap = DeviceUtils.drawableToBitmap(icon);
-                                ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                                bitmap.compress(Bitmap.CompressFormat.PNG, 60, stream);
-                                iconBytes = stream.toByteArray();
-                            }
-
-                            appList.add(new ServerApplicationInfo()
-                                    .setApplicationName(DeviceUtils.getApplicationName(getPackageManager(), appInfo))
-                                    .setApplicationPackage(appInfo.packageName)
-                                    .setApplicationIcon(iconBytes)
-                            );
-                        }
-                    }
-
-                    sendBySocket(new ServerEventStructure(appList));
-                }, Timber::e
-        ));
-
         disposables.add(bus.listen(SendVolumeEvent.class).subscribe(event ->
                         server.postMessage(new ServerEventStructure(
                                 KiviProtocolStructure.ServerEventType.VOLUME, event.getVolumeLevel())),
                 Timber::e));
 
         disposables.add(bus.listen(PingEvent.class).subscribe(event -> server.sendPong(), Timber::e));
+
+        disposables.add(bus.listen(SendAppsListEvent.class).subscribe(
+        event -> {
+            sendBySocket(new ServerEventStructure(addCollectedApps(event)));
+        }, Timber::e
+        ));
+
+    }
+
+    private List<ServerApplicationInfo> addCollectedApps(SendAppsListEvent event) {
+        if (appList == null) appList = new ArrayList<>();
+        appList.clear();
+        for (ApplicationInfo appInfo : event.getAppInfoList()) {
+            Drawable icon = null;
+            try {
+                icon = getPackageManager().getApplicationIcon(appInfo.packageName);
+            } catch (PackageManager.NameNotFoundException e) {
+                Timber.e(e, e.getMessage());
+            }
+
+            byte[] iconBytes = new byte[]{};
+
+            if (icon != null) {
+                Bitmap bitmap = DeviceUtils.drawableToBitmap(icon);
+                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.PNG, 60, stream);
+                iconBytes = stream.toByteArray();
+            }
+
+            appList.add(new ServerApplicationInfo()
+                    .setApplicationName(DeviceUtils.getApplicationName(getPackageManager(), appInfo))
+                    .setApplicationPackage(appInfo.packageName)
+                    .setApplicationIcon(iconBytes)
+            );
+
+        }
+        return appList;
     }
 
 
@@ -312,7 +325,7 @@ public class KiviRemoteService extends Service implements ServiceMvpView {
                                 pictureSettings.setSaturation(pair.getValue());
                                 break;
                             case BACKLIGHT:
-                                pictureSettings.setBacklight(pair.getValue(),getBaseContext());
+                                pictureSettings.setBacklight(pair.getValue(), getBaseContext());
                                 break;
                             case GREEN:
                                 pictureSettings.setGreen(pair.getValue());
@@ -370,6 +383,7 @@ public class KiviRemoteService extends Service implements ServiceMvpView {
         handler.removeCallbacksAndMessages(null);
         server.disposeResources();
         unregisterReceiver(screenOnReceiver);
+        unregisterReceiver(appsChangeReveiver);
         dispose();
         Log.d("Log_ STOP ", "serverService stopped!!!");
         super.onDestroy();

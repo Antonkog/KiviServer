@@ -13,10 +13,15 @@ public class Constants {
     public static final String LAST_TREBLE = "treble_level";
     public static final String LAST_BASS = "bass_level";
 
+
+    public final static String LOG_FILE_PREFIX = "KiviLogs";
+    public final static String LOG_FILE_EXTENSION = ".txt";
+
     public static final int NO_VALUE = -1;
     public static final int SERV_REALTEK = 1;
     public static final int SERV_MSTAR = 0;
 
+    public static final int APPS_SENDING_DELAY = 300; // for some reason PM collecting old app's if asking immediately after package removed
     public static final int SCROLL_VELOCITY_MS = 300;
     public static final int FIFTY = 50;
     public static final int REALTEK_SOUND_FIX = 50;  // that is for sound values on realtek
