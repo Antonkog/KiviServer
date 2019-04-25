@@ -8,7 +8,7 @@ buildscript {
             'targetSdk'     : 27,
             'versionMajor'             : 1,
             'versionMinor'             : 2,
-            'versionPatch'             : 31,
+            'versionPatch'             : 32,
             //versioning see  https://medium.com/@maxirosson/versioning-android-apps-d6ec171cfd82
             'supportLibrary': '27.1.1',
             'dagger'        : '2.0.1',

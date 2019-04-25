@@ -2,11 +2,12 @@ package com.wezom.kiviremoteserver.service.communication;
 
 import android.app.IntentService;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
 import com.google.gson.Gson;
-import com.wezom.kiviremoteserver.service.AspectLayoutService;
+import com.wezom.kiviremoteserver.common.Utils;
 import com.wezom.kiviremoteserver.service.AspectLayoutService;
 import com.wezom.kiviremoteserver.service.inputs.InputSourceHelper;
 
@@ -72,7 +73,12 @@ public class DelegatePlatformsService extends IntentService {
     private void handleBtn(int keyCode) {
         switch (keyCode) {
             case KEY_FAST_LAUNCH_MENU:
-                startService(new Intent(getApplicationContext(), AspectLayoutService.class));
+                Context ctx = getApplicationContext();
+                if (Utils.isServiceRunning(AspectLayoutService.class, ctx)){
+                    ctx.stopService(new Intent(ctx, AspectLayoutService.class));
+                }else {
+                    startService(new Intent(ctx, AspectLayoutService.class));
+                }
                 break;
             case KEY_TV:
                 Intent tvIntent = null;

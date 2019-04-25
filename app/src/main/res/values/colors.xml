@@ -3,8 +3,18 @@
     <color name="colorPrimary">#2b7cff</color>
     <!--<color name="green">#217311</color>-->
     <color name="colorPrimaryDark">#0f5ad3</color>
-    <color name="colorAccent">#487</color>
-    <color name="accent">#487</color>
+
+    <color name="colorPrimaryLXX">#802B7CFF</color>
+    <color name="colorPrimaryDarkAlphaLXV">#990F5AD3</color>
+    <color name="aspectKeySelected">@color/colorPrimaryDarkAlphaLXV</color>
+    <color name="aspectKeyNormal">#80344449</color>
+    <color name="aspectBody">#66142429</color>
+    <color name="aspectHeader">#CC344449</color>
+    <color name="aspectDesctiption">@color/aspectKeyNormal</color>
+
+
+    <color name="colorAccent">@color/colorPrimary</color>
+    <color name="accent">@color/colorPrimary</color>
 
     <color name="colorBlack">#000000</color>
     <color name="colorWhite">#ffffff</color>

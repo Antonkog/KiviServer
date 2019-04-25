@@ -25,17 +25,26 @@
     <color name="composing_color_hl">#ffffffff</color>
     <color name="composing_color_idle">#ff777777</color>
 
-    <color name="colorPrimary">#4CAF50</color>
-    <color name="colorPrimaryDark">#388E3C</color>
+    <color name="colorPrimary">#2b7cff</color>
+    <color name="colorPrimaryDark">#0f5ad3</color>
+
+    <color name="colorPrimaryLXX">#802B7CFF</color>
+    <color name="colorPrimaryDarkAlphaLXV">#990F5AD3</color>
+    <color name="aspectKeySelected">@color/colorPrimaryDarkAlphaLXV</color>
+    <color name="aspectKeyNormal">#80344449</color>
+    <color name="aspectBody">#66142429</color>
+    <color name="aspectHeader">#CC344449</color>
+    <color name="aspectDesctiption">@color/aspectKeyNormal</color>
+
     <color name="colorAccent">#fd6666</color>
-    <color name="kiviBlue">#0f59d4</color>
+    <color name="kiviBlue">@color/colorPrimary</color>
 
     <color name="colorBlack">#000000</color>
     <color name="colorWhite">#ffffff</color>
     <color name="trans">#00FFFFFF</color>
 
 
-    <color name="key_background_pressed">#3EAC4F</color>
+    <color name="key_background_pressed">@color/colorPrimary</color>
     <color name="key_background_normal">#4C4C4C</color>
     <color name="key_background_bottom_row">#404040</color>
     <color name="keyboard_background">#333333</color>
