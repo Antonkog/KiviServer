@@ -1,10 +1,17 @@
 package com.wezom.kiviremoteserver.environment;
 
 import android.content.Context;
+import android.os.IBinder;
+import android.os.Parcel;
+import android.os.RemoteException;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 import com.wezom.kiviremoteserver.common.Constants;
 import com.wezom.kiviremoteserver.service.aspect.HDRValues;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 import wezom.kiviremoteserver.environment.bridge.BridgePicture;
 import wezom.kiviremoteserver.environment.bridge.driver_set.SoundValues;
@@ -15,8 +22,8 @@ public class EnvironmentPictureSettings {
     private int greenColor;
     private int blueColor;
     private int pictureMode;
-    private int brightness;
-    private int saturation;
+    private int brightness = 50;
+    private int saturation = 50;
     private int backlight;
     private int temperature;
     private int HDR;
@@ -24,7 +31,7 @@ public class EnvironmentPictureSettings {
     private int BLue;
     private int red;
     private int sharpness;
-    private int contrast;
+    private int contrast = 50;
     private int videoArcType;
 
     //
@@ -127,6 +134,76 @@ public class EnvironmentPictureSettings {
         //                TvPictureManager.PICTURE_SHARPNESS, progress)
     }
 
+    private void updateValues() {
+        if(true)
+            return;
+        Log.e("transform", "test 3");
+        float difContr = ((float) (contrast * 0.6 + 20) - 50f) / 100f;
+        float lBrightness = ((float) (brightness * 0.6 + 20) - 50f) / 100f;
+        float lSaturation = ((float) saturation) / 100f;
+        float lContrast = 1 + difContr / (3 - 2 * lSaturation);
+        float brightnessShift = -0.5f * (difContr);
+
+        lBrightness += brightnessShift;
+        Log.e("transform", "br " + lBrightness +
+                " : sat " + lSaturation + " : contr " + lContrast);
+        final float invSat = 1 - lSaturation;
+        final float R = 0.213f * invSat;
+        final float G = 0.715f * invSat;
+        final float B = 0.072f * invSat;
+
+        float[] matrixVal = new float[]{
+                (R + lSaturation) * lContrast, R * lContrast, R * lContrast, 0,
+                G * lContrast, (G + lSaturation) * lContrast, G * lContrast, 0,
+                B * lContrast, B * lContrast, (B + lSaturation) * lContrast, 0,
+                lBrightness, lBrightness, lBrightness, 1};
+        setColorTransform(matrixVal);
+    }
+
+    private void setColorTransform(float[] m) {
+        try {
+            Class localClass = Class.forName("android.os.ServiceManager");
+            IBinder flinger = null;//android.os.ServiceManager.getService("SurfaceFlinger");
+            Method getService = localClass.getMethod("getService", new Class[]{String.class});
+            if (getService != null) {
+                Object result = getService.invoke(localClass, new Object[]{"SurfaceFlinger"});
+                if (result != null) {
+                    flinger = (IBinder) result;
+                }
+            }
+            if (flinger != null) {
+                final Parcel data = Parcel.obtain();
+                data.writeInterfaceToken("android.ui.ISurfaceComposer");
+                if (m != null) {
+                    data.writeInt(1);
+                    for (int i = 0; i < 16; i++) {
+                        data.writeFloat(m[i]);
+                    }
+                } else {
+                    data.writeInt(0);
+                }
+                flinger.transact(1015, data, null, 0);
+                data.recycle();
+            }
+        } catch (RemoteException ex) {
+            Log.e("RemoteException", "Failed to set color transform", ex);
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        }
+    }
+
+//    float saturation = 50;
+//    float contrast = 50;
+//    float brightness = 50;
+
+
+
     public void setSharpness(int sharpness) {
         this.sharpness = sharpness;
         bridgePicture.setSharpness(sharpness);
@@ -135,16 +212,19 @@ public class EnvironmentPictureSettings {
     public void setSaturation(int saturation) {
         this.saturation = saturation;
         bridgePicture.setSaturation(saturation);
+        updateValues();
     }
 
     public void setContrast(int contrast) {
         this.contrast = contrast;
         bridgePicture.setContrast(contrast);
+        updateValues();
     }
 
     public void setBrightness(int brightness) {
         this.brightness = brightness;
         bridgePicture.setBrightness(brightness);
+        updateValues();
     }
 
     public void setBacklight(int backlight, Context context) {
