@@ -1,6 +1,7 @@
 package com.wezom.kiviremoteserver.service.inputs;
 
 import android.content.Context;
+import android.net.Uri;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
@@ -10,6 +11,7 @@ import com.wezom.kiviremoteserver.R;
 import com.wezom.kiviremoteserver.common.Constants;
 import com.wezom.kiviremoteserver.environment.EnvironmentInputsHelper;
 import com.wezom.kiviremoteserver.interfaces.DriverValue;
+import com.wezom.kiviremoteserver.net.server.model.Input;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -176,6 +178,10 @@ public class InputSourceHelper {
             return id;
         }
 
+        public String getStringId() {
+            return id+"";
+        }
+
         public int getNameResource() {
             return nameResoucre;
         }
@@ -188,15 +194,40 @@ public class InputSourceHelper {
     public static List<DriverValue> getAsDriverList(Context context) {
         List<InputSourceHelper.INPUT_PORT> inputs = getPortsList(context);
         LinkedList<DriverValue> linkedList = new LinkedList<>();
+
+        int currentPort =  new EnvironmentInputsHelper().getCurrentTvInputSource();
+
         for (int i = 0; i < inputs.size(); i++) {
             InputSourceHelper.INPUT_PORT temp = inputs.get(i);
 
             linkedList.add(new DriverValue(INPUT_PORT.class.getSimpleName(),
                     context.getResources().getString(temp.getNameResource()),
-                    temp.getId()+""
+                    temp.getStringId()
                     , temp.getId(),
-                    false));
+                    currentPort == temp.getId()));
         }
         return linkedList;
     }
+
+
+    public static List<Input> getAsInputs(Context context) {
+        List<InputSourceHelper.INPUT_PORT> inputs = getPortsList(context);
+        LinkedList<Input> linkedList = new LinkedList<>();
+
+       int currentPort =  new EnvironmentInputsHelper().getCurrentTvInputSource();
+
+        for (int i = 0; i < inputs.size(); i++) {
+            InputSourceHelper.INPUT_PORT temp = inputs.get(i);
+            String uri = Uri.parse("android.resource://" + temp.getDrawable()).toString();
+
+            linkedList.add(new Input()
+                    .addPortName(INPUT_PORT.class.getSimpleName())
+                    .addUri(uri)
+                    .addActive(currentPort == temp.getId())
+            .addPortNum(temp.getId()));
+
+        }
+        return linkedList;
+    }
+
 }

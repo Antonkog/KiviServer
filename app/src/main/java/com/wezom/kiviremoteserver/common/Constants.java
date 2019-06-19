@@ -7,6 +7,16 @@ package com.wezom.kiviremoteserver.common;
 public class Constants {
     public static final boolean DEBUG = false;
 
+    public static final String LAUNCHER_PACKAGE = "com.kivi.launcher_v2";
+    public static final String LAUNCHER_SERVICE = "com.kivi.launcher_v2.services.StartContentService";
+    public static final String LAUNCHER_PREF_KEY = "pref_key_data";
+
+    public static final String PREFERENCE_CATEGORY = "AbsManager";
+    public static final String RECOMMENDATION_MANAGER = "recommendation";
+    public static final String FAVORITES_MANAGER = "favorites";
+    public static final String CHANNEL_MANAGER = "kiviTV";
+
+
     public static final String APPLICATION_UID = "app_uid";
     public static final String LAST_VOLUME_REALTEK = "last_volume_realtek";
     public static final String LAST_BACKLIGHT = "last_backlight";

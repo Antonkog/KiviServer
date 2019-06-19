@@ -9,16 +9,20 @@ import android.os.Message;
 import android.util.Pair;
 
 import com.google.gson.Gson;
-import com.wezom.kiviremoteserver.bus.SocketAcceptedEvent;
 import com.wezom.kiviremoteserver.bus.SendToSettingsEvent;
+import com.wezom.kiviremoteserver.bus.SocketAcceptedEvent;
 import com.wezom.kiviremoteserver.common.ImeUtils;
 import com.wezom.kiviremoteserver.common.KiviProtocolStructure;
 import com.wezom.kiviremoteserver.common.RxBus;
+import com.wezom.kiviremoteserver.common.Utils;
 import com.wezom.kiviremoteserver.interfaces.AspectAvailable;
 import com.wezom.kiviremoteserver.interfaces.AspectMessage;
 import com.wezom.kiviremoteserver.interfaces.InitialMessage;
 import com.wezom.kiviremoteserver.interfaces.RemoteServer;
 import com.wezom.kiviremoteserver.mvp.view.ServiceMvpView;
+import com.wezom.kiviremoteserver.net.server.model.Channel;
+import com.wezom.kiviremoteserver.net.server.model.Input;
+import com.wezom.kiviremoteserver.net.server.model.Recommendation;
 import com.wezom.kiviremoteserver.net.server.model.WriteThreadedModel;
 import com.wezom.kiviremoteserver.net.server.threads.ReceivingThread;
 import com.wezom.kiviremoteserver.net.server.threads.SendingThread;
@@ -27,6 +31,7 @@ import com.wezom.kiviremoteserver.service.protocol.ServerEventStructure;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -198,6 +203,34 @@ public class KiviServer implements RemoteServer {
     @Override
     public void sendAspect(AspectMessage aspectMessage, AspectAvailable available) {
         postMessage(new ServerEventStructure(aspectMessage, available,  null, KiviProtocolStructure.ServerEventType.ASPECT));
+    }
+
+    @Override
+    public void sendInputs(List<Input> inputs) {
+        if(!inputs.isEmpty())
+        Utils.appendLog(" sending from server " + inputs.get(0).getName());
+        postMessage(new ServerEventStructure(KiviProtocolStructure.ServerEventType.INPUTS).setAvailableInputs(inputs));
+    }
+
+    @Override
+    public void sendRecommendations(List<Recommendation> recommendations) {
+        if(!recommendations.isEmpty())
+            Utils.appendLog(" sending from server " + recommendations.get(0).getName());
+        postMessage(new ServerEventStructure(KiviProtocolStructure.ServerEventType.RECOMMENDATIONS).setAvailableRecommendations(recommendations));
+    }
+
+    @Override
+    public void sendFavourites(List<Recommendation> favourites) {
+        if(!favourites.isEmpty())
+            Utils.appendLog(" sending from server " + favourites.get(0).getName());
+        postMessage(new ServerEventStructure(KiviProtocolStructure.ServerEventType.FAVORITES).setAvailableFavourites(favourites));
+    }
+
+    @Override
+    public void sendChannels(List<Channel> channels) {
+        if(!channels.isEmpty())
+            Utils.appendLog(" sending from server " + channels.get(0).getName());
+        postMessage(new ServerEventStructure(KiviProtocolStructure.ServerEventType.CHANNELS).setAvailableChannels(channels));
     }
 
     @Override

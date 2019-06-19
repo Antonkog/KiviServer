@@ -4,11 +4,11 @@ buildscript {
     ext.versions = [
             'compileSdk'    : 27,
             'buildTools'    : '27.0.3',
-            'minSdk'        : 19,
+            'minSdk'        : 20,
             'targetSdk'     : 27,
             'versionMajor'             : 1,
             'versionMinor'             : 2,
-            'versionPatch'             : 32,
+            'versionPatch'             : 33,
             //versioning see  https://medium.com/@maxirosson/versioning-android-apps-d6ec171cfd82
             'supportLibrary': '27.1.1',
             'dagger'        : '2.0.1',

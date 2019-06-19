@@ -22,7 +22,15 @@ public class KiviProtocolStructure {
         REQUEST_APPS,
         REQUEST_ASPECT,
         REQUEST_INITIAL,
+        REQUEST_CHANNELS,
+        REQUEST_INPUTS,
+        REQUEST_RECOMMENDATIONS,
+        REQUEST_FAVORITES,
         LAUNCH_APP,
+        LAUNCH_CHANNEL,
+        CHANGE_INPUT,
+        LAUNCH_RECOMMENDATION,
+        LAUNCH_FAVORITE,
         REQUEST_VOLUME,
         PING,
         SWITCH_OFF,
@@ -47,6 +55,12 @@ public class KiviProtocolStructure {
         CONN_ESTABLISHED,
         COORDINATES,
         ASPECT,
-        INITIAL
+        INITIAL,
+        CHANNELS,
+        INPUTS,
+        FAVORITES,
+        RECOMMENDATIONS,
+        LAST_REQUEST_ERROR,
+        LAST_REQUEST_OK
     }
 }

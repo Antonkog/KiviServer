@@ -13,6 +13,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
+import android.net.Uri;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
@@ -33,7 +34,11 @@ import com.wezom.kiviremoteserver.bus.NewMessageEvent;
 import com.wezom.kiviremoteserver.bus.PingEvent;
 import com.wezom.kiviremoteserver.bus.SendAppsListEvent;
 import com.wezom.kiviremoteserver.bus.SendAspectEvent;
+import com.wezom.kiviremoteserver.bus.SendChannelsEvent;
+import com.wezom.kiviremoteserver.bus.SendFavouritesEvent;
 import com.wezom.kiviremoteserver.bus.SendInitialEvent;
+import com.wezom.kiviremoteserver.bus.SendInputsEvent;
+import com.wezom.kiviremoteserver.bus.SendRecommendationsEvent;
 import com.wezom.kiviremoteserver.bus.SendToSettingsEvent;
 import com.wezom.kiviremoteserver.bus.SendVolumeEvent;
 import com.wezom.kiviremoteserver.bus.ShowKeyboardEvent;
@@ -247,6 +252,15 @@ public class KiviRemoteService extends Service implements ServiceMvpView {
                 event -> server.stopReceiving(), Timber::e
         ));
 
+        disposables.add(bus.listen(SendInputsEvent.class).subscribe(event -> server.sendInputs(InputSourceHelper.getAsInputs(getApplicationContext())), Timber::e));
+
+        disposables.add(bus.listen(SendRecommendationsEvent.class).subscribe(event -> server.sendRecommendations(DeviceUtils.getRecommendations(getApplicationContext())), Timber::e));
+
+        disposables.add(bus.listen(SendChannelsEvent.class).subscribe(event -> server.sendChannels(DeviceUtils.getChannels(getApplicationContext())), Timber::e));
+
+        disposables.add(bus.listen(SendFavouritesEvent.class).subscribe(event -> server.sendFavourites(DeviceUtils.getFavourites(getApplicationContext())), Timber::e));
+
+
         disposables.add(bus.listen(SendVolumeEvent.class).subscribe(event ->
                         server.postMessage(new ServerEventStructure(
                                 KiviProtocolStructure.ServerEventType.VOLUME, event.getVolumeLevel())),
@@ -255,9 +269,7 @@ public class KiviRemoteService extends Service implements ServiceMvpView {
         disposables.add(bus.listen(PingEvent.class).subscribe(event -> server.sendPong(), Timber::e));
 
         disposables.add(bus.listen(SendAppsListEvent.class).subscribe(
-        event -> {
-            sendBySocket(new ServerEventStructure(addCollectedApps(event)));
-        }, Timber::e
+                event -> sendBySocket(new ServerEventStructure(addCollectedApps(event))), Timber::e
         ));
 
     }
@@ -268,7 +280,7 @@ public class KiviRemoteService extends Service implements ServiceMvpView {
         for (ApplicationInfo appInfo : event.getAppInfoList()) {
             Drawable icon = null;
             try {
-                icon = getPackageManager().getApplicationIcon(appInfo.packageName);
+                icon = getPackageManager().getApplicationBanner(appInfo.packageName);
             } catch (PackageManager.NameNotFoundException e) {
                 Timber.e(e, e.getMessage());
             }
@@ -282,11 +294,15 @@ public class KiviRemoteService extends Service implements ServiceMvpView {
                 iconBytes = stream.toByteArray();
             }
 
+            String uri = Uri.parse("android.resource://" + appInfo.packageName + "/" + appInfo.banner).toString();
             appList.add(new ServerApplicationInfo()
                     .setApplicationName(DeviceUtils.getApplicationName(getPackageManager(), appInfo))
                     .setApplicationPackage(appInfo.packageName)
                     .setApplicationIcon(iconBytes)
+                    .setUri(uri)
             );
+
+            Utils.appendLog("uri of app info " + uri + " app " + appInfo.packageName);
 
         }
         return appList;
