@@ -27,7 +27,7 @@ android {
         applicationId "com.wezom.kiviremoteserver"
         minSdkVersion versions.minSdk
         targetSdkVersion versions.targetSdk
-        versionCode 190010234
+        versionCode 190010235
         versionName "test"
         multiDexEnabled true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"

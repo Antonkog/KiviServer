@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.util.Log;
 
 import com.google.gson.Gson;
+import com.wezom.kiviremoteserver.App;
 import com.wezom.kiviremoteserver.common.Utils;
 import com.wezom.kiviremoteserver.service.AspectLayoutService;
 import com.wezom.kiviremoteserver.service.inputs.InputSourceHelper;
@@ -57,7 +58,7 @@ public class DelegatePlatformsService extends IntentService {
             Log.e("ACTION_INPUTS_LIST", "ACTION_INPUTS_LIST");
             final String action = intent.getAction();
             if (ACTION_INPUTS_LIST.equals(action)) {
-                sendInputsList();
+                sendInputsList(getBaseContext());
             } else if (ACTION_CHANGE_INPUT.equals(action)) {
                 final Integer param1 = intent.getIntExtra(EXTRA_CHANGE_INPUT_ID, 0);
                 changeInput(param1);
@@ -74,9 +75,9 @@ public class DelegatePlatformsService extends IntentService {
         switch (keyCode) {
             case KEY_FAST_LAUNCH_MENU:
                 Context ctx = getApplicationContext();
-                if (Utils.isServiceRunning(AspectLayoutService.class, ctx)){
+                if (Utils.isServiceRunning(AspectLayoutService.class, ctx)) {
                     ctx.stopService(new Intent(ctx, AspectLayoutService.class));
-                }else {
+                } else {
                     startService(new Intent(ctx, AspectLayoutService.class));
                 }
                 break;
@@ -118,21 +119,35 @@ public class DelegatePlatformsService extends IntentService {
     }
 
 
-    private void sendInputsList() {
+    public static void sendInputsList(Context context) {
         Intent i = new Intent();
 
         List<InputItemJson> result = new ArrayList<>();
-        for (InputSourceHelper.INPUT_PORT port : new InputSourceHelper().getPortsList(getBaseContext())) {
-            result.add(new InputItemJson(port, getBaseContext()));
+        for (InputSourceHelper.INPUT_PORT port : new InputSourceHelper().getPortsList(context)) {
+            result.add(new InputItemJson(port, context));
         }
         i.setComponent(new ComponentName("com.kivi.launcher_v2", "com.kivi.launcher_v2.services.CallbackIntentService"));
         i.putExtra("package", "com.kivi.launcher_v2");
         i.putExtra("service", "com.kivi.launcher_v2.sandbox.TestService");
         i.putExtra("requestCode", 112233);
-        i.putExtra("responseAction", "sendToken");
+        i.putExtra("responseAction", "inputs");
         i.putExtra("result", new Gson().toJson(new InputDataJson(result)));
-        i.setAction("requestToken");
-        getApplicationContext().startService(i);
+        i.setAction("inputs");
+        context.getApplicationContext().startService(i);
+    }
+
+    public static void updateHdmiInfo(Context context) {
+        Intent i = new Intent();
+
+        i.setComponent(new ComponentName("com.kivi.launcher_v2", "com.kivi.launcher_v2.services.CallbackIntentService"));
+        i.putExtra("input_id_" + InputSourceHelper.INPUT_PORT.INPUT_SOURCE_HDMI
+                , App.hdmiStatus1);
+        i.putExtra("input_id_" + InputSourceHelper.INPUT_PORT.INPUT_SOURCE_HDMI2,
+                App.hdmiStatus2);
+        i.putExtra("input_id_" + InputSourceHelper.INPUT_PORT.INPUT_SOURCE_HDMI3,
+                App.hdmiStatus3);
+        i.setAction("inputsStatus");
+        context.getApplicationContext().startService(i);
     }
 
 

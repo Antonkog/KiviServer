@@ -30,11 +30,11 @@
         <requestFocus />
 
         <ImageView
+            android:id="@+id/image"
             android:layout_width="80dp"
             android:layout_height="80dp"
             android:layout_centerHorizontal="true"
-            android:layout_gravity="center"
-            android:src="@drawable/ic_usb" />
+            android:layout_gravity="center" />
 
         <TextView
             android:id="@+id/text"
@@ -42,7 +42,6 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="-18dp"
-            android:text="USB"
             android:textColor="#FFF"
             android:textSize="15sp" />
     </LinearLayout>

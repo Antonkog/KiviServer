@@ -10,6 +10,7 @@ import android.content.SharedPreferences;
 import android.graphics.PixelFormat;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatDelegate;
 import android.util.Log;
@@ -17,14 +18,20 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.crashlytics.android.Crashlytics;
+import com.realtek.tv.Tv;
 import com.wezom.kiviremoteserver.di.components.ApplicationComponent;
 import com.wezom.kiviremoteserver.di.components.DaggerApplicationComponent;
 import com.wezom.kiviremoteserver.di.modules.ApplicationModule;
 import com.wezom.kiviremoteserver.receiver.ScreenOnReceiver;
+import com.wezom.kiviremoteserver.service.AspectLayoutService;
 import com.wezom.kiviremoteserver.service.CursorService;
 import com.wezom.kiviremoteserver.service.KiviRemoteService;
+import com.wezom.kiviremoteserver.service.communication.DelegatePlatformsService;
+import com.wezom.kiviremoteserver.service.inputs.InputSourceHelper;
 
 import java.lang.reflect.Method;
 import java.util.UUID;
@@ -41,15 +48,67 @@ import static com.wezom.kiviremoteserver.common.Constants.APPLICATION_UID;
 
 public class App extends Application {
     private static ApplicationComponent appComponent;
+    private static Context context;
     SharedPreferences prefs;
+    private static Tv rtkTV;
+    Handler hdmiTimer = new Handler();
+    Runnable runnable = new Runnable() {
+        @Override
+        public void run() {
+            checkHDMIStatus();
+            hdmiTimer.postDelayed(runnable, 5000);
+        }
+    };
+    public static volatile boolean hdmiStatus1;
+    public static volatile boolean hdmiStatus2;
+    public static volatile boolean hdmiStatus3;
+
+
+    public static void checkHDMIStatus() {
+        boolean old1 = hdmiStatus1;
+        boolean old2 = hdmiStatus2;
+        boolean old3 = hdmiStatus3;
+        hdmiStatus1 = App.getTv().GetHDMIConnectionState(2);
+        hdmiStatus2 = App.getTv().GetHDMIConnectionState(1);
+        hdmiStatus3 = App.getTv().GetHDMIConnectionState(0);
+        if (old1 != hdmiStatus1 || old2 != hdmiStatus2 ||
+                old3 != hdmiStatus3) {
+            int i = -1;
+            if (old1 != hdmiStatus1 && hdmiStatus1) {
+                i = 1;
+            } else if (old2 != hdmiStatus2 && hdmiStatus2) {
+                i = 2;
+            } else if (old3 != hdmiStatus3 && hdmiStatus3) {
+                i = 3;
+            }
+            hdmiStatusChanged(i);
+        }
+    }
+
+    private static void hdmiStatusChanged(int id) {
+        //  context.sendBroadcast();
+        AspectLayoutService.updateIfNeeded(hdmiStatus1, hdmiStatus2, hdmiStatus3);
+        DelegatePlatformsService.sendInputsList(context);
+        if (id > 0)
+            startDialog(TYPE_HDMI, id, context);
+    }
 
     public static ApplicationComponent getApplicationComponent() {
         return appComponent;
     }
 
+    private static Tv getTv() {
+        if (rtkTV == null) {
+            rtkTV = new Tv();
+        }
+        return rtkTV;
+    }
+
     @Override
     public void onCreate() {
         super.onCreate();
+        context = this.getBaseContext();
+
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
 
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
@@ -78,7 +137,7 @@ public class App extends Application {
                     String action = intent.getAction();
                     UsbDevice device = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
                     Log.e("inputManager", "usb " + action + "  : " + device);
-                    startDialog(device);
+                    startDialog(/*device*/TYPE_USB, 0, App.context);
                 }
             };
             IntentFilter filter = new IntentFilter();
@@ -88,10 +147,16 @@ public class App extends Application {
         }
 
         ScreenOnReceiver.setInitialBackL(getBaseContext());
+        getTv();
+        hdmiTimer.postDelayed(runnable, 5000);
+
     }
 
-    private void startDialog(UsbDevice device) {
-        WindowManager wmgr = (WindowManager) getApplicationContext()
+    private final static int TYPE_USB = 0;
+    private final static int TYPE_HDMI = 1;
+
+    private static void startDialog(int type, int id, Context context) {
+        WindowManager wmgr = (WindowManager) context
                 .getSystemService(Context.WINDOW_SERVICE);
         final WindowManager.LayoutParams param = new WindowManager.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
@@ -101,12 +166,37 @@ public class App extends Application {
                 PixelFormat.TRANSLUCENT);
         param.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
         param.windowAnimations = android.R.style.Animation_Toast;
-        View generalView = View.inflate(this, R.layout.layout_dialog, null);
+
+        View generalView = View.inflate(context, R.layout.layout_dialog, null);
+        if (type == TYPE_USB) {
+            ((ImageView) generalView.findViewById(R.id.image)).setImageResource(R.drawable.ic_usb);
+            ((TextView) generalView.findViewById(R.id.text)).setText("USB");
+        } else if (type == TYPE_HDMI) {
+            ((ImageView) generalView.findViewById(R.id.image)).setImageResource(R.drawable.ic_ser_hdmi);
+            ((TextView) generalView.findViewById(R.id.text)).setText("HDMI");
+        }
         generalView.findViewById(R.id.yes).setOnClickListener(v -> {
-            Intent intent = new Intent();
-            intent.setComponent(new ComponentName("com.rtk.mediabrowser", "com.rtk.mediabrowser.MediaBrowser"));
-            startActivity(intent);
-            wmgr.removeView(generalView);
+            if (type == TYPE_USB) {
+                Intent intent = new Intent();
+                intent.setComponent(new ComponentName("com.hikeen.mediabrowser",
+                        "com.hikeen.mediabrowser.activity.MediaBrowser"));
+                context.startActivity(intent);
+                wmgr.removeView(generalView);
+            } else if (type == TYPE_HDMI) {
+                int port = InputSourceHelper.INPUT_PORT.INPUT_SOURCE_HDMI.getId();
+                switch (id) {
+                    case 1:
+                        port = InputSourceHelper.INPUT_PORT.INPUT_SOURCE_HDMI.getId();
+                        break;
+                    case 2:
+                        port = InputSourceHelper.INPUT_PORT.INPUT_SOURCE_HDMI2.getId();
+                        break;
+                    case 3:
+                        port = InputSourceHelper.INPUT_PORT.INPUT_SOURCE_HDMI3.getId();
+                        break;
+                }
+                new InputSourceHelper().changeInput(port, context);
+            }
         });
 
         generalView.findViewById(R.id.no).setOnClickListener(v -> {

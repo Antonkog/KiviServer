@@ -40,6 +40,7 @@ import com.wezom.kiviremoteserver.ui.views.LRTextSwitcher;
 import com.wezom.kiviremoteserver.ui.views.NumberDialing;
 import com.wezom.kiviremoteserver.ui.views.ScreenProgress;
 
+import java.lang.ref.SoftReference;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -144,12 +145,13 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
     List<Integer> shutDownTimers = Arrays.asList(-1, 10, 20, 30, 60, 120);
     private boolean sleepFocused;
     // boolean isUHD = false;
+    private static int mainColor = Color.BLUE;
 
     //android.widget.LinearLayout{e7580bb VFE...C.. .F...... 444,0-554,98 #7f090128 app:id/root}
     @Override
     public void onCreate() {
         super.onCreate();
-
+        mainColor = getResources().getColor(R.color.colorPrimary);
         Log.e("AspectLayoutService", "started");
 
 //        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this).setSmallIcon(R.drawable.ic_launcher_background);
@@ -207,7 +209,6 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
         headerContainer = generalView.findViewById(R.id.header_container);
         bodyContainer = generalView.findViewById(R.id.body_container);
         description = generalView.findViewById(R.id.description);
-
         generalView.setVisibility(View.VISIBLE);
         generalView.clearAnimation();
 
@@ -932,11 +933,50 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
         );
     }
 
+    private static SoftReference<TextView> hdmi1;
+    private static SoftReference<TextView> hdmi2;
+    private static SoftReference<TextView> hdmi3;
+
+    public static void updateIfNeeded(boolean h1, boolean h2, boolean h3) {
+        if (hdmi1 != null) {
+            TextView v1 = hdmi1.get();
+            TextView v2 = hdmi2.get();
+            TextView v3 = hdmi3.get();
+            if (h1) {
+                v1.setTextColor(mainColor);
+            } else {
+                v1.setTextColor(Color.WHITE);
+            }
+            if (h2) {
+                v2.setTextColor(mainColor);
+            } else {
+                v2.setTextColor(Color.WHITE);
+            }
+            if (h3) {
+                v3.setTextColor(mainColor);
+            } else {
+                v3.setTextColor(Color.WHITE);
+            }
+        }
+    }
+
     private void iniInputs(ViewGroup bodyInputs) {
         List<InputSourceHelper.INPUT_PORT> inputs = new InputSourceHelper().getPortsList(this);
         for (InputSourceHelper.INPUT_PORT port : inputs) {
             LinearLayout view = (LinearLayout) layoutInflater.inflate(R.layout.inputs, bodyInputs, false);
             ((TextView) view.findViewById(R.id.label)).setText(port.getNameResource());
+            if (port.isConnected()) {
+                ((TextView) view.findViewById(R.id.label)).setTextColor(Color.GREEN);
+            }
+            if (port == InputSourceHelper.INPUT_PORT.INPUT_SOURCE_HDMI) {
+                hdmi1 = new SoftReference<>(view.findViewById(R.id.label));
+            }
+            if (port == InputSourceHelper.INPUT_PORT.INPUT_SOURCE_HDMI2) {
+                hdmi2 = new SoftReference<>(view.findViewById(R.id.label));
+            }
+            if (port == InputSourceHelper.INPUT_PORT.INPUT_SOURCE_HDMI3) {
+                hdmi3 = new SoftReference<>(view.findViewById(R.id.label));
+            }
             ((ImageView) view.findViewById(R.id.image)).setImageResource(port.getDrawable());
             view.setOnClickListener(v -> {
                 new InputSourceHelper().changeInput(port.getId(), this);
