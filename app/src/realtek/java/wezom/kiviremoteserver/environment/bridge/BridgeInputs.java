@@ -26,22 +26,25 @@ import static com.wezom.kiviremoteserver.service.inputs.InputSourceHelper.INPUT_
 
 public class BridgeInputs {
     public void getPortsList(ArrayList<InputSourceHelper.INPUT_PORT> result, Context context) {
-        String str = App.getProperty("ro.ota.modelname");
-        boolean is2831 = "2831".equals(str.trim());
-        boolean is2851 = "2851".equals(str.trim());
+        String modelNew = App.getProperty("ro.ota.modelname").trim();
+        boolean is2831 = "2831".equals(modelNew);
+        boolean is2851 = "2851".equals(modelNew) ||
+                "2842P533".equals(modelNew) ||
+                "2842P735".equals(modelNew);
         //  Toast.makeText(context, "is 2851 " + is2851, Toast.LENGTH_LONG).show();
         if (is2851) {
             result.add(InputSourceHelper.INPUT_PORT.INPUT_SOURCE_ATV);
             result.add(InputSourceHelper.INPUT_PORT.INPUT_SOURCE_CVBS);
             result.add(InputSourceHelper.INPUT_PORT.INPUT_SOURCE_HDMI);
             result.add(InputSourceHelper.INPUT_PORT.INPUT_SOURCE_HDMI2);
-            result.add(InputSourceHelper.INPUT_PORT.INPUT_SOURCE_HDMI3);
+            if (!"2842P533".equals(modelNew))
+                result.add(InputSourceHelper.INPUT_PORT.INPUT_SOURCE_HDMI3);
 
             long time = System.currentTimeMillis();
             App.checkHDMIStatus();
             Log.e("time_start", "hdmi stat = " + (System.currentTimeMillis() - time));
 
-            InputSourceHelper.INPUT_PORT.INPUT_SOURCE_HDMI.setConnected (App.hdmiStatus1);
+            InputSourceHelper.INPUT_PORT.INPUT_SOURCE_HDMI.setConnected(App.hdmiStatus1);
             InputSourceHelper.INPUT_PORT.INPUT_SOURCE_HDMI2.setConnected(App.hdmiStatus2);
             InputSourceHelper.INPUT_PORT.INPUT_SOURCE_HDMI3.setConnected(App.hdmiStatus3);
             result.add(InputSourceHelper.INPUT_PORT.INPUT_SOURCE_DTV);

@@ -27,10 +27,7 @@ public class ScreenProgress extends FrameLayout {
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK || keyCode == KeyEvent.KEYCODE_HOME || keyCode == KeyEvent.KEYCODE_TV_ZOOM_MODE) {
-            getContext().stopService(new Intent(getContext(), AspectLayoutService.class));
-            return true;
-        }
+
         AspectLayoutService.lastUpdate = System.currentTimeMillis();
 
         switch (keyCode) {
@@ -89,6 +86,10 @@ public class ScreenProgress extends FrameLayout {
 
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK || keyCode == KeyEvent.KEYCODE_HOME || keyCode == KeyEvent.KEYCODE_TV_ZOOM_MODE) {
+            getContext().stopService(new Intent(getContext(), AspectLayoutService.class));
+            return true;
+        }
         AspectLayoutService.lastUpdate = System.currentTimeMillis();
         switch (keyCode) {
             case KeyEvent.KEYCODE_DPAD_RIGHT:

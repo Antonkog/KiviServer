@@ -149,7 +149,9 @@ public class InputSourceHelper {
                 str = str.trim();
                 if ("2841".equals(str)) {
                     return realtekID2841;
-                } else if ("2851".equals(str)) {
+                } else if ("2851".equals(str)
+                        || "2842P533".equals(str)
+                        || "2842P735".equals(str)) {
                     return realtekID2851;
                 }
             }
@@ -177,7 +179,9 @@ public class InputSourceHelper {
         public static INPUT_PORT getPortByRealtekID(String id) { //todo: moke fix
             String str = App.getProperty("ro.ota.modelname");
             boolean is2841 = "2841".equals(str.trim());
-            boolean is2851 = "2851".equals(str.trim());
+            boolean is2851 = "2851".equals(str.trim()) ||
+                    "2842P533".equals(str.trim()) ||
+                    "2842P735".equals(str.trim());
             if (is2841) {
                 for (INPUT_PORT port : values()) {
                     if (port.realtekID2841 != null && port.realtekID2841.equals(id)) {

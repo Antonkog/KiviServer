@@ -4,6 +4,7 @@ package com.wezom.kiviremoteserver.service;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -11,7 +12,9 @@ import android.graphics.PixelFormat;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.SystemClock;
 import android.preference.PreferenceManager;
+import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
@@ -67,7 +70,7 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
     private final static String KEY_PIC_HDR = "psdHDR";
     private final static String KEY_PIC_TEMPERATURE = "psdTemperature";
     private final static String KEY_PIC_BACKLIGHT = "psdBacklight";
-
+    private static final String OSD_TIME = "OSD_TIME";
     private int generalType = BridgePicture.LAYER_TYPE;//WindowManager.LayoutParams.TYPE_TOAST;
     private WindowManager wmgr;
     private int alarmPosition = 0;
@@ -92,10 +95,11 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
             }
 
             timer.postDelayed(updateSleepTime, 1000);
-            if (System.currentTimeMillis() - 10000 > lastUpdate) {
-                Log.e("AspectLayoutService", "stopSelf");
-                stopSelf();
-            }
+            if (autoCloseTime > 0)
+                if (System.currentTimeMillis() - autoCloseTime > lastUpdate) {
+                    //Log.e("AspectLayoutService", "stopSelf " + System.currentTimeMillis() + ":" + autoCloseTime + ":" + lastUpdate);
+                    stopSelf();
+                }
         }
 
 
@@ -103,7 +107,9 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
 
     private void updateSleepText() {
         String timeStr = "";
-        long leftTime = (slipIn - System.currentTimeMillis()) / 1000;
+        long leftTime = (slipIn - SystemClock.elapsedRealtime()) / 1000;
+       // Log.e("AspectLayoutService", "leftTime " + leftTime);
+
         int timeToSleep = -1;
         if (leftTime > 0) {
             timeToSleep = (int) leftTime;
@@ -142,15 +148,24 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
 
     //      PictureMode.PICTURE_MODE_ECONOMY);
     List<Ratio> ratios = Ratio.getInstance().getRatios();
-    List<Integer> shutDownTimers = Arrays.asList(-1, 10, 20, 30, 60, 120);
+
+    List<Integer> shutDownTimers = Arrays.asList(0, 15, 30, 60, 90, 120, 180);
     private boolean sleepFocused;
     // boolean isUHD = false;
     private static int mainColor = Color.BLUE;
+    int autoCloseTime = 10;
 
     //android.widget.LinearLayout{e7580bb VFE...C.. .F...... 444,0-554,98 #7f090128 app:id/root}
     @Override
     public void onCreate() {
         super.onCreate();
+
+        autoCloseTime = Settings.Global.getInt(getContentResolver(), OSD_TIME, 10);
+
+        if (autoCloseTime < 10 && autoCloseTime > 0) {
+            autoCloseTime = 10;
+        }
+        autoCloseTime *= 1000;
         mainColor = getResources().getColor(R.color.colorPrimary);
         Log.e("AspectLayoutService", "started");
 
@@ -167,7 +182,8 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
         inputsHelper = new EnvironmentInputsHelper();
         createLayout(getBaseContext());
         //}, 5000);
-        timer.post(updateSleepTime);
+        //if (autoCloseTime > 0)
+        timer.postDelayed(updateSleepTime, autoCloseTime);
         //   }, 3000);
 
     }
@@ -448,7 +464,11 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
 
     @Override
     public void onDestroy() {
-        timer.removeCallbacks(updateSleepTime);
+        try {
+            timer.removeCallbacks(updateSleepTime);
+        } catch (Exception e) {
+
+        }
         if (wmgr != null)
             wmgr.removeView(generalView);
         super.onDestroy();
@@ -833,13 +853,15 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
 //            }
 
         });
-        AlarmManager am = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        //TODO AlarmManager am = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(AspectLayoutService.this, Alarm.class);
         PendingIntent pi = PendingIntent.getService(AspectLayoutService.this, 0, intent, 0);
-        slipIn = PreferenceManager.getDefaultSharedPreferences(this).getLong("shutDownTime", -1);
+        //  slipIn = PreferenceManager.getDefaultSharedPreferences(this).getLong("shutDownTime", -1);
+        slipIn = Settings.Global.getLong(getContentResolver(), SLEEP_TIMEOUT_REMAIN, SystemClock.elapsedRealtime());
+
         String text = "";
-        if (slipIn > System.currentTimeMillis()) {
-            int timeToSleep = (int) (slipIn - System.currentTimeMillis()) / 1000;
+        if (slipIn > SystemClock.elapsedRealtime()) {
+            int timeToSleep = (int) (slipIn - SystemClock.elapsedRealtime()) / 1000;
             //  description.setText(getStringTime(sec) + " c");
             minutesLeft = timeToSleep / 60;
 
@@ -868,18 +890,18 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
         actions.put(view, new KeyActions()
                 .addAction(KeyEvent.KEYCODE_DPAD_UP, (action) -> {
                     if (action == KeyEvent.ACTION_DOWN) {
-                        am.cancel(pi);
+                        // am.cancel(pi);
                         PreferenceManager.getDefaultSharedPreferences(this).edit().remove("shutDownTime").commit();
                         alarmPosition++;
-                        setAlarm(am, pi, textView);
+                        setAlarm(pi, textView);
                     }
                 })
                 .addAction(KeyEvent.KEYCODE_DPAD_DOWN, (action) -> {
                     if (action == KeyEvent.ACTION_DOWN) {
-                        am.cancel(pi);
+                        //  am.cancel(pi);
                         PreferenceManager.getDefaultSharedPreferences(this).edit().remove("shutDownTime").commit();
                         alarmPosition--;
-                        setAlarm(am, pi, textView);
+                        setAlarm(pi, textView);
                     }
 
                 })
@@ -1147,7 +1169,7 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
         return false;
     }
 
-    public void setAlarm(AlarmManager alarm, PendingIntent pi, TextView textView) {
+    public void setAlarm(/*AlarmManager alarm,*/ PendingIntent pi, TextView textView) {
         if (alarmPosition < 0) {
             alarmPosition = shutDownTimers.size() - 1;
         }
@@ -1156,7 +1178,7 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
         }
         minutesLeft = shutDownTimers.get(alarmPosition);
         if (minutesLeft > 0) {
-            slipIn = System.currentTimeMillis() + minutesLeft * 60 * 1000;
+            slipIn = SystemClock.elapsedRealtime() + minutesLeft * 60 * 1000;
             PreferenceManager.getDefaultSharedPreferences(this).edit().putLong("shutDownTime", slipIn).commit();
 
             String text = "";
@@ -1166,13 +1188,27 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
                 text += minutesLeft + getString(R.string.minutes);
             }
             textView.setText(text);
-            alarm.set(AlarmManager.RTC_WAKEUP, +slipIn, pi);
+            sleepIn(slipIn, minutesLeft * 60 * 1000);
+            //alarm.set(AlarmManager.RTC_WAKEUP, +slipIn, pi);
         } else {
             slipIn = -1;
             textView.setText(R.string.off);
         }
     }
 
+    private static final String SHUTDOWN_INTENT_EXTRA = "shutdown";
+    public static final String SLEEP_TIMEOUT = "sleep_timer";
+    public static final String SLEEP_TIMEOUT_REMAIN = "sleep_timer_remain";
+    public static final String AUTO_POWER_DOWN_TIMEOUT = "auto_power_down_timer";
+
+    private void sleepIn(long timeIn, int delay) {
+        Settings.Global.putLong(getContentResolver(), SLEEP_TIMEOUT_REMAIN, SystemClock.elapsedRealtime() + delay);
+        Settings.Global.putInt(getContentResolver(), SLEEP_TIMEOUT, delay / (60 * 1000));
+        Intent intentForToast = new Intent();
+        intentForToast.setComponent(new ComponentName("com.hikeen.menu", "com.hikeen.menu.util.SleepTimeRecevier"));
+        intentForToast.setAction("com.kivi.sleep.action");
+        sendBroadcast(intentForToast);
+    }
 
     private boolean isSafe() {
         return pictureSettings.isSafe();
