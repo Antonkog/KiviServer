@@ -434,7 +434,7 @@ public class KiviRemoteService extends Service implements ServiceMvpView {
     public int onStartCommand(Intent intent, int flags, int startId) {
         handler.postDelayed(() -> {
             Pair<String, String> address = server.getLocalIpPair(getApplicationContext());
-            startForeground(SERVER_ID, createNotification(prepareIntent(), address));
+//            startForeground(SERVER_ID, createNotification(prepareIntent(), address));
         }, 300);
 
         return START_STICKY;

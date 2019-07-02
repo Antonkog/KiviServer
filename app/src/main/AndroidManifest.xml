@@ -4,8 +4,11 @@
     package="com.wezom.kiviremoteserver"
     android:sharedUserId="android.uid.system">
 
-    <!-- version 20 -->
 
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/> 
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/> 
+
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
@@ -57,7 +60,8 @@
         android:sharedUserId="android.uid.system"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        tools:replace="android:icon,android:label">
+        tools:replace="android:icon,android:label"
+        tools:ignore="GoogleAppIndexingWarning">
         <activity android:name=".ui.activity.HomeActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -111,6 +115,7 @@
         <service
             android:name=".service.communication.DelegatePlatformsService"
             android:exported="true"></service>
+
     </application>
 
 </manifest>

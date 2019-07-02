@@ -9,6 +9,7 @@ import android.media.tv.TvContract;
 import android.net.Uri;
 import android.os.Build;
 import android.view.KeyEvent;
+import android.widget.Toast;
 
 import com.realtek.tv.Tv;
 import com.wezom.kiviremoteserver.App;
@@ -23,25 +24,41 @@ public class BridgeInputs {
     public void getPortsList(ArrayList<InputSourceHelper.INPUT_PORT> result, Context context) {
         String str = App.getProperty("ro.ota.modelname");
         boolean is2831 = "2831".equals(str.trim());
-        String model = Build.MODEL;
-        boolean is24inch = model != null && Build.MODEL.startsWith("24");
+        boolean is2851 = "2851".equals(str.trim());
+      //  Toast.makeText(context, "is 2851 " + is2851, Toast.LENGTH_LONG).show();
+        if (is2851) {
+            result.add(InputSourceHelper.INPUT_PORT.INPUT_SOURCE_ATV);
+            result.add(InputSourceHelper.INPUT_PORT.INPUT_SOURCE_CVBS);
+            result.add(InputSourceHelper.INPUT_PORT.INPUT_SOURCE_HDMI);
+            result.add(InputSourceHelper.INPUT_PORT.INPUT_SOURCE_HDMI2);
+            result.add(InputSourceHelper.INPUT_PORT.INPUT_SOURCE_HDMI3);
+            result.add(InputSourceHelper.INPUT_PORT.INPUT_SOURCE_DTV);
+            result.add(InputSourceHelper.INPUT_PORT.INPUT_SOURCE_DVBS);
+            result.add(InputSourceHelper.INPUT_PORT.INPUT_SOURCE_YPBPR);
+            result.add(InputSourceHelper.INPUT_PORT.INPUT_SOURCE_DVBC);
+            result.add(InputSourceHelper.INPUT_PORT.INPUT_SOURCE_VGA);
+        } else {
+            String model = Build.MODEL;
+            boolean is24inch = model != null && Build.MODEL.startsWith("24");
 
-        result.add(InputSourceHelper.INPUT_PORT.INPUT_SOURCE_ATV);
-        result.add(InputSourceHelper.INPUT_PORT.INPUT_SOURCE_CVBS);
+            result.add(InputSourceHelper.INPUT_PORT.INPUT_SOURCE_ATV);
+            result.add(InputSourceHelper.INPUT_PORT.INPUT_SOURCE_CVBS);
 //        result.add(InputSourceHelper.INPUT_PORT.INPUT_SOURCE_YPBPR);
 //        result.add(InputSourceHelper.INPUT_PORT.INPUT_SOURCE_VGA);
-        result.add(InputSourceHelper.INPUT_PORT.INPUT_SOURCE_HDMI);
-        result.add(InputSourceHelper.INPUT_PORT.INPUT_SOURCE_HDMI2);
-        if (!is2831 || !is24inch)
-            result.add(InputSourceHelper.INPUT_PORT.INPUT_SOURCE_HDMI3);
-        result.add(InputSourceHelper.INPUT_PORT.INPUT_SOURCE_DTV);
-        if (!is2831) {
-            result.add(InputSourceHelper.INPUT_PORT.INPUT_SOURCE_DVBS);
-        } else {
-            if (!is24inch)
-                result.add(InputSourceHelper.INPUT_PORT.INPUT_SOURCE_YPBPR);
+            result.add(InputSourceHelper.INPUT_PORT.INPUT_SOURCE_HDMI);
+            result.add(InputSourceHelper.INPUT_PORT.INPUT_SOURCE_HDMI2);
+            if (!is2831 || !is24inch)
+                result.add(InputSourceHelper.INPUT_PORT.INPUT_SOURCE_HDMI3);
+            result.add(InputSourceHelper.INPUT_PORT.INPUT_SOURCE_DTV);
+            if (!is2831) {
+                result.add(InputSourceHelper.INPUT_PORT.INPUT_SOURCE_DVBS);
+            } else {
+                if (!is24inch)
+                    result.add(InputSourceHelper.INPUT_PORT.INPUT_SOURCE_YPBPR);
+            }
+            result.add(InputSourceHelper.INPUT_PORT.INPUT_SOURCE_DVBC);
         }
-        result.add(InputSourceHelper.INPUT_PORT.INPUT_SOURCE_DVBC);
+
 
 //        TvInputManager inputManager = (TvInputManager) context.getSystemService(Context.TV_INPUT_SERVICE);
 //        try {
@@ -63,14 +80,7 @@ public class BridgeInputs {
 
     public void changeInput(InputSourceHelper.INPUT_PORT inputPort, Context context) {
         String str = App.getProperty("ro.ota.modelname");
-        String id = inputPort.getRealtekID();
-        if (str != null && !str.isEmpty()) {
-            str = str.trim();
-            if ("2841".equals(str) && inputPort.getRealtekID2841() != null && !inputPort.getRealtekID2841().isEmpty()) {
-                id = inputPort.getRealtekID2841();
-            }
-        }
-
+        String id = inputPort.getRealtekID(str);
         startTvInputs(getInputUri(id), context);
     }
 
@@ -169,7 +179,7 @@ public class BridgeInputs {
 
     public boolean isTV(int i) {
         final String launcherPort = App.getProperty(Constants.REALTEK_INPUT_SOURCE);
-        if("com.kivi.launcher".equals(launcherPort)) return false;
+        if ("com.kivi.launcher".equals(launcherPort)) return false;
         if (i == InputSourceHelper.INPUT_PORT.INPUT_SOURCE_VGA.getId() ||
                 i == InputSourceHelper.INPUT_PORT.INPUT_SOURCE_ATV.getId() ||
                 i == InputSourceHelper.INPUT_PORT.INPUT_SOURCE_DTV.getId() ||

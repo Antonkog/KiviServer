@@ -152,9 +152,9 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
 
         Log.e("AspectLayoutService", "started");
 
-        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this).setSmallIcon(R.drawable.ic_launcher_background);
-        mBuilder.setOnlyAlertOnce(true);
-        startForeground(0, mBuilder.build());
+//        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this).setSmallIcon(R.drawable.ic_launcher_background);
+//        mBuilder.setOnlyAlertOnce(true);
+        //startForeground(0, mBuilder.build());
 
         // new Handler().postDelayed(() -> {
         String MODEL = Build.MODEL;

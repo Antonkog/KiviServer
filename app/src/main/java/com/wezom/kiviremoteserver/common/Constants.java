@@ -67,4 +67,29 @@ public class Constants {
     public static final String SOURCE_HDMI2 = "com.realtek.tv.hdmitvinput/.HDMITvInputService/HW151519488";
     public static final String SOURCE_HDMI3 = "com.realtek.tv.hdmitvinput/.HDMITvInputService/HW151519744";
     public static final String SOURCE_VGA = "com.realtek.tv.vgatvinput/.VGATvInputService/HW117899264";
+
+
+    public static final String SOURCE_REALTEK_9_HDMI1 = "com.realtek.tv.passthrough/.hdmiinput.HDMITvInputService/HW151519744";
+    public static final String SOURCE_REALTEK_9_HDMI2 = "com.realtek.tv.passthrough/.hdmiinput.HDMITvInputService/HW151519488";
+    public static final String SOURCE_REALTEK_9_HDMI3 = "com.realtek.tv.passthrough/.hdmiinput.HDMITvInputService/HW151519232";
+    public static final String SOURCE_REALTEK_9_AV = "com.realtek.tv.passthrough/.avinput.AVTvInputService/HW50593792";
+    public static final String SOURCE_REALTEK_9_VGA = "com.realtek.tv.passthrough/.vgainput.VGATvInputService/HW117899264";
+    public static final String SOURCE_REALTEK_9_YPbPr = "com.realtek.tv.passthrough/.yppinput.YPPTvInputService/HW101056512";
+    public static final String SOURCE_REALTEK_9_ATV = "com.realtek.tv.atv/.atvinput.AtvInputService/HW33619968";
+    public static final String SOURCE_REALTEK_9_DVB_C = "com.realtek.dtv/.tvinput.DTVTvInputService/HW33685504";
+    public static final String SOURCE_REALTEK_9_DVB_T = "com.realtek.dtv/.tvinput.DTVTvInputService/HW33685505";
+    public static final String SOURCE_REALTEK_9_DVB_S = "com.realtek.dtv/.tvinput.DTVTvInputService/HW33685506";
+
+
+    //HDMI1：com.realtek.tv.passthrough/.hdmiinput.HDMITvInputService/HW151519232
+//HDMI2：com.realtek.tv.passthrough/.hdmiinput.HDMITvInputService/HW151519488
+//HDMI3：com.realtek.tv.passthrough/.hdmiinput.HDMITvInputService/HW151519744
+//AV：   com.realtek.tv.passthrough/.avinput.AVTvInputService/HW50593792
+//VGA：  com.realtek.tv.passthrough/.vgainput.VGATvInputService/HW117899264
+//YPbPr：com.realtek.tv.passthrough/.yppinput.YPPTvInputService/HW101056512
+//
+//ATV:com.realtek.tv.atv/.atvinput.AtvInputService/HW33619968
+//DVB-C:com.realtek.dtv/.tvinput.DTVTvInputService/HW33685504
+//DVB-T:com.realtek.dtv/.tvinput.DTVTvInputService/HW33685505
+//DVB-S:com.realtek.dtv/.tvinput.DTVTvInputService/HW33685506
 }
