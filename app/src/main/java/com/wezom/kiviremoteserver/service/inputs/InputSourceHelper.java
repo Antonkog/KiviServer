@@ -1,22 +1,40 @@
 package com.wezom.kiviremoteserver.service.inputs;
 
 import android.content.Context;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
+import android.support.v4.content.FileProvider;
+import android.util.Base64;
 
 import com.wezom.kiviremoteserver.App;
 import com.wezom.kiviremoteserver.R;
 import com.wezom.kiviremoteserver.common.Constants;
+import com.wezom.kiviremoteserver.common.DeviceUtils;
+import com.wezom.kiviremoteserver.common.Utils;
 import com.wezom.kiviremoteserver.environment.EnvironmentInputsHelper;
 import com.wezom.kiviremoteserver.interfaces.DriverValue;
 import com.wezom.kiviremoteserver.net.server.model.Input;
+import com.wezom.kiviremoteserver.net.server.model.ServerApplicationInfo;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+
+import io.reactivex.Single;
+import timber.log.Timber;
 
 
 /**
@@ -162,9 +180,9 @@ public class InputSourceHelper {
         public static INPUT_PORT getPortByRealtekID(String id) { //todo: moke fix
             String str = App.getProperty("ro.ota.modelname");
             boolean is2841 = "2841".equals(str.trim());
-            if(is2841){
-                if(Constants.SOURCE_HDMI1.equals(id)) return INPUT_PORT.INPUT_SOURCE_HDMI3;
-                if(Constants.SOURCE_HDMI3.equals(id)) return INPUT_PORT.INPUT_SOURCE_HDMI;
+            if (is2841) {
+                if (Constants.SOURCE_HDMI1.equals(id)) return INPUT_PORT.INPUT_SOURCE_HDMI3;
+                if (Constants.SOURCE_HDMI3.equals(id)) return INPUT_PORT.INPUT_SOURCE_HDMI;
             }
             for (INPUT_PORT port : values()) {
                 if (port.realtekID != null && port.realtekID.equals(id)) {
@@ -179,7 +197,7 @@ public class InputSourceHelper {
         }
 
         public String getStringId() {
-            return id+"";
+            return id + "";
         }
 
         public int getNameResource() {
@@ -195,7 +213,7 @@ public class InputSourceHelper {
         List<InputSourceHelper.INPUT_PORT> inputs = getPortsList(context);
         LinkedList<DriverValue> linkedList = new LinkedList<>();
 
-        int currentPort =  new EnvironmentInputsHelper().getCurrentTvInputSource();
+        int currentPort = new EnvironmentInputsHelper().getCurrentTvInputSource();
 
         for (int i = 0; i < inputs.size(); i++) {
             InputSourceHelper.INPUT_PORT temp = inputs.get(i);
@@ -212,22 +230,53 @@ public class InputSourceHelper {
 
     public static List<Input> getAsInputs(Context context) {
         List<InputSourceHelper.INPUT_PORT> inputs = getPortsList(context);
-        LinkedList<Input> linkedList = new LinkedList<>();
+        Set<Input> set = new TreeSet<>();
 
        int currentPort =  new EnvironmentInputsHelper().getCurrentTvInputSource();
 
         for (int i = 0; i < inputs.size(); i++) {
             InputSourceHelper.INPUT_PORT temp = inputs.get(i);
-            String uri = Uri.parse("android.resource://" + temp.getDrawable()).toString();
 
-            linkedList.add(new Input()
-                    .addPortName(INPUT_PORT.class.getSimpleName())
-                    .addUri(uri)
-                    .addActive(currentPort == temp.getId())
-            .addPortNum(temp.getId()));
+            try {
+                byte[] iconBytes;
 
+                Bitmap bitmap = DeviceUtils.drawableToBitmap(context.getResources().getDrawable(temp.drawable));
+                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.PNG, 60, stream);
+                iconBytes = stream.toByteArray();
+
+                String byteString = Base64.encodeToString(iconBytes, Base64.DEFAULT);
+
+                set.add(new Input()
+                        .addPortName(context.getResources().getString(temp.getNameResource()))
+                        .addActive(currentPort == temp.getId())
+                        .addInputIcon(byteString)
+                        .addPortNum(temp.getId()));
+
+
+            } catch (Exception e) {
+                Timber.e(e);
+                set.add(new Input()
+                        .addPortName(context.getResources().getString(temp.getNameResource()))
+                        .addActive(currentPort == temp.getId())
+                        .addPortNum(temp.getId()));
+            }
         }
-        return linkedList;
+        return new LinkedList<>(set);
+    }
+
+
+    public static Single <List<Input>> getInputsSingle(Context context) {
+        return Single.create(emitter -> {
+
+            Timber.e("getAsInputs started");
+            try{
+                List<Input> inputs = getAsInputs(context);
+                emitter.onSuccess(inputs);
+            }catch (Exception e){
+                emitter.onError(e);
+            }
+        });
     }
 
 }

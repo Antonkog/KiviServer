@@ -269,9 +269,9 @@ public class KiviRemoteService extends Service implements ServiceMvpView {
         disposables.add(bus.listen(PingEvent.class).subscribe(event -> server.sendPong(), Timber::e));
 
         disposables.add(bus.listen(SendAppsListEvent.class).subscribe(
-                event -> sendBySocket(new ServerEventStructure(addCollectedApps(event))), Timber::e
+                event -> sendBySocket(new ServerEventStructure(KiviProtocolStructure.ServerEventType.APPS)
+                        .addApps(addCollectedApps(event))), Timber::e
         ));
-
     }
 
     private List<ServerApplicationInfo> addCollectedApps(SendAppsListEvent event) {

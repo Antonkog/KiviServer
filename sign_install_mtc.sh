@@ -8,8 +8,8 @@ ADB="adb"
 ADB_SH="$ADB shell"
 
 path_sysapp="/system/priv-app/KiviServer/KiviServer.apk" # assuming the app is priviledged
-apk_host="./app/build/outputs/apk/realtek/debug/app-realtek-debug.apk"
-apk_host2="./app/build/outputs/apk/realtek/debug/server_mtc.apk"
+apk_host="./app/build/outputs/apk/mstar/debug/app-mstar-debug.apk"
+apk_host2="./app/build/outputs/apk/mstar/debug/server_mtc.apk"
 
 
 sign509="/Users/antonio/Documents/Auto-Sign/mtc6/platform.x509.pem"
@@ -18,7 +18,7 @@ autoSign="/Users/antonio/Documents/Auto-Sign/signapk.jar"
 
 
 
-./gradlew assembleDebug || exit -1 # exit on failure
+#./gradlew assembleDebug || exit -1 # exit on failure
 
 $ADB connect 192.168.0.151:5555 || exit -1
 

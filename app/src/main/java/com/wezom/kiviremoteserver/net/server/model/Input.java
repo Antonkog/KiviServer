@@ -1,15 +1,19 @@
 package com.wezom.kiviremoteserver.net.server.model;
 
 import android.os.Parcel;
+import android.support.annotation.NonNull;
+
+import com.google.gson.annotations.SerializedName;
 
 import java.util.HashMap;
 
-public class Input implements LauncherBasedData {
+public class Input implements LauncherBasedData, Comparable<Input> {
     int portNum;
     private String portName;
     private String imageUrl;
     private String uri;
     private Boolean active;
+    private String inputIcon;
 
     public Input addImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
@@ -34,6 +38,11 @@ public class Input implements LauncherBasedData {
 
     public Input addActive(Boolean active) {
         this.active = active;
+        return this;
+    }
+
+    public Input addInputIcon(String inputIcon) {
+        this.inputIcon = inputIcon;
         return this;
     }
 
@@ -67,7 +76,6 @@ public class Input implements LauncherBasedData {
         return active;
     }
 
-
     @Override
     public HashMap<String, String> getAdditionalData() {
         return null;
@@ -77,6 +85,10 @@ public class Input implements LauncherBasedData {
     public TYPE getType() {
                  return TYPE.INPUT;
     }
+
+    public Input() {
+    }
+
 
     @Override
     public int describeContents() {
@@ -90,9 +102,7 @@ public class Input implements LauncherBasedData {
         dest.writeString(this.imageUrl);
         dest.writeString(this.uri);
         dest.writeValue(this.active);
-    }
-
-    public Input() {
+        dest.writeString(this.inputIcon);
     }
 
     protected Input(Parcel in) {
@@ -101,6 +111,7 @@ public class Input implements LauncherBasedData {
         this.imageUrl = in.readString();
         this.uri = in.readString();
         this.active = (Boolean) in.readValue(Boolean.class.getClassLoader());
+        this.inputIcon = in.readString();
     }
 
     public static final Creator<Input> CREATOR = new Creator<Input>() {
@@ -114,4 +125,13 @@ public class Input implements LauncherBasedData {
             return new Input[size];
         }
     };
+
+    @Override
+    public int compareTo(@NonNull Input input) {
+        if (this.portNum ==(input.portNum)) {
+            return 0;
+        }
+        //removed the comparison by subtraction since it will behave wrongly on int overflow
+        return new Integer(this.portNum).compareTo(input.portNum);
+    }
 }

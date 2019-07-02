@@ -394,7 +394,7 @@ public class ExecutorServiceIME extends PinyinIME implements EventProtocolExecut
                     //   launchApp("com.funshion.poweroffdialog");
                     break;
 
-                case SCROLL: //for old version of remoteControl versionCode<20\
+                case SCROLL:
                     float dy = dataStructure.getMotion().get(1);
                     if (isBrowserCurrent()) {
                         scroll(dy);
@@ -405,14 +405,6 @@ public class ExecutorServiceIME extends PinyinIME implements EventProtocolExecut
                             else executeCommand(KeyEvent.KEYCODE_DPAD_UP);
                         }
                     }
-                    break;
-                case SCROLL_BOTTOM_TO_TOP:  //todo: for remote verion 1.1.14 versionCode52 remove later
-                    if (isBrowserCurrent()) scroll(-dataStructure.getMotion().get(1));
-                    else executeCommand(KeyEvent.KEYCODE_DPAD_DOWN);
-                    break;
-                case SCROLL_TOP_TO_BOTTOM: //todo: for remote verion 1.1.14 versionCode52 remove later
-                    if (isBrowserCurrent()) scroll(dataStructure.getMotion().get(1));
-                    else executeCommand(KeyEvent.KEYCODE_DPAD_UP);
                     break;
                 case HOME_DOWN:
                     executeKeyDownInstrumentation(KeyEvent.KEYCODE_HOME);

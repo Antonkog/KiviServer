@@ -23,7 +23,7 @@ import com.wezom.kiviremoteserver.mvp.view.ServiceMvpView;
 import com.wezom.kiviremoteserver.net.server.model.Channel;
 import com.wezom.kiviremoteserver.net.server.model.Input;
 import com.wezom.kiviremoteserver.net.server.model.Recommendation;
-import com.wezom.kiviremoteserver.net.server.model.WriteThreadedModel;
+import com.wezom.kiviremoteserver.net.server.threads.WriteThreadedModel;
 import com.wezom.kiviremoteserver.net.server.threads.ReceivingThread;
 import com.wezom.kiviremoteserver.net.server.threads.SendingThread;
 import com.wezom.kiviremoteserver.service.protocol.ServerEventStructure;

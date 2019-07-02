@@ -48,6 +48,7 @@ public class ServerEventStructure {
         return this;
     }
 
+
     public ServerEventStructure setAvailableRecommendations(List<Recommendation> recommendations) {
         this.recommendations = recommendations;
         return this;
@@ -64,9 +65,9 @@ public class ServerEventStructure {
     }
 
 
-
-    public ServerEventStructure(List<ServerApplicationInfo> appInfo) {
+    public ServerEventStructure addApps(List<ServerApplicationInfo> appInfo) {
         this.appInfo = appInfo;
+        return this;
     }
 
     public ServerEventStructure(KiviProtocolStructure.ServerEventType event, int volume) {

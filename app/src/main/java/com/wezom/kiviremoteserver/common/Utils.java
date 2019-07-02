@@ -2,11 +2,14 @@ package com.wezom.kiviremoteserver.common;
 
 
 import android.app.ActivityManager;
+import android.content.ContentResolver;
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.support.graphics.drawable.VectorDrawableCompat;
@@ -18,6 +21,7 @@ import com.wezom.kiviremoteserver.BuildConfig;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -46,6 +50,41 @@ public class Utils {
         }
 
         return bitmap;
+    }
+
+    public static Uri resourceToUri(Resources resources, int resID) {
+        return Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" +
+                resources.getResourcePackageName(resID) + '/' +
+                resources.getResourceTypeName(resID) + '/' +
+                resources.getResourceEntryName(resID) );
+    }
+
+   public static File saveBitmapToFile(File dir, String fileName, Bitmap bm,
+                             Bitmap.CompressFormat format, int quality) {
+
+        File imageFile = new File(dir,fileName);
+
+        FileOutputStream fos = null;
+        try {
+            fos = new FileOutputStream(imageFile);
+
+            bm.compress(format,quality,fos);
+
+            fos.close();
+
+            return imageFile;
+        }
+        catch (IOException e) {
+            Log.e("app",e.getMessage());
+            if (fos != null) {
+                try {
+                    fos.close();
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+            }
+        }
+        return null;
     }
 
     public static boolean getMuteStatus(AudioManager audioManager) {
