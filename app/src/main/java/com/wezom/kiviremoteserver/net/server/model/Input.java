@@ -11,7 +11,6 @@ public class Input implements LauncherBasedData, Comparable<Input> {
     int portNum;
     private String portName;
     private String imageUrl;
-    private String uri;
     private Boolean active;
     private String inputIcon;
 
@@ -20,7 +19,6 @@ public class Input implements LauncherBasedData, Comparable<Input> {
         return this;
     }
 
-
     public Input addPortNum(int portNum) {
         this.portNum = portNum;
         return this;
@@ -28,11 +26,6 @@ public class Input implements LauncherBasedData, Comparable<Input> {
 
     public Input addPortName(String portName) {
         this.portName = portName;
-        return this;
-    }
-
-    public Input addUri(String uri) {
-        this.uri = uri;
         return this;
     }
 
@@ -62,13 +55,8 @@ public class Input implements LauncherBasedData, Comparable<Input> {
     }
 
     @Override
-    public String getLocalUri() {
-        return uri;
-    }
-
-    @Override
-    public String getPackageName() {
-        return null;
+    public String getBaseIcon() {
+        return inputIcon;
     }
 
     @Override
@@ -86,9 +74,16 @@ public class Input implements LauncherBasedData, Comparable<Input> {
                  return TYPE.INPUT;
     }
 
-    public Input() {
-    }
+    public Input() {}
 
+    @Override
+    public int compareTo(@NonNull Input input) {
+        if (this.portNum ==(input.portNum)) {
+            return 0;
+        }
+        //removed the comparison by subtraction since it will behave wrongly on int overflow
+        return new Integer(this.portNum).compareTo(input.portNum);
+    }
 
     @Override
     public int describeContents() {
@@ -100,7 +95,6 @@ public class Input implements LauncherBasedData, Comparable<Input> {
         dest.writeInt(this.portNum);
         dest.writeString(this.portName);
         dest.writeString(this.imageUrl);
-        dest.writeString(this.uri);
         dest.writeValue(this.active);
         dest.writeString(this.inputIcon);
     }
@@ -109,7 +103,6 @@ public class Input implements LauncherBasedData, Comparable<Input> {
         this.portNum = in.readInt();
         this.portName = in.readString();
         this.imageUrl = in.readString();
-        this.uri = in.readString();
         this.active = (Boolean) in.readValue(Boolean.class.getClassLoader());
         this.inputIcon = in.readString();
     }
@@ -125,13 +118,4 @@ public class Input implements LauncherBasedData, Comparable<Input> {
             return new Input[size];
         }
     };
-
-    @Override
-    public int compareTo(@NonNull Input input) {
-        if (this.portNum ==(input.portNum)) {
-            return 0;
-        }
-        //removed the comparison by subtraction since it will behave wrongly on int overflow
-        return new Integer(this.portNum).compareTo(input.portNum);
-    }
 }

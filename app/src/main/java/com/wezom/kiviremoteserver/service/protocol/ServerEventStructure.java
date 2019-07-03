@@ -9,6 +9,7 @@ import com.wezom.kiviremoteserver.interfaces.AspectMessage;
 import com.wezom.kiviremoteserver.interfaces.InitialMessage;
 import com.wezom.kiviremoteserver.net.server.model.Channel;
 import com.wezom.kiviremoteserver.net.server.model.Input;
+import com.wezom.kiviremoteserver.net.server.model.PreviewCommonStructure;
 import com.wezom.kiviremoteserver.net.server.model.Recommendation;
 import com.wezom.kiviremoteserver.net.server.model.ServerApplicationInfo;
 
@@ -22,6 +23,7 @@ public class ServerEventStructure {
     private KiviProtocolStructure.ServerEventType event;
     @SerializedName("app_info")
     private List<ServerApplicationInfo> appInfo;
+    private List<PreviewCommonStructure> previewCommonStructures;
     private List<Recommendation> recommendations;
     private List<Recommendation> favorites;
     private List<Channel> channels;
@@ -48,6 +50,10 @@ public class ServerEventStructure {
         return this;
     }
 
+    public ServerEventStructure addPreviewCommonStructures(List<PreviewCommonStructure> previewCommonStructures) {
+        this.previewCommonStructures = previewCommonStructures;
+        return this;
+    }
 
     public ServerEventStructure setAvailableRecommendations(List<Recommendation> recommendations) {
         this.recommendations = recommendations;

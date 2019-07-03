@@ -9,7 +9,6 @@ import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.media.AudioManager;
 import android.os.Build;
-import android.os.Handler;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
@@ -17,10 +16,8 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
-import android.widget.Toast;
 
 import com.android.inputmethod.pinyin.PinyinIME;
-import com.google.gson.Gson;
 import com.wezom.kiviremoteserver.App;
 import com.wezom.kiviremoteserver.bus.HideKeyboardEvent;
 import com.wezom.kiviremoteserver.bus.NewDataEvent;
@@ -33,6 +30,7 @@ import com.wezom.kiviremoteserver.bus.SendInitialEvent;
 import com.wezom.kiviremoteserver.bus.SendInputsEvent;
 import com.wezom.kiviremoteserver.bus.SendRecommendationsEvent;
 import com.wezom.kiviremoteserver.bus.SendVolumeEvent;
+import com.wezom.kiviremoteserver.bus.ShowHideAspectEvent;
 import com.wezom.kiviremoteserver.bus.ShowKeyboardEvent;
 import com.wezom.kiviremoteserver.common.Constants;
 import com.wezom.kiviremoteserver.common.DeviceUtils;
@@ -41,9 +39,8 @@ import com.wezom.kiviremoteserver.common.RxBus;
 import com.wezom.kiviremoteserver.common.Utils;
 import com.wezom.kiviremoteserver.interfaces.DataStructure;
 import com.wezom.kiviremoteserver.interfaces.EventProtocolExecutor;
-import com.wezom.kiviremoteserver.net.server.model.Channel;
+import com.wezom.kiviremoteserver.interfaces.InitialMessage;
 import com.wezom.kiviremoteserver.net.server.model.LauncherBasedData;
-import com.wezom.kiviremoteserver.net.server.model.Recommendation;
 import com.wezom.kiviremoteserver.service.inputs.InputSourceHelper;
 
 import java.util.concurrent.TimeUnit;
@@ -366,7 +363,7 @@ public class ExecutorServiceIME extends PinyinIME implements EventProtocolExecut
                     }
 
                     requestAppsDisposable = Observable
-                            .fromCallable(() -> DeviceUtils.getInstalledApplications(this, getPackageManager()))
+                            .fromCallable(() -> DeviceUtils.getTvApps(this))
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(
@@ -425,8 +422,24 @@ public class ExecutorServiceIME extends PinyinIME implements EventProtocolExecut
                 case REQUEST_ASPECT:
                     RxBus.INSTANCE.publish(new SendAspectEvent());
                     break;
+                case SHOW_OR_HIDE_ASPECT:
+                    RxBus.INSTANCE.publish(new ShowHideAspectEvent());
+                    break;
                 case REQUEST_INITIAL:
-                    RxBus.INSTANCE.publish(new SendInitialEvent());
+                    InitialMessage.getInstance().setDriverValueListSingle(getApplicationContext()).
+                            subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(
+                                    initialMessage -> RxBus.INSTANCE.publish(new SendInitialEvent(initialMessage)),
+                                    e -> Timber.e(e, e.getMessage()));
+                    break;
+                case REQUEST_INITIAL_II:
+                    DeviceUtils.getPreviewCommonStructureSingle(getApplicationContext()).
+                            subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(
+                                    previewCommonStructures -> RxBus.INSTANCE.publish(new SendInitialEvent(previewCommonStructures)),
+                                    e -> Timber.e(e, e.getMessage()));
                     break;
                 case REQUEST_CHANNELS:
                     RxBus.INSTANCE.publish(new SendChannelsEvent());
@@ -447,7 +460,7 @@ public class ExecutorServiceIME extends PinyinIME implements EventProtocolExecut
                     startLauncherIntent(LauncherBasedData.TYPE.FAVOURITE, dataStructure.getArgs().get(0));
                     break;
                 case REQUEST_INPUTS:
-                    Timber.e("Inputs was requested");
+                    Timber.d("Inputs requested");
                     RxBus.INSTANCE.publish(new SendInputsEvent());
                     break;
                 case CHANGE_INPUT:

@@ -1,18 +1,18 @@
 package com.wezom.kiviremoteserver.bus;
 
 
-import android.content.pm.ApplicationInfo;
+import com.wezom.kiviremoteserver.net.server.model.ServerApplicationInfo;
 
 import java.util.List;
 
 public class SendAppsListEvent {
-    private List<ApplicationInfo> appInfoList;
+    private List<ServerApplicationInfo> serverApplicationInfos;
 
-    public SendAppsListEvent(List<ApplicationInfo> appInfoList) {
-        this.appInfoList = appInfoList;
+    public SendAppsListEvent(List<ServerApplicationInfo> serverApplicationInfos) {
+        this.serverApplicationInfos = serverApplicationInfos;
     }
 
-    public List<ApplicationInfo> getAppInfoList() {
-        return appInfoList;
+    public List<ServerApplicationInfo> getServerApplicationInfos() {
+        return serverApplicationInfos;
     }
 }

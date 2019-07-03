@@ -12,8 +12,10 @@ public class ServerApplicationInfo implements LauncherBasedData {
     private String applicationName;
     @SerializedName("package_name")
     private String applicationPackage;
+    @SerializedName("baseIcon")
+    private String baseIcon;
     @SerializedName("app_icon")
-    private byte[] applicationIcon;
+    private byte[] applicationIcon; // for old remote Control
     @SerializedName("uri")
     private String imageUri;
 
@@ -26,17 +28,9 @@ public class ServerApplicationInfo implements LauncherBasedData {
         return this;
     }
 
-    public String getApplicationPackage() {
-        return applicationPackage;
-    }
-
     public ServerApplicationInfo setApplicationPackage(String applicationPackage) {
         this.applicationPackage = applicationPackage;
         return this;
-    }
-
-    public byte[] getApplicationIcon() {
-        return applicationIcon;
     }
 
     public ServerApplicationInfo setApplicationIcon(byte[] applicationIcon) {
@@ -49,17 +43,14 @@ public class ServerApplicationInfo implements LauncherBasedData {
         return this;
     }
 
-    @Override
-    public String toString() {
-        return "ServerApplicationInfo{" +
-                "applicationName='" + applicationName + '\'' +
-                ", applicationPackage='" + applicationPackage + '\'' +
-                '}';
+    public ServerApplicationInfo setBaseIcon(String baseIcon) {
+        this.baseIcon = baseIcon;
+        return this;
     }
 
     @Override
     public String getID() {
-        return null;
+        return applicationPackage;
     }
 
     @Override
@@ -73,13 +64,8 @@ public class ServerApplicationInfo implements LauncherBasedData {
     }
 
     @Override
-    public String getLocalUri() {
-        return imageUri;
-    }
-
-    @Override
-    public String getPackageName() {
-        return applicationPackage;
+    public String getBaseIcon() {
+        return baseIcon;
     }
 
     @Override
@@ -98,6 +84,10 @@ public class ServerApplicationInfo implements LauncherBasedData {
     }
 
 
+    public ServerApplicationInfo() {
+    }
+
+
     @Override
     public int describeContents() {
         return 0;
@@ -107,16 +97,15 @@ public class ServerApplicationInfo implements LauncherBasedData {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(this.applicationName);
         dest.writeString(this.applicationPackage);
+        dest.writeString(this.baseIcon);
         dest.writeByteArray(this.applicationIcon);
         dest.writeString(this.imageUri);
-    }
-
-    public ServerApplicationInfo() {
     }
 
     protected ServerApplicationInfo(Parcel in) {
         this.applicationName = in.readString();
         this.applicationPackage = in.readString();
+        this.baseIcon = in.readString();
         this.applicationIcon = in.createByteArray();
         this.imageUri = in.readString();
     }

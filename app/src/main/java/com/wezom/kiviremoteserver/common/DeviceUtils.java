@@ -11,19 +11,26 @@ import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.support.annotation.RequiresApi;
+import android.util.Base64;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.wezom.kiviremoteserver.net.server.model.Channel;
 import com.wezom.kiviremoteserver.net.server.model.LauncherBasedData;
+import com.wezom.kiviremoteserver.net.server.model.PreviewCommonStructure;
 import com.wezom.kiviremoteserver.net.server.model.Recommendation;
+import com.wezom.kiviremoteserver.net.server.model.ServerApplicationInfo;
+import com.wezom.kiviremoteserver.service.inputs.InputSourceHelper;
 
+import java.io.ByteArrayOutputStream;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Set;
 
+import io.reactivex.Single;
 import timber.log.Timber;
 
 import static android.content.Context.UI_MODE_SERVICE;
@@ -41,6 +48,8 @@ public class DeviceUtils {
     private static final List<Channel> channels = new ArrayList<>();
     private static final List<Recommendation> recommendations = new ArrayList<>();
     private static final List<Recommendation> favourites = new ArrayList<>();
+    private static final List<PreviewCommonStructure> previewCommonStructures = new ArrayList<>();
+
 
     public static String getDeviceName() {
         return Build.MODEL;
@@ -87,6 +96,98 @@ public class DeviceUtils {
         return userApps;
     }
 
+
+    public static Single<List<ServerApplicationInfo>> getTvAppsSingle(Context context) {
+        return Single.create(emitter -> {
+            try {
+                List<ServerApplicationInfo> s =getTvApps(context);
+                emitter.onSuccess(s);
+            } catch (Exception e) {
+                emitter.onError(e);
+            }
+        });
+    }
+
+    public static List<ServerApplicationInfo> getTvApps(Context context) {
+        List<ServerApplicationInfo> appList = new ArrayList<>();
+        for (ApplicationInfo appInfo : getInstalledApplications(context, context.getPackageManager())) {
+            Drawable icon = null;
+            try {
+                icon = context.getPackageManager().getApplicationBanner(appInfo.packageName);
+            } catch (PackageManager.NameNotFoundException e) {
+                Timber.e(e, e.getMessage());
+            }
+
+            byte[] iconBytes = new byte[]{};
+
+            if (icon != null) {
+                Bitmap bitmap = DeviceUtils.drawableToBitmap(icon);
+                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.PNG, 60, stream);
+                iconBytes = stream.toByteArray();
+            }
+
+//            String uri = Uri.parse("android.resource://" + appInfo.packageName + "/" + appInfo.banner).toString();
+            appList.add(new ServerApplicationInfo()
+                    .setApplicationName(DeviceUtils.getApplicationName(context.getPackageManager(), appInfo))
+                    .setApplicationPackage(appInfo.packageName)
+                    .setApplicationIcon(iconBytes)
+                    .setBaseIcon(Base64.encodeToString(iconBytes, Base64.DEFAULT))
+            );
+        }
+        return appList;
+    }
+
+
+    public static Single<List<PreviewCommonStructure>> getPreviewCommonStructureSingle(Context context) {
+        return Single.create(emitter -> {
+            try {
+                List<PreviewCommonStructure> s = getPreviewCommonStructure(context);
+                emitter.onSuccess(s);
+            } catch (Exception e) {
+                emitter.onError(e);
+            }
+        });
+    }
+
+    public static List<PreviewCommonStructure> getPreviewCommonStructure(Context context) {
+        previewCommonStructures.clear();
+
+        for (LauncherBasedData data : getRecommendations(context)) {
+            previewCommonStructures.add(new PreviewCommonStructure(data.getType().name(),
+                    data.getID(), data.getName(),
+                    data.getBaseIcon(),
+                    data.getImageUrl(),
+                    data.isActive(), data.getAdditionalData()));
+        }
+        for (LauncherBasedData data : getChannels(context)) {
+            previewCommonStructures.add(new PreviewCommonStructure(data.getType().name(),
+                    data.getID(), data.getName(),
+                    data.getBaseIcon(),
+                    data.getImageUrl(),
+                    data.isActive(), data.getAdditionalData()));
+        }
+
+        for (LauncherBasedData data : InputSourceHelper.getAsInputs(context)) {
+            previewCommonStructures.add(new PreviewCommonStructure(data.getType().name(),
+                    data.getID(), data.getName(),
+                    data.getBaseIcon(),
+                    data.getImageUrl(),
+                    data.isActive(), data.getAdditionalData()));
+        }
+
+        for (LauncherBasedData data : getTvApps(context)) {
+            previewCommonStructures.add(new PreviewCommonStructure(data.getType().name(),
+                    data.getID(), data.getName(),
+                    data.getBaseIcon(),
+                    data.getImageUrl(),
+                    data.isActive(), data.getAdditionalData()));
+        }
+
+        return previewCommonStructures;
+    }
+
+
     public static List<Recommendation> getRecommendations(Context context) {
         recommendations.clear();
         for (LauncherBasedData data : readData(new TypeToken<ArrayList<Recommendation>>() {
@@ -114,14 +215,14 @@ public class DeviceUtils {
         return channels;
     }
 
-    private static List<LauncherBasedData> readData(Type typeOfT,LauncherBasedData.TYPE type,  Context context) {
+    private static List<LauncherBasedData> readData(Type typeOfT, LauncherBasedData.TYPE type, Context context) {
         SharedPreferences preferences = getLauncherPreference(type, context);
 
         if (preferences != null) {
             try {
                 String value = preferences.getString(Constants.LAUNCHER_PREF_KEY, "");
                 return new Gson().fromJson(value, typeOfT);
-            }catch (Exception e ){
+            } catch (Exception e) {
                 Timber.e("Can't get launcher based from gson  " + type.name());
             }
         } else {

@@ -30,6 +30,11 @@ public class Constants {
     public static final int NO_VALUE = -1;
     public static final int SERV_REALTEK = 1;
     public static final int SERV_MSTAR = 0;
+    public static final int APP_ICON_W = 160;
+    public static final int APP_ICON_H = 90;
+    public static final int INPUT_ICON_WH = 85;
+
+
 
     public static final int APPS_SENDING_DELAY = 300; // for some reason PM collecting old app's if asking immediately after package removed
     public static final int SCROLL_VELOCITY_MS = 300;

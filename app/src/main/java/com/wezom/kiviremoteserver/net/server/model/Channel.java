@@ -85,12 +85,7 @@ public class Channel implements LauncherBasedData {
     }
 
     @Override
-    public String getLocalUri() {
-        return null;
-    }
-
-    @Override
-    public String getPackageName() {
+    public String getBaseIcon() {
         return null;
     }
 

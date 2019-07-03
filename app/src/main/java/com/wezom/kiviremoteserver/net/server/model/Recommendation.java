@@ -70,12 +70,7 @@ public class Recommendation implements LauncherBasedData {
     }
 
     @Override
-    public String getLocalUri() {
-        return uri;
-    }
-
-    @Override
-    public String getPackageName() {
+    public String getBaseIcon() {
         return null;
     }
 

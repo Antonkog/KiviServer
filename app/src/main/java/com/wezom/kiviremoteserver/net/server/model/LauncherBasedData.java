@@ -8,8 +8,7 @@ public interface LauncherBasedData extends Parcelable {
     String getID ();
     String getName();
     String getImageUrl();
-    String getLocalUri();
-    String getPackageName();
+    String getBaseIcon();
     Boolean isActive();
     TYPE getType();
     HashMap<String,String> getAdditionalData();

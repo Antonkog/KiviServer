@@ -17,7 +17,7 @@ apk_host2="./app/build/outputs/apk/realtek/debug/server_v2rtk.apk"
 path_sysapp="/system/priv-app/KiviServer/KiviServer.apk" # assuming the app is priviledged
 
 #./gradlew assembleDebug || exit -1 # exit on failure
-$ADB connect 192.168.0.146:5555 || exit -1
+$ADB connect 192.168.0.144:5555 || exit -1
 
 java -jar ${autoSign} ${sign509} ${signPk8} ${apk_host}  ${apk_host2}
 
@@ -25,7 +25,7 @@ java -jar ${autoSign} ${sign509} ${signPk8} ${apk_host}  ${apk_host2}
 $ADB devices -l
 $ADB root 2> /dev/null
 
-$ADB connect 192.168.0.146:5555 || exit -1
+$ADB connect 192.168.0.144:5555 || exit -1
 
 
 $ADB remount # mount system
