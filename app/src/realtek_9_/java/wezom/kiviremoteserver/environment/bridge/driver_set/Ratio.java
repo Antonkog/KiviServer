@@ -14,10 +14,14 @@ import java.util.List;
 
 public enum Ratio implements AvailableValues {
 
+    //    VIDEO_ARC_DEFAULT(1, R.string.default_r),
+//    VIDEO_ARC_16x9(9, R.string.r_16x9),
+//    VIDEO_ARC_4x3(5, R.string.r_4x3),
+//    VIDEO_ARC_AUTO(10, R.string.auto);
     VIDEO_ARC_DEFAULT(1, R.string.default_r),
-    VIDEO_ARC_16x9(9, R.string.r_16x9),
+    VIDEO_ARC_16x9(10, R.string.r_16x9),
     VIDEO_ARC_4x3(5, R.string.r_4x3),
-    VIDEO_ARC_AUTO(10, R.string.auto);
+    VIDEO_ARC_AUTO(8, R.string.auto);
 
     int id;
     int string;
@@ -34,6 +38,7 @@ public enum Ratio implements AvailableValues {
     public int getString() {
         return string;
     }
+
     @Nullable
     public static Ratio getByID(int id) {
         for (Ratio port : values()) {
@@ -53,7 +58,7 @@ public enum Ratio implements AvailableValues {
         List<Ratio> modes = getRatios();
         int[] result = new int[modes.size()];
         for (int i = 0; i < modes.size(); i++) {
-            result[i]= modes.get(i).getId();
+            result[i] = modes.get(i).getId();
         }
         return result;
     }
@@ -66,7 +71,7 @@ public enum Ratio implements AvailableValues {
             Ratio temp = modes.get(i);
             linkedList.add(new DriverValue(Ratio.class.getSimpleName(),
                     context.getResources().getString(temp.getString()),
-                    temp.getId() +""
+                    temp.getId() + ""
                     , temp.getId(),
                     false));
         }
@@ -74,8 +79,7 @@ public enum Ratio implements AvailableValues {
     }
 
 
-
-    public List<Ratio> getRatios (){
+    public List<Ratio> getRatios() {
         return Arrays.asList(
                 Ratio.VIDEO_ARC_DEFAULT,
                 Ratio.VIDEO_ARC_16x9,

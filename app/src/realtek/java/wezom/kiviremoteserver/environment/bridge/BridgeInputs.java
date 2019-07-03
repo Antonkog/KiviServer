@@ -28,11 +28,11 @@ public class BridgeInputs {
     public void getPortsList(ArrayList<InputSourceHelper.INPUT_PORT> result, Context context) {
         String modelNew = App.getProperty("ro.ota.modelname").trim();
         boolean is2831 = "2831".equals(modelNew);
-        boolean is2851 = "2851".equals(modelNew) ||
-                "2842P533".equals(modelNew) ||
+        boolean is2851 = "2851".equals(modelNew);
+        boolean is2842 = "2842P533".equals(modelNew) ||
                 "2842P735".equals(modelNew);
         //  Toast.makeText(context, "is 2851 " + is2851, Toast.LENGTH_LONG).show();
-        if (is2851) {
+        if (is2851 || is2842) {
             result.add(InputSourceHelper.INPUT_PORT.INPUT_SOURCE_ATV);
             result.add(InputSourceHelper.INPUT_PORT.INPUT_SOURCE_CVBS);
             result.add(InputSourceHelper.INPUT_PORT.INPUT_SOURCE_HDMI);

@@ -37,24 +37,27 @@ android {
         javaMaxHeapSize "4g"
     }
 
-    sourceSets{
-        realtek_9_{
-            java.srcDirs("src/realtek/java")
-        }
-    }
+
     flavorDimensions "dim1"
     productFlavors {
         mstar {
             dimension "dim1"
         }
-        realtek {
+        realtek_7_ {
             dimension "dim1"
         }
         realtek_9_ {
             dimension "dim1"
         }
     }
-
+    sourceSets {
+        realtek_9_ {
+            java.srcDirs("src/realtek/java", "src/realtek_9_/java")
+        }
+        realtek_7_ {
+            java.srcDirs("src/realtek/java", "src/realtek_7_/java")
+        }
+    }
     buildTypes {
         release {
             minifyEnabled true
@@ -116,9 +119,9 @@ private String generateVersionName() {
 }
 
 dependencies {
-   // implementation fileTree(include: ['*.jar'], dir: 'libs')
+    // implementation fileTree(include: ['*.jar'], dir: 'libs')
     mstarImplementation fileTree(include: ['*.jar', '*.aar'], dir: 'libs')
-    realtekImplementation fileTree(include: ['*.jar', '*.aar'], dir: 'libs-realtek')
+    realtek_7_Implementation fileTree(include: ['*.jar', '*.aar'], dir: 'libs-realtek')
     realtek_9_Implementation fileTree(include: ['*.jar', '*.aar'], dir: 'libs-realtek_9_')
     implementation deps.support.appCompat
     implementation deps.support.v4
