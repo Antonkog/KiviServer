@@ -24,8 +24,13 @@ import com.wezom.kiviremoteserver.bus.NewDataEvent;
 import com.wezom.kiviremoteserver.bus.PingEvent;
 import com.wezom.kiviremoteserver.bus.SendAppsListEvent;
 import com.wezom.kiviremoteserver.bus.SendAspectEvent;
+import com.wezom.kiviremoteserver.bus.SendChannelsEvent;
+import com.wezom.kiviremoteserver.bus.SendFavouritesEvent;
 import com.wezom.kiviremoteserver.bus.SendInitialEvent;
+import com.wezom.kiviremoteserver.bus.SendInputsEvent;
+import com.wezom.kiviremoteserver.bus.SendRecommendationsEvent;
 import com.wezom.kiviremoteserver.bus.SendVolumeEvent;
+import com.wezom.kiviremoteserver.bus.ShowHideAspectEvent;
 import com.wezom.kiviremoteserver.bus.ShowKeyboardEvent;
 import com.wezom.kiviremoteserver.common.Constants;
 import com.wezom.kiviremoteserver.common.DeviceUtils;
@@ -34,6 +39,9 @@ import com.wezom.kiviremoteserver.common.RxBus;
 import com.wezom.kiviremoteserver.common.Utils;
 import com.wezom.kiviremoteserver.interfaces.DataStructure;
 import com.wezom.kiviremoteserver.interfaces.EventProtocolExecutor;
+import com.wezom.kiviremoteserver.interfaces.InitialMessage;
+import com.wezom.kiviremoteserver.net.server.model.LauncherBasedData;
+import com.wezom.kiviremoteserver.service.inputs.InputSourceHelper;
 
 import java.util.concurrent.TimeUnit;
 
@@ -55,6 +63,7 @@ import static com.wezom.kiviremoteserver.net.nsd.NsdUtil.DEVICE_NAME_KEY;
 public class ExecutorServiceIME extends PinyinIME implements EventProtocolExecutor {
 
     private AudioManager audioManager;
+    private InputSourceHelper inputSourceHelper = null;
 
     private Disposable scrollDisposable;
     private Disposable requestAppsDisposable;
@@ -354,8 +363,8 @@ public class ExecutorServiceIME extends PinyinIME implements EventProtocolExecut
                     }
 
                     requestAppsDisposable = Observable
-                            .fromCallable(() -> DeviceUtils.getInstalledApplications(this, getPackageManager()))
-                            .subscribeOn(Schedulers.io())
+                            .fromCallable(() -> DeviceUtils.getTvApps(this, true))
+                            .subscribeOn(Schedulers.computation())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(
                                     apps -> RxBus.INSTANCE.publish(new SendAppsListEvent(apps)),
@@ -382,25 +391,17 @@ public class ExecutorServiceIME extends PinyinIME implements EventProtocolExecut
                     //   launchApp("com.funshion.poweroffdialog");
                     break;
 
-                case SCROLL: //for old version of remoteControl versionCode<20\
+                case SCROLL:
                     float dy = dataStructure.getMotion().get(1);
                     if (isBrowserCurrent()) {
                         scroll(dy);
                     } else {
-                        if(System.currentTimeMillis() - scrollTime > Constants.SCROLL_VELOCITY_MS){
+                        if (System.currentTimeMillis() - scrollTime > Constants.SCROLL_VELOCITY_MS) {
                             scrollTime = System.currentTimeMillis();
                             if (dy > 0) executeCommand(KeyEvent.KEYCODE_DPAD_DOWN);
                             else executeCommand(KeyEvent.KEYCODE_DPAD_UP);
                         }
                     }
-                    break;
-                case SCROLL_BOTTOM_TO_TOP:  //todo: for remote verion 1.1.14 versionCode52 remove later
-                    if (isBrowserCurrent()) scroll(-dataStructure.getMotion().get(1));
-                    else executeCommand(KeyEvent.KEYCODE_DPAD_DOWN);
-                    break;
-                case SCROLL_TOP_TO_BOTTOM: //todo: for remote verion 1.1.14 versionCode52 remove later
-                    if (isBrowserCurrent()) scroll(dataStructure.getMotion().get(1));
-                    else executeCommand(KeyEvent.KEYCODE_DPAD_UP);
                     break;
                 case HOME_DOWN:
                     executeKeyDownInstrumentation(KeyEvent.KEYCODE_HOME);
@@ -408,11 +409,9 @@ public class ExecutorServiceIME extends PinyinIME implements EventProtocolExecut
                 case HOME_UP:
                     navigateHome();
                     break;
-
                 case LAUNCH_QUICK_APPS:
                     launchQuickApps();
                     break;
-
                 case NAME_CHANGE:
                     String name = dataStructure.getArgs().get(0);
                     if (name != null && !name.trim().isEmpty()) {
@@ -423,13 +422,78 @@ public class ExecutorServiceIME extends PinyinIME implements EventProtocolExecut
                 case REQUEST_ASPECT:
                     RxBus.INSTANCE.publish(new SendAspectEvent());
                     break;
+                case SHOW_OR_HIDE_ASPECT:
+                    RxBus.INSTANCE.publish(new ShowHideAspectEvent());
+                    break;
                 case REQUEST_INITIAL:
-                    RxBus.INSTANCE.publish(new SendInitialEvent());
+                    InitialMessage.getInstance().setDriverValueListSingle(getApplicationContext()).
+                            subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(
+                                    initialMessage -> RxBus.INSTANCE.publish(new SendInitialEvent(initialMessage)),
+                                    e -> Timber.e(e, e.getMessage()));
+                    break;
+                case REQUEST_INITIAL_II:
+                    DeviceUtils.getPreviewCommonStructureSingle(getApplicationContext()).
+                            subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(
+                                    previewCommonStructures -> RxBus.INSTANCE.publish(new SendInitialEvent(previewCommonStructures)),
+                                    e -> Timber.e(e, e.getMessage()));
+                    break;
+                case REQUEST_CHANNELS:
+                    RxBus.INSTANCE.publish(new SendChannelsEvent());
+                    break;
+                case LAUNCH_CHANNEL:
+                    startLauncherIntent(LauncherBasedData.TYPE.CHANNEL, dataStructure.getArgs().get(0));
+                    break;
+                case REQUEST_RECOMMENDATIONS:
+                    RxBus.INSTANCE.publish(new SendRecommendationsEvent());
+                    break;
+                case REQUEST_FAVORITES:
+                    RxBus.INSTANCE.publish(new SendFavouritesEvent());
+                    break;
+                case LAUNCH_RECOMMENDATION:
+                    startLauncherIntent(LauncherBasedData.TYPE.RECOMMENDATION, dataStructure.getArgs().get(0));
+                    break;
+                case LAUNCH_FAVORITE:
+                    startLauncherIntent(LauncherBasedData.TYPE.FAVOURITE, dataStructure.getArgs().get(0));
+                    break;
+                case REQUEST_INPUTS:
+                    Timber.d("Inputs requested");
+                    RxBus.INSTANCE.publish(new SendInputsEvent());
+                    break;
+                case CHANGE_INPUT:
+                    changeInput(Integer.parseInt(dataStructure.getArgs().get(0)));
                     break;
                 default:
                     Timber.e("some not handled action in IME => %s", dataStructure.getAction());
                     break;
             }
+    }
+
+    private void changeInput(int inputId) {
+        if (inputSourceHelper == null)
+            inputSourceHelper = new InputSourceHelper();
+        inputSourceHelper.changeInput(inputId, getApplicationContext());
+    }
+
+    private void startLauncherIntent(LauncherBasedData.TYPE type, String args) {
+        Intent i = new Intent();
+        i.setComponent(new ComponentName(Constants.LAUNCHER_PACKAGE, Constants.LAUNCHER_SERVICE));
+        switch (type) {
+            case CHANNEL:
+                i.putExtra("type", Constants.CHANNEL_MANAGER);
+                break;
+            case RECOMMENDATION:
+                i.putExtra("type", Constants.RECOMMENDATION_MANAGER);
+                break;
+            case FAVOURITE:
+                i.putExtra("type", Constants.FAVORITES_MANAGER);
+                break;
+        }
+        i.putExtra("item", args);
+        startService(i);
     }
 
     private void launchApp(String packageName) {

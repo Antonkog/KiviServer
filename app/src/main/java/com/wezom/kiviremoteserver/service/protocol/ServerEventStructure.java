@@ -7,6 +7,10 @@ import com.wezom.kiviremoteserver.common.KiviProtocolStructure;
 import com.wezom.kiviremoteserver.interfaces.AspectAvailable;
 import com.wezom.kiviremoteserver.interfaces.AspectMessage;
 import com.wezom.kiviremoteserver.interfaces.InitialMessage;
+import com.wezom.kiviremoteserver.net.server.model.Channel;
+import com.wezom.kiviremoteserver.net.server.model.Input;
+import com.wezom.kiviremoteserver.net.server.model.PreviewCommonStructure;
+import com.wezom.kiviremoteserver.net.server.model.Recommendation;
 import com.wezom.kiviremoteserver.net.server.model.ServerApplicationInfo;
 
 import java.util.List;
@@ -19,6 +23,11 @@ public class ServerEventStructure {
     private KiviProtocolStructure.ServerEventType event;
     @SerializedName("app_info")
     private List<ServerApplicationInfo> appInfo;
+    private List<PreviewCommonStructure> previewCommonStructures;
+    private List<Recommendation> recommendations;
+    private List<Recommendation> favorites;
+    private List<Channel> channels;
+    private List<Input> inputs;
     private Integer volume;
     private AspectMessage aspectMessage;
     private AspectAvailable availableAspectValues;
@@ -35,8 +44,36 @@ public class ServerEventStructure {
         this.event = event;
     }
 
-    public ServerEventStructure(List<ServerApplicationInfo> appInfo) {
+
+    public ServerEventStructure setAvailableInputs(List<Input> inputs) {
+        this.inputs = inputs;
+        return this;
+    }
+
+    public ServerEventStructure addPreviewCommonStructures(List<PreviewCommonStructure> previewCommonStructures) {
+        this.previewCommonStructures = previewCommonStructures;
+        return this;
+    }
+
+    public ServerEventStructure setAvailableRecommendations(List<Recommendation> recommendations) {
+        this.recommendations = recommendations;
+        return this;
+    }
+
+    public ServerEventStructure setAvailableChannels(List<Channel> channels) {
+        this.channels = channels;
+        return this;
+    }
+
+    public ServerEventStructure setAvailableFavourites(List<Recommendation> favorites) {
+        this.favorites = favorites;
+        return this;
+    }
+
+
+    public ServerEventStructure addApps(List<ServerApplicationInfo> appInfo) {
         this.appInfo = appInfo;
+        return this;
     }
 
     public ServerEventStructure(KiviProtocolStructure.ServerEventType event, int volume) {

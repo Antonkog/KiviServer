@@ -2,18 +2,26 @@ package com.wezom.kiviremoteserver.common;
 
 
 import android.app.ActivityManager;
+import android.content.ContentResolver;
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.support.graphics.drawable.VectorDrawableCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
+import android.util.Log;
+import android.widget.Toast;
+
+import com.wezom.kiviremoteserver.BuildConfig;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -42,6 +50,41 @@ public class Utils {
         }
 
         return bitmap;
+    }
+
+    public static Uri resourceToUri(Resources resources, int resID) {
+        return Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" +
+                resources.getResourcePackageName(resID) + '/' +
+                resources.getResourceTypeName(resID) + '/' +
+                resources.getResourceEntryName(resID) );
+    }
+
+   public static File saveBitmapToFile(File dir, String fileName, Bitmap bm,
+                             Bitmap.CompressFormat format, int quality) {
+
+        File imageFile = new File(dir,fileName);
+
+        FileOutputStream fos = null;
+        try {
+            fos = new FileOutputStream(imageFile);
+
+            bm.compress(format,quality,fos);
+
+            fos.close();
+
+            return imageFile;
+        }
+        catch (IOException e) {
+            Log.e("app",e.getMessage());
+            if (fos != null) {
+                try {
+                    fos.close();
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+            }
+        }
+        return null;
     }
 
     public static boolean getMuteStatus(AudioManager audioManager) {
@@ -78,9 +121,16 @@ public class Utils {
     }
 
 
+    private final static String TAG = "DebugUtils";
+
+
     public static void appendLog(String text) {
-        System.out.println(text);
-        Timber.i(text);
+        appendLog(TAG, text);
+    }
+
+    public static void appendLog(String tag, String text) {
+        Log.e(tag, text);
+        Timber.e(text);
         File logFile = getLogFile();
         try {
             if (!logFile.exists()) {
@@ -91,11 +141,35 @@ public class Utils {
             calendar.setTimeInMillis(System.currentTimeMillis());
 
             BufferedWriter buf = new BufferedWriter(new FileWriter(logFile, true));
-            buf.append(text + " " + calendar.getTime().toString()) ;
+            buf.append(text + " " + calendar.getTime().toString());
             buf.newLine();
             buf.close();
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    public static void showDebugErrorMessage(Throwable throwable, Context context) {
+        if (BuildConfig.DEBUG) {
+            throwable.printStackTrace();
+            Toast.makeText(context, throwable.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public static void logV(String tag, String message) {
+        if (tag != null && message != null && !message.isEmpty() && BuildConfig.DEBUG)
+            Log.v(tag, message);
+    }
+
+    public static void logE(String tag, String message) {
+        if (tag != null && message != null && !message.isEmpty()) {
+            Log.e(tag, message);
+            if (!BuildConfig.DEBUG)
+                try {
+                    Timber.e(tag, message);
+                } catch (Exception e) {
+                    Log.e("FirebaseCrash", e.getMessage());
+                }
         }
     }
 }

@@ -1,20 +1,31 @@
 package com.wezom.kiviremoteserver.service.inputs;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
+import android.util.Base64;
 
 import com.wezom.kiviremoteserver.App;
 import com.wezom.kiviremoteserver.R;
 import com.wezom.kiviremoteserver.common.Constants;
+import com.wezom.kiviremoteserver.common.DeviceUtils;
+import com.wezom.kiviremoteserver.common.extensions.ViewExtensionsKt;
 import com.wezom.kiviremoteserver.environment.EnvironmentInputsHelper;
 import com.wezom.kiviremoteserver.interfaces.DriverValue;
+import com.wezom.kiviremoteserver.net.server.model.Input;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+
+import io.reactivex.Single;
+import timber.log.Timber;
 
 
 /**
@@ -209,6 +220,10 @@ public class InputSourceHelper {
             return id;
         }
 
+        public String getStringId() {
+            return id + "";
+        }
+
         public int getNameResource() {
             return nameResoucre;
         }
@@ -221,15 +236,71 @@ public class InputSourceHelper {
     public static List<DriverValue> getAsDriverList(Context context) {
         List<InputSourceHelper.INPUT_PORT> inputs = getPortsList(context);
         LinkedList<DriverValue> linkedList = new LinkedList<>();
+
+        int currentPort = new EnvironmentInputsHelper().getCurrentTvInputSource();
+
         for (int i = 0; i < inputs.size(); i++) {
             InputSourceHelper.INPUT_PORT temp = inputs.get(i);
 
             linkedList.add(new DriverValue(INPUT_PORT.class.getSimpleName(),
                     context.getResources().getString(temp.getNameResource()),
-                    temp.getId() + ""
+                    temp.getStringId()
                     , temp.getId(),
-                    false));
+                    currentPort == temp.getId()));
         }
         return linkedList;
     }
+
+
+    public static List<Input> getAsInputs(Context context) {
+        List<InputSourceHelper.INPUT_PORT> inputs = getPortsList(context);
+        Set<Input> set = new TreeSet<>();
+
+       int currentPort =  new EnvironmentInputsHelper().getCurrentTvInputSource();
+
+        for (int i = 0; i < inputs.size(); i++) {
+            InputSourceHelper.INPUT_PORT temp = inputs.get(i);
+
+            try {
+                byte[] iconBytes;
+
+                Bitmap bitmap = ViewExtensionsKt.createBitmap(context.getResources().getDrawable(temp.drawable), ViewExtensionsKt.dpToPx(context, Constants.APP_ICON_W),ViewExtensionsKt.dpToPx(context, Constants.APP_ICON_H));
+                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 60, stream);
+                iconBytes = stream.toByteArray();
+
+                String byteString = Base64.encodeToString(iconBytes, Base64.DEFAULT);
+
+                set.add(new Input()
+                        .addPortName(context.getResources().getString(temp.getNameResource()))
+                        .addActive(currentPort == temp.getId())
+                        .addInputIcon(byteString)
+                        .addPortNum(temp.getId()));
+
+
+            } catch (Exception e) {
+                Timber.e(e);
+                set.add(new Input()
+                        .addPortName(context.getResources().getString(temp.getNameResource()))
+                        .addActive(currentPort == temp.getId())
+                        .addPortNum(temp.getId()));
+            }
+        }
+        return new LinkedList<>(set);
+    }
+
+
+    public static Single <List<Input>> getInputsSingle(Context context) {
+        return Single.create(emitter -> {
+
+            Timber.e("getAsInputs started");
+            try{
+                List<Input> inputs = getAsInputs(context);
+                emitter.onSuccess(inputs);
+            }catch (Exception e){
+                emitter.onError(e);
+            }
+        });
+    }
+
 }

@@ -7,11 +7,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
 import android.os.Binder;
 import android.os.Handler;
@@ -26,6 +22,7 @@ import android.util.Pair;
 import com.google.gson.Gson;
 import com.wezom.kiviremoteserver.App;
 import com.wezom.kiviremoteserver.R;
+import com.wezom.kiviremoteserver.bus.AppsChangedEvent;
 import com.wezom.kiviremoteserver.bus.HideKeyboardEvent;
 import com.wezom.kiviremoteserver.bus.Keyboard200;
 import com.wezom.kiviremoteserver.bus.NewDataEvent;
@@ -33,9 +30,14 @@ import com.wezom.kiviremoteserver.bus.NewMessageEvent;
 import com.wezom.kiviremoteserver.bus.PingEvent;
 import com.wezom.kiviremoteserver.bus.SendAppsListEvent;
 import com.wezom.kiviremoteserver.bus.SendAspectEvent;
+import com.wezom.kiviremoteserver.bus.SendChannelsEvent;
+import com.wezom.kiviremoteserver.bus.SendFavouritesEvent;
 import com.wezom.kiviremoteserver.bus.SendInitialEvent;
+import com.wezom.kiviremoteserver.bus.SendInputsEvent;
+import com.wezom.kiviremoteserver.bus.SendRecommendationsEvent;
 import com.wezom.kiviremoteserver.bus.SendToSettingsEvent;
 import com.wezom.kiviremoteserver.bus.SendVolumeEvent;
+import com.wezom.kiviremoteserver.bus.ShowHideAspectEvent;
 import com.wezom.kiviremoteserver.bus.ShowKeyboardEvent;
 import com.wezom.kiviremoteserver.bus.SocketAcceptedEvent;
 import com.wezom.kiviremoteserver.bus.StopReceivingEvent;
@@ -55,17 +57,13 @@ import com.wezom.kiviremoteserver.interfaces.RemoteServer;
 import com.wezom.kiviremoteserver.mvp.view.ServiceMvpView;
 import com.wezom.kiviremoteserver.net.nsd.NsdUtil;
 import com.wezom.kiviremoteserver.net.server.KiviServer;
-import com.wezom.kiviremoteserver.net.server.model.ServerApplicationInfo;
 import com.wezom.kiviremoteserver.receiver.AppsChangeReceiver;
 import com.wezom.kiviremoteserver.receiver.ScreenOnReceiver;
 import com.wezom.kiviremoteserver.service.inputs.InputSourceHelper;
 import com.wezom.kiviremoteserver.service.protocol.ServerEventStructure;
 import com.wezom.kiviremoteserver.ui.activity.HomeActivity;
 
-import java.io.ByteArrayOutputStream;
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -75,6 +73,7 @@ import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
 import static com.wezom.kiviremoteserver.common.KiviProtocolStructure.ExecActionEnum.OPEN_SETTINGS;
@@ -105,8 +104,6 @@ public class KiviRemoteService extends Service implements ServiceMvpView {
 
     private String messIp = "";
     private final ServiceBinder binder;
-
-    private List<ServerApplicationInfo> appList;
 
     private CompositeDisposable disposables;
     private AudioManager audioManager;
@@ -188,8 +185,27 @@ public class KiviRemoteService extends Service implements ServiceMvpView {
                 sendAspectEvent -> server.sendAspect(prepareAspect(), AspectAvailable.getInstance()),
                 Timber::e));
 
+        disposables.add(bus.listen(ShowHideAspectEvent.class).subscribe(
+                event -> {
+                    Context ctx = getApplicationContext();
+                    if (Utils.isServiceRunning(AspectLayoutService.class, ctx)) {
+                        ctx.stopService(new Intent(ctx, AspectLayoutService.class));
+                    } else {
+                        startService(new Intent(ctx, AspectLayoutService.class));
+                    }
+                }
+                , Timber::e));
+
         disposables.add(bus.listen(SendInitialEvent.class).subscribe(
-                sendAspectEvent -> sentInitValues(),
+                sendInitialEvent -> {
+                    if (sendInitialEvent.getInitialMessage() != null) {
+                        server.sendInitialMsg(prepareAspect(), AspectAvailable.getInstance(), InitialMessage.getInstance());
+                    }
+                    if (sendInitialEvent.getStructures() != null) {
+                        server.postMessage(new ServerEventStructure(KiviProtocolStructure.ServerEventType.INITIAL_II).
+                                addPreviewCommonStructures(DeviceUtils.getPreviewCommonStructure(getApplicationContext())));
+                    }
+                },
                 Timber::e));
 
         disposables.add(bus
@@ -247,6 +263,15 @@ public class KiviRemoteService extends Service implements ServiceMvpView {
                 event -> server.stopReceiving(), Timber::e
         ));
 
+        disposables.add(bus.listen(SendInputsEvent.class).subscribe(event -> server.sendInputs(InputSourceHelper.getAsInputs(getApplicationContext())), Timber::e));
+
+        disposables.add(bus.listen(SendRecommendationsEvent.class).subscribe(event -> server.sendRecommendations(DeviceUtils.getRecommendations(getApplicationContext())), Timber::e));
+
+        disposables.add(bus.listen(SendChannelsEvent.class).subscribe(event -> server.sendChannels(DeviceUtils.getChannels(getApplicationContext())), Timber::e));
+
+        disposables.add(bus.listen(SendFavouritesEvent.class).subscribe(event -> server.sendFavourites(DeviceUtils.getFavourites(getApplicationContext())), Timber::e));
+
+
         disposables.add(bus.listen(SendVolumeEvent.class).subscribe(event ->
                         server.postMessage(new ServerEventStructure(
                                 KiviProtocolStructure.ServerEventType.VOLUME, event.getVolumeLevel())),
@@ -255,41 +280,10 @@ public class KiviRemoteService extends Service implements ServiceMvpView {
         disposables.add(bus.listen(PingEvent.class).subscribe(event -> server.sendPong(), Timber::e));
 
         disposables.add(bus.listen(SendAppsListEvent.class).subscribe(
-        event -> {
-            sendBySocket(new ServerEventStructure(addCollectedApps(event)));
-        }, Timber::e
+                event -> sendBySocket(new ServerEventStructure(KiviProtocolStructure.ServerEventType.APPS)
+                        .addApps(event.getServerApplicationInfos())), Timber::e
         ));
 
-    }
-
-    private List<ServerApplicationInfo> addCollectedApps(SendAppsListEvent event) {
-        if (appList == null) appList = new ArrayList<>();
-        appList.clear();
-        for (ApplicationInfo appInfo : event.getAppInfoList()) {
-            Drawable icon = null;
-            try {
-                icon = getPackageManager().getApplicationIcon(appInfo.packageName);
-            } catch (PackageManager.NameNotFoundException e) {
-                Timber.e(e, e.getMessage());
-            }
-
-            byte[] iconBytes = new byte[]{};
-
-            if (icon != null) {
-                Bitmap bitmap = DeviceUtils.drawableToBitmap(icon);
-                ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                bitmap.compress(Bitmap.CompressFormat.PNG, 60, stream);
-                iconBytes = stream.toByteArray();
-            }
-
-            appList.add(new ServerApplicationInfo()
-                    .setApplicationName(DeviceUtils.getApplicationName(getPackageManager(), appInfo))
-                    .setApplicationPackage(appInfo.packageName)
-                    .setApplicationIcon(iconBytes)
-            );
-
-        }
-        return appList;
     }
 
 
