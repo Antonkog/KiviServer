@@ -16,6 +16,7 @@ import android.util.Base64;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.wezom.kiviremoteserver.common.extensions.ViewExtensionsKt;
 import com.wezom.kiviremoteserver.net.server.model.Channel;
 import com.wezom.kiviremoteserver.net.server.model.LauncherBasedData;
 import com.wezom.kiviremoteserver.net.server.model.PreviewCommonStructure;
@@ -24,6 +25,7 @@ import com.wezom.kiviremoteserver.net.server.model.ServerApplicationInfo;
 import com.wezom.kiviremoteserver.service.inputs.InputSourceHelper;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -96,44 +98,50 @@ public class DeviceUtils {
         return userApps;
     }
 
+//
+//    public static Single<List<ServerApplicationInfo>> getTvAppsSingle(Context context) {
+//        return Single.create(emitter -> {
+//            try {
+//                List<ServerApplicationInfo> s = getTvApps(context);
+//                emitter.onSuccess(s);
+//            } catch (Exception e) {
+//                emitter.onError(e);
+//            }
+//        });
+//    }
 
-    public static Single<List<ServerApplicationInfo>> getTvAppsSingle(Context context) {
-        return Single.create(emitter -> {
-            try {
-                List<ServerApplicationInfo> s =getTvApps(context);
-                emitter.onSuccess(s);
-            } catch (Exception e) {
-                emitter.onError(e);
-            }
-        });
-    }
-
-    public static List<ServerApplicationInfo> getTvApps(Context context) {
+    public static List<ServerApplicationInfo> getTvApps(Context context, boolean oldRemoteRequest) {
         List<ServerApplicationInfo> appList = new ArrayList<>();
         for (ApplicationInfo appInfo : getInstalledApplications(context, context.getPackageManager())) {
-            Drawable icon = null;
-            try {
-                icon = context.getPackageManager().getApplicationBanner(appInfo.packageName);
-            } catch (PackageManager.NameNotFoundException e) {
-                Timber.e(e, e.getMessage());
-            }
+            try (ByteArrayOutputStream stream = new ByteArrayOutputStream()) {
+                Drawable banner = context.getPackageManager().getApplicationBanner(appInfo.packageName);
+                if (banner == null)
+                    banner = context.getPackageManager().getApplicationIcon(appInfo.packageName);
+                if (banner == null)
+                    banner = context.getPackageManager().getApplicationLogo(appInfo.packageName);
 
-            byte[] iconBytes = new byte[]{};
+                byte[] iconBytes = new byte[]{};
 
-            if (icon != null) {
-                Bitmap bitmap = DeviceUtils.drawableToBitmap(icon);
-                ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                bitmap.compress(Bitmap.CompressFormat.PNG, 60, stream);
-                iconBytes = stream.toByteArray();
-            }
+                if (banner != null) {
+                    Bitmap bitmap = ViewExtensionsKt.createBitmap(banner, ViewExtensionsKt.dpToPx(context, Constants.APP_ICON_W), ViewExtensionsKt.dpToPx(context, Constants.APP_ICON_H));
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 60, stream);
+                    iconBytes = stream.toByteArray();
+                }
 
+                String bytesString = Base64.encodeToString(iconBytes, Base64.DEFAULT);
 //            String uri = Uri.parse("android.resource://" + appInfo.packageName + "/" + appInfo.banner).toString();
-            appList.add(new ServerApplicationInfo()
-                    .setApplicationName(DeviceUtils.getApplicationName(context.getPackageManager(), appInfo))
-                    .setApplicationPackage(appInfo.packageName)
-                    .setApplicationIcon(iconBytes)
-                    .setBaseIcon(Base64.encodeToString(iconBytes, Base64.DEFAULT))
-            );
+                appList.add(new ServerApplicationInfo()
+                        .setApplicationName(DeviceUtils.getApplicationName(context.getPackageManager(), appInfo))
+                        .setApplicationPackage(appInfo.packageName)
+                        .setBaseIcon(bytesString)
+                        .setApplicationIcon(oldRemoteRequest ? iconBytes : null)
+
+                );
+            } catch (PackageManager.NameNotFoundException e) {
+                Timber.e("123app error", e.getMessage());
+            } catch (Exception e) {
+                Timber.e("123app error", e.getMessage());
+            }
         }
         return appList;
     }
@@ -176,7 +184,7 @@ public class DeviceUtils {
                     data.isActive(), data.getAdditionalData()));
         }
 
-        for (LauncherBasedData data : getTvApps(context)) {
+        for (LauncherBasedData data : getTvApps(context, false)) {
             previewCommonStructures.add(new PreviewCommonStructure(data.getType().name(),
                     data.getID(), data.getName(),
                     data.getBaseIcon(),

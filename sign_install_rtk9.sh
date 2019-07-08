@@ -7,17 +7,17 @@ ADB="adb"
 ADB_SH="$ADB shell"
 #/system/priv-app/KiviLauncher/KiviLauncher.apk
 
-signPk8="/Users/antonio/Documents/Auto-Sign/realtek/platform.pk8"
-sign509="/Users/antonio/Documents/Auto-Sign/realtek/platform.x509.pem"
+signPk8="/Users/antonio/Documents/Auto-Sign/realtek9/platform.pk8"
+sign509="/Users/antonio/Documents/Auto-Sign/realtek9/platform.x509.pem"
 autoSign="/Users/antonio/Documents/Auto-Sign/signapk.jar"
 
 apk_host="./app/build/outputs/apk/realtek/debug/app-realtek-debug.apk"
-apk_host2="./app/build/outputs/apk/realtek/debug/server_v2rtk.apk"
+apk_host2="./app/build/outputs/apk/realtek/debug/server_v2rtk9.apk"
 
 path_sysapp="/system/priv-app/KiviServer/KiviServer.apk" # assuming the app is priviledged
 
 #./gradlew assembleDebug || exit -1 # exit on failure
-$ADB connect 192.168.0.143:5555 || exit -1
+$ADB connect 192.168.0.144:5555 || exit -1
 
 java -jar ${autoSign} ${sign509} ${signPk8} ${apk_host}  ${apk_host2}
 
@@ -25,7 +25,7 @@ java -jar ${autoSign} ${sign509} ${signPk8} ${apk_host}  ${apk_host2}
 $ADB devices -l
 $ADB root 2> /dev/null
 
-$ADB connect 192.168.0.143:5555 || exit -1
+$ADB connect 192.168.0.144:5555 || exit -1
 
 
 $ADB remount # mount system

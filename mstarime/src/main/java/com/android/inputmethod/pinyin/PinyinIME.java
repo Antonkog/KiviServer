@@ -421,11 +421,17 @@ private int mapkeyForHKB(KeyEvent event) {
             getCurrentInputConnection().clearMetaKeyStates(allMetaState);
             return true;
         }
+
+        if (processEnterKeys(keyCode)) {
+            Log.d(TAG, "12312 processEnterKeys");
+            return true;
+        }
+
         //switch not working on HKB - antonio 19mar2019 is this still mstar patch?
         // If HKB is on to input English, by-pass the key event so that
         // default key listener will handle it.
         if (mInputModeSwitcher.isEnglishWithHkb()) {
-            Log.e(TAG, " mstar patch end mInputModeSwitcher.isEnglishWithHkb() return false");
+            Log.d(TAG, " mstar patch end mInputModeSwitcher.isEnglishWithHkb() return false");
             return false;
         }
 
@@ -501,20 +507,24 @@ private int mapkeyForHKB(KeyEvent event) {
      * @param keyCode  isAccfter
      * @return
      ***********************************************************************/
-    private boolean processEnterKeys(int keyCode, boolean isAccfter) {
+    private boolean processEnterKeys(int keyCode) {
         if (isInputViewShown() && (keyCode == KeyEvent.KEYCODE_ENTER || keyCode == KeyEvent.KEYCODE_DPAD_CENTER)) {
             if (isAfter) {
                 mSkbContainer.actionForEnterUp();
+                Log.d(TAG, "12312 processEnterKeys true");
                 return true;
+
             } else {
                 mSkbContainer.actionForEnterDown();
                 if (isSimulateEnterUp) {
                     mSkbContainer.actionForEnterUp();
                 }
+                Log.d(TAG, "12312 processEnterKeys true2");
                 return true;
 
             }
         }
+        Log.d(TAG, "12312 processEnterKeys false");
         return false;
     }
 
@@ -543,7 +553,7 @@ private int mapkeyForHKB(KeyEvent event) {
             return false;
         }
 
-        if (processEnterKeys(keyCode, isAfter)) {
+        if (processEnterKeys(keyCode)) {
             return true;
         }
 

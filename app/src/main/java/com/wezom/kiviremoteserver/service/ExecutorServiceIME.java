@@ -363,8 +363,8 @@ public class ExecutorServiceIME extends PinyinIME implements EventProtocolExecut
                     }
 
                     requestAppsDisposable = Observable
-                            .fromCallable(() -> DeviceUtils.getTvApps(this))
-                            .subscribeOn(Schedulers.io())
+                            .fromCallable(() -> DeviceUtils.getTvApps(this, true))
+                            .subscribeOn(Schedulers.computation())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(
                                     apps -> RxBus.INSTANCE.publish(new SendAppsListEvent(apps)),

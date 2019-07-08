@@ -1,5 +1,6 @@
 package com.wezom.kiviremoteserver.common.extensions
 
+import android.content.Context
 import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -9,12 +10,13 @@ import android.graphics.drawable.Drawable
 import timber.log.Timber
 
 
+fun dpToPx(context: Context, dps: Int) = Math.round(context.resources.displayMetrics.density * dps)
+
 fun createBitmap(drawable: Drawable, width: Int, height: Int): Bitmap {
     val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565)
     val canvas = Canvas(bitmap)
     drawable.setBounds(0, 0, canvas.width, canvas.height)
     drawable.draw(canvas)
-
     return bitmap
 }
 

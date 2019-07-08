@@ -38,7 +38,7 @@ public class AppsChangeReceiver extends BroadcastReceiver {
         }
 
         requestAppsDisposable = Observable
-                .fromCallable(() -> DeviceUtils.getTvApps(context))
+                .fromCallable(() -> DeviceUtils.getTvApps(context, true))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(

@@ -11,6 +11,7 @@ import com.wezom.kiviremoteserver.App;
 import com.wezom.kiviremoteserver.R;
 import com.wezom.kiviremoteserver.common.Constants;
 import com.wezom.kiviremoteserver.common.DeviceUtils;
+import com.wezom.kiviremoteserver.common.extensions.ViewExtensionsKt;
 import com.wezom.kiviremoteserver.environment.EnvironmentInputsHelper;
 import com.wezom.kiviremoteserver.interfaces.DriverValue;
 import com.wezom.kiviremoteserver.net.server.model.Input;
@@ -259,9 +260,9 @@ public class InputSourceHelper {
             try {
                 byte[] iconBytes;
 
-                Bitmap bitmap = DeviceUtils.drawableToBitmap(context.getResources().getDrawable(temp.drawable));
+                Bitmap bitmap = ViewExtensionsKt.createBitmap(context.getResources().getDrawable(temp.drawable), ViewExtensionsKt.dpToPx(context, Constants.APP_ICON_W),ViewExtensionsKt.dpToPx(context, Constants.APP_ICON_H));
                 ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                bitmap.compress(Bitmap.CompressFormat.PNG, 60, stream);
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 60, stream);
                 iconBytes = stream.toByteArray();
 
                 String byteString = Base64.encodeToString(iconBytes, Base64.DEFAULT);

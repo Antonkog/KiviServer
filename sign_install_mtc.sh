@@ -20,13 +20,13 @@ autoSign="/Users/antonio/Documents/Auto-Sign/signapk.jar"
 
 #./gradlew assembleDebug || exit -1 # exit on failure
 
-$ADB connect 192.168.0.151:5555 || exit -1
+$ADB connect 192.168.0.152:5555 || exit -1
 
 $ADB devices -l
 
 $ADB root 2> /dev/null
 
-$ADB connect 192.168.0.151:5555 || exit -1
+$ADB connect 192.168.0.152:5555 || exit -1
 
 $ADB remount # mount system
 
