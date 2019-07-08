@@ -423,7 +423,6 @@ private int mapkeyForHKB(KeyEvent event) {
         }
 
         if (processEnterKeys(keyCode)) {
-            Log.d(TAG, "12312 processEnterKeys");
             return true;
         }
 

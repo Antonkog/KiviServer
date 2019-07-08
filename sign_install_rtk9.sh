@@ -11,8 +11,8 @@ signPk8="/Users/antonio/Documents/Auto-Sign/realtek9/platform.pk8"
 sign509="/Users/antonio/Documents/Auto-Sign/realtek9/platform.x509.pem"
 autoSign="/Users/antonio/Documents/Auto-Sign/signapk.jar"
 
-apk_host="./app/build/outputs/apk/realtek/debug/app-realtek-debug.apk"
-apk_host2="./app/build/outputs/apk/realtek/debug/server_v2rtk9.apk"
+apk_host="./app/build/outputs/apk/realtek_9_/debug/app-realtek_9_-debug.apk"
+apk_host2="./app/build/outputs/apk/realtek_9_/debug/server_v2rtk9.apk"
 
 path_sysapp="/system/priv-app/KiviServer/KiviServer.apk" # assuming the app is priviledged
 
