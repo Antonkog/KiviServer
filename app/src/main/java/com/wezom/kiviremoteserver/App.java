@@ -50,12 +50,11 @@ public class App extends Application {
     private static ApplicationComponent appComponent;
     private static Context context;
     SharedPreferences prefs;
-    private static Tv rtkTV;
     Handler hdmiTimer = new Handler();
     Runnable runnable = new Runnable() {
         @Override
         public void run() {
-            checkHDMIStatus();
+            BridgeGeneral.checkHDMIStatus();
             hdmiTimer.postDelayed(runnable, 5000);
         }
     };
@@ -64,44 +63,9 @@ public class App extends Application {
     public static volatile boolean hdmiStatus3;
 
 
-    public static void checkHDMIStatus() {
-        boolean old1 = hdmiStatus1;
-        boolean old2 = hdmiStatus2;
-        boolean old3 = hdmiStatus3;
-        hdmiStatus1 = App.getTv().GetHDMIConnectionState(2);
-        hdmiStatus2 = App.getTv().GetHDMIConnectionState(1);
-        hdmiStatus3 = App.getTv().GetHDMIConnectionState(0);
-        if (old1 != hdmiStatus1 || old2 != hdmiStatus2 ||
-                old3 != hdmiStatus3) {
-            int i = -1;
-            if (old1 != hdmiStatus1 && hdmiStatus1) {
-                i = 1;
-            } else if (old2 != hdmiStatus2 && hdmiStatus2) {
-                i = 2;
-            } else if (old3 != hdmiStatus3 && hdmiStatus3) {
-                i = 3;
-            }
-            hdmiStatusChanged(i);
-        }
-    }
-
-    private static void hdmiStatusChanged(int id) {
-        //  context.sendBroadcast();
-        AspectLayoutService.updateIfNeeded(hdmiStatus1, hdmiStatus2, hdmiStatus3);
-        DelegatePlatformsService.sendInputsList(context);
-        if (id > 0)
-            startDialog(TYPE_HDMI, id, context);
-    }
 
     public static ApplicationComponent getApplicationComponent() {
         return appComponent;
-    }
-
-    private static Tv getTv() {
-        if (rtkTV == null) {
-            rtkTV = new Tv();
-        }
-        return rtkTV;
     }
 
     @Override
@@ -147,13 +111,20 @@ public class App extends Application {
         }
 
         ScreenOnReceiver.setInitialBackL(getBaseContext());
-        getTv();
         hdmiTimer.postDelayed(runnable, 5000);
 
     }
 
     private final static int TYPE_USB = 0;
     private final static int TYPE_HDMI = 1;
+
+    public static void hdmiStatusChanged(int id) {
+        //  context.sendBroadcast();
+        AspectLayoutService.updateIfNeeded(hdmiStatus1, hdmiStatus2, hdmiStatus3);
+        DelegatePlatformsService.sendInputsList(context);
+        if (id > 0)
+            startDialog(TYPE_HDMI, id, context);
+    }
 
     private static void startDialog(int type, int id, Context context) {
         WindowManager wmgr = (WindowManager) context

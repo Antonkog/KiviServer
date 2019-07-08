@@ -82,6 +82,8 @@ public class BridgeGeneral {
 
     }
 
+    public static void checkHDMIStatus() { }
+
     public void onPause() {
         try {
             if (runnable != null)

@@ -41,7 +41,7 @@ public class BridgeInputs {
                 result.add(InputSourceHelper.INPUT_PORT.INPUT_SOURCE_HDMI3);
 
             long time = System.currentTimeMillis();
-            App.checkHDMIStatus();
+            BridgeGeneral.checkHDMIStatus();
             Log.e("time_start", "hdmi stat = " + (System.currentTimeMillis() - time));
 
             InputSourceHelper.INPUT_PORT.INPUT_SOURCE_HDMI.setConnected(App.hdmiStatus1);
