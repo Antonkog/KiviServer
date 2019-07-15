@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Handler;
 
 import com.wezom.kiviremoteserver.bus.SendAppsListEvent;
+import com.wezom.kiviremoteserver.common.AppsInfoLoader;
 import com.wezom.kiviremoteserver.common.Constants;
 import com.wezom.kiviremoteserver.common.DeviceUtils;
 import com.wezom.kiviremoteserver.common.RxBus;
@@ -37,12 +38,12 @@ public class AppsChangeReceiver extends BroadcastReceiver {
             requestAppsDisposable.dispose();
         }
 
-        requestAppsDisposable = Observable
-                .fromCallable(() -> DeviceUtils.getTvApps(context, true))
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        apps -> RxBus.INSTANCE.publish(new SendAppsListEvent(apps)),
-                        e -> Timber.e(e, e.getMessage()));
+        requestAppsDisposable =
+                AppsInfoLoader.getAppsList(context)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                apps -> RxBus.INSTANCE.publish(new SendAppsListEvent(apps)),
+                                e -> Timber.e(e, e.getMessage()));
     }
 }

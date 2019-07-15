@@ -21,16 +21,13 @@ import com.wezom.kiviremoteserver.net.server.model.Channel;
 import com.wezom.kiviremoteserver.net.server.model.LauncherBasedData;
 import com.wezom.kiviremoteserver.net.server.model.PreviewCommonStructure;
 import com.wezom.kiviremoteserver.net.server.model.Recommendation;
-import com.wezom.kiviremoteserver.net.server.model.ServerApplicationInfo;
 import com.wezom.kiviremoteserver.service.inputs.InputSourceHelper;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
-import java.util.Set;
+
 
 import io.reactivex.Single;
 import timber.log.Timber;
@@ -44,31 +41,10 @@ import static android.content.Context.UI_MODE_SERVICE;
 public class DeviceUtils {
     private DeviceUtils() {
     }
-
-    private static final List<String> whiteListSystemApps = new ArrayList<>();
-    private static final List<ApplicationInfo> userApps = new ArrayList<>();
     private static final List<Channel> channels = new ArrayList<>();
     private static final List<Recommendation> recommendations = new ArrayList<>();
     private static final List<Recommendation> favourites = new ArrayList<>();
     private static final List<PreviewCommonStructure> previewCommonStructures = new ArrayList<>();
-
-
-    public static String getDeviceName() {
-        return Build.MODEL;
-    }
-
-    private static String capitalize(String s) {
-        if (s.isEmpty()) {
-            return "";
-        }
-
-        char first = s.charAt(0);
-        if (Character.isUpperCase(first)) {
-            return s;
-        } else {
-            return Character.toUpperCase(first) + s.substring(1);
-        }
-    }
 
     public static boolean isTvDevice(Context context) {
         UiModeManager uiModeManager = (UiModeManager) context.getSystemService(UI_MODE_SERVICE);
@@ -83,69 +59,6 @@ public class DeviceUtils {
     public static String getSystemName(Context context) {
         return android.os.Build.MODEL;
     }
-
-    public static List<ApplicationInfo> getInstalledApplications(Context context, PackageManager packageManager) {
-        userApps.clear();
-        getWhiteList(context);
-
-        for (ApplicationInfo app : packageManager.getInstalledApplications(PackageManager.GET_META_DATA)) {
-            if (packageManager.getLaunchIntentForPackage(app.packageName) != null && isNotExcluded(app))
-                // todo For testing purposes
-//            if (packageManager.getLaunchIntentForPackage(app.packageName) != null)
-                userApps.add(app);
-        }
-
-        return userApps;
-    }
-
-//
-//    public static Single<List<ServerApplicationInfo>> getTvAppsSingle(Context context) {
-//        return Single.create(emitter -> {
-//            try {
-//                List<ServerApplicationInfo> s = getTvApps(context);
-//                emitter.onSuccess(s);
-//            } catch (Exception e) {
-//                emitter.onError(e);
-//            }
-//        });
-//    }
-
-    public static List<ServerApplicationInfo> getTvApps(Context context, boolean oldRemoteRequest) {
-        List<ServerApplicationInfo> appList = new ArrayList<>();
-        for (ApplicationInfo appInfo : getInstalledApplications(context, context.getPackageManager())) {
-            try (ByteArrayOutputStream stream = new ByteArrayOutputStream()) {
-                Drawable banner = context.getPackageManager().getApplicationBanner(appInfo.packageName);
-                if (banner == null)
-                    banner = context.getPackageManager().getApplicationIcon(appInfo.packageName);
-                if (banner == null)
-                    banner = context.getPackageManager().getApplicationLogo(appInfo.packageName);
-
-                byte[] iconBytes = new byte[]{};
-
-                if (banner != null) {
-                    Bitmap bitmap = ViewExtensionsKt.createBitmap(banner, ViewExtensionsKt.dpToPx(context, Constants.APP_ICON_W), ViewExtensionsKt.dpToPx(context, Constants.APP_ICON_H));
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, 60, stream);
-                    iconBytes = stream.toByteArray();
-                }
-
-                String bytesString = Base64.encodeToString(iconBytes, Base64.DEFAULT);
-//            String uri = Uri.parse("android.resource://" + appInfo.packageName + "/" + appInfo.banner).toString();
-                appList.add(new ServerApplicationInfo()
-                        .setApplicationName(DeviceUtils.getApplicationName(context.getPackageManager(), appInfo))
-                        .setApplicationPackage(appInfo.packageName)
-                        .setBaseIcon(bytesString)
-                        .setApplicationIcon(oldRemoteRequest ? iconBytes : null)
-
-                );
-            } catch (PackageManager.NameNotFoundException e) {
-                Timber.e("123app error", e.getMessage());
-            } catch (Exception e) {
-                Timber.e("123app error", e.getMessage());
-            }
-        }
-        return appList;
-    }
-
 
     public static Single<List<PreviewCommonStructure>> getPreviewCommonStructureSingle(Context context) {
         return Single.create(emitter -> {
@@ -184,7 +97,7 @@ public class DeviceUtils {
                     data.isActive(), data.getAdditionalData()));
         }
 
-        for (LauncherBasedData data : getTvApps(context, false)) {
+        for (LauncherBasedData data : AppsInfoLoader.checkApps(context, false)) {
             previewCommonStructures.add(new PreviewCommonStructure(data.getType().name(),
                     data.getID(), data.getName(),
                     data.getBaseIcon(),
@@ -262,82 +175,7 @@ public class DeviceUtils {
     }
 
 
-    private static boolean isNotExcluded(ApplicationInfo info) {
-        if (info.packageName.equals("com.ua.mytrinity.tvplayer.kivitv"))
-            return true;
-
-        if (info.packageName.equals("com.wezom.kiviremoteserver"))
-            return false;
-
-        if (isSystemApp(info) && isInWhiteList(info.packageName))
-            return true;
-
-        if (!isSystemApp(info))
-            return true;
-
-        if (isSystemApp(info) && !isInWhiteList(info.packageName))
-            return false;
-
-        return false;
-    }
-
-    private static boolean isSystemApp(ApplicationInfo info) {
-        return (info.flags & ApplicationInfo.FLAG_SYSTEM) != 0;
-    }
-
-    private static boolean isInWhiteList(String packageName) {
-        return whiteListSystemApps.contains(packageName);
-    }
-
-    private static List<String> getWhiteList(Context context) {
-        Set<String> apps;
-        try {
-            Context myContext = context.createPackageContext("com.kivi.launcher",
-                    Context.MODE_PRIVATE);
-
-            SharedPreferences testPrefs = myContext.getSharedPreferences
-                    ("kivi.launcher", Context.MODE_PRIVATE);
-            apps = testPrefs.getStringSet("white_list", null);
-            if (apps != null) {
-                whiteListSystemApps.clear();
-                whiteListSystemApps.addAll(apps);
-            } else {
-                Timber.e("getWhiteList empty");
-            }
-        } catch (PackageManager.NameNotFoundException e) {
-            Timber.e(e, e.getMessage());
-        }
-        return whiteListSystemApps;
-    }
-
-    public static boolean isUserApp(ApplicationInfo info) {
-        int mask = ApplicationInfo.FLAG_SYSTEM | ApplicationInfo.FLAG_UPDATED_SYSTEM_APP;
-        return (info.flags & mask) == 0;
-    }
-
     public static String getApplicationName(PackageManager packageManager, ApplicationInfo applicationInfo) {
         return applicationInfo.loadLabel(packageManager).toString();
-    }
-
-    public static Bitmap drawableToBitmap(Drawable drawable) {
-        if (drawable instanceof BitmapDrawable) {
-            return ((BitmapDrawable) drawable).getBitmap();
-        }
-
-        final int width = !drawable.getBounds().isEmpty() ? drawable
-                .getBounds().width() : drawable.getIntrinsicWidth();
-
-        final int height = !drawable.getBounds().isEmpty() ? drawable
-                .getBounds().height() : drawable.getIntrinsicHeight();
-
-        final Bitmap bitmap = Bitmap.createBitmap(width <= 0 ? 1 : width,
-                height <= 0 ? 1 : height, Bitmap.Config.ARGB_8888);
-
-        Timber.d("Bitmap width - Height :", width + " : " + height);
-        Canvas canvas = new Canvas(bitmap);
-        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
-        drawable.draw(canvas);
-
-        return bitmap;
     }
 }

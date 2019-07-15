@@ -7,7 +7,9 @@ import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
+import com.wezom.kiviremoteserver.common.Constants
 import timber.log.Timber
+import java.io.ByteArrayOutputStream
 
 
 fun dpToPx(context: Context, dps: Int) = Math.round(context.resources.displayMetrics.density * dps)
@@ -18,6 +20,19 @@ fun createBitmap(drawable: Drawable, width: Int, height: Int): Bitmap {
     drawable.setBounds(0, 0, canvas.width, canvas.height)
     drawable.draw(canvas)
     return bitmap
+}
+
+fun getIconBytes(context: Context, banner: Drawable?): ByteArray? {
+        ByteArrayOutputStream().use { stream ->
+            var iconBytes = byteArrayOf()
+            if (banner != null) {
+                val bitmap = createBitmap(banner, dpToPx(context, Constants.APP_ICON_W), dpToPx(context, Constants.APP_ICON_H))
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 60, stream)
+                iconBytes = stream.toByteArray()
+            }
+            return iconBytes
+        }
+    return null
 }
 
 fun drawableToBitmap(drawable: Drawable): Bitmap {

@@ -73,7 +73,6 @@ import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
 import static com.wezom.kiviremoteserver.common.KiviProtocolStructure.ExecActionEnum.OPEN_SETTINGS;
@@ -125,7 +124,6 @@ public class KiviRemoteService extends Service implements ServiceMvpView {
                 InitialMessage message = InitialMessage.getInstance();
                 message.setDriverValueList(getApplicationContext());
                 server.sendInitialMsg(prepareAspect(), AspectAvailable.getInstance(), InitialMessage.getInstance());
-//                Timber.e("12345" + message.toString());
             } catch (Exception e) {
                 Timber.e(e.getMessage());
             }
@@ -280,15 +278,16 @@ public class KiviRemoteService extends Service implements ServiceMvpView {
         disposables.add(bus.listen(PingEvent.class).subscribe(event -> server.sendPong(), Timber::e));
 
         disposables.add(bus.listen(SendAppsListEvent.class).subscribe(
-                event -> sendBySocket(new ServerEventStructure(KiviProtocolStructure.ServerEventType.APPS)
-                        .addApps(event.getServerApplicationInfos())), Timber::e
+                event -> {
+                    sendBySocket(new ServerEventStructure(KiviProtocolStructure.ServerEventType.APPS)
+                            .addApps(event.getServerApplicationInfos()));
+                }, Timber::e
         ));
 
     }
 
 
     private void syncAspectWithPhone(AspectMessage message) {
-        Timber.i("got aspect : " + message.toString() + "picture " + pictureSettings.isSafe());
         if (message.settings != null) {
             Iterator it = message.settings.entrySet().iterator();
             while (it.hasNext()) {
