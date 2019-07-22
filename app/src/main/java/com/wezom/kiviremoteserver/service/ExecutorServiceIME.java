@@ -32,6 +32,7 @@ import com.wezom.kiviremoteserver.bus.SendRecommendationsEvent;
 import com.wezom.kiviremoteserver.bus.SendVolumeEvent;
 import com.wezom.kiviremoteserver.bus.ShowHideAspectEvent;
 import com.wezom.kiviremoteserver.bus.ShowKeyboardEvent;
+import com.wezom.kiviremoteserver.common.AppsInfoLoader;
 import com.wezom.kiviremoteserver.common.Constants;
 import com.wezom.kiviremoteserver.common.DeviceUtils;
 import com.wezom.kiviremoteserver.common.MotionRelay;
@@ -362,8 +363,7 @@ public class ExecutorServiceIME extends PinyinIME implements EventProtocolExecut
                         requestAppsDisposable.dispose();
                     }
 
-                    requestAppsDisposable = Observable
-                            .fromCallable(() -> DeviceUtils.getTvApps(this, true))
+                    requestAppsDisposable = AppsInfoLoader.getAppsList(getApplicationContext() )
                             .subscribeOn(Schedulers.computation())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(
