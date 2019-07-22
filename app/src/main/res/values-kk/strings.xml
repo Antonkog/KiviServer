@@ -71,7 +71,7 @@
     <string name="timer_off">Таймер сөндірілген</string>
     <string name="off">Сөнд</string>
     <string name="minutes">" мин"</string>
-    <string name="hours">" с"</string>
+    <string name="hours">" с "</string>
     <string name="cool">Суық</string>
     <string name="nature">Табиғи</string>
     <string name="warm">Жылу</string>

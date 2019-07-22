@@ -62,7 +62,6 @@ public class App extends Application {
     public static volatile boolean hdmiStatus3;
 
 
-
     public static ApplicationComponent getApplicationComponent() {
         return appComponent;
     }
@@ -121,8 +120,9 @@ public class App extends Application {
         //  context.sendBroadcast();
         AspectLayoutService.updateIfNeeded(hdmiStatus1, hdmiStatus2, hdmiStatus3);
         DelegatePlatformsService.sendInputsList(context);
-        if (id > 0)
+        if (id > 0) {
             startDialog(TYPE_HDMI, id, context);
+        }
     }
 
     private static void startDialog(int type, int id, Context context) {
@@ -151,7 +151,7 @@ public class App extends Application {
                 intent.setComponent(new ComponentName("com.hikeen.mediabrowser",
                         "com.hikeen.mediabrowser.activity.MediaBrowser"));
                 context.startActivity(intent);
-                wmgr.removeView(generalView);
+               // wmgr.removeView(generalView);
             } else if (type == TYPE_HDMI) {
                 int port = InputSourceHelper.INPUT_PORT.INPUT_SOURCE_HDMI.getId();
                 switch (id) {
@@ -166,7 +166,9 @@ public class App extends Application {
                         break;
                 }
                 new InputSourceHelper().changeInput(port, context);
+
             }
+            wmgr.removeView(generalView);
         });
 
         generalView.findViewById(R.id.no).setOnClickListener(v -> {

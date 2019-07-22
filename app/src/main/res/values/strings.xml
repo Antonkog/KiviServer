@@ -128,7 +128,7 @@
     <string name="double_dot" translatable="false">:</string>
     <string name="off">Off</string>
     <string name="minutes">" min"</string>
-    <string name="hours">" h"</string>
+    <string name="hours">" h "</string>
     <string name="cool">Cold</string>
     <string name="nature">Nature</string>
     <string name="warm">Warm</string>
@@ -390,5 +390,8 @@ or through the website </string>
     <string name="sound_type">Sound mode</string>
     <string name="sound_low">Bass</string>
     <string name="sound_height">Treble</string>
+    <string name="zoom1">zoom1</string>
+    <string name="zoom2">zoom2</string>
+    <string name="panorama">panorama</string>
 
 </resources>
