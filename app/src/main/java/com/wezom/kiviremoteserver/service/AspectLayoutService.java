@@ -108,7 +108,7 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
     private void updateSleepText() {
         String timeStr = "";
         long leftTime = (slipIn - SystemClock.elapsedRealtime()) / 1000;
-       // Log.e("AspectLayoutService", "leftTime " + leftTime);
+        // Log.e("AspectLayoutService", "leftTime " + leftTime);
 
         int timeToSleep = -1;
         if (leftTime > 0) {
@@ -878,7 +878,7 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
             if (minutesLeft > 60) {
                 text = minutesLeft / 60 + getResources().getString(R.string.hours);
             }
-            text += minutesLeft % 60 + getResources().getString(R.string.minutes);
+            text += String.format("%02d", minutesLeft % 60) + getResources().getString(R.string.minutes);
 
         } else {
             text = getResources().getString(R.string.off);
@@ -1183,7 +1183,7 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
 
             String text = "";
             if (minutesLeft > 60) {
-                text = minutesLeft / 60 + getString(R.string.hours);
+                text = minutesLeft / 60 + getString(R.string.hours) + String.format("%02d", minutesLeft % 60) + getString(R.string.minutes);
             } else {
                 text += minutesLeft + getString(R.string.minutes);
             }
@@ -1192,6 +1192,7 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
             //alarm.set(AlarmManager.RTC_WAKEUP, +slipIn, pi);
         } else {
             slipIn = -1;
+            sleepIn(slipIn, 0);
             textView.setText(R.string.off);
         }
     }

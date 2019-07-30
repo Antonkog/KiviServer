@@ -75,7 +75,7 @@
     <string name="timer_off">Таймер сну</string>
     <string name="off">Вимкнено</string>
     <string name="minutes">" хв"</string>
-    <string name="hours">" год"</string>
+    <string name="hours">" год "</string>
 
     <string name="cool">Холодний</string>
     <string name="nature">Природний</string>

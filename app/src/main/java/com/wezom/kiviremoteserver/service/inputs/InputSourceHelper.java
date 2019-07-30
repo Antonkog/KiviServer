@@ -164,6 +164,7 @@ public class InputSourceHelper {
                     return realtekID2841;
                 } else if ("2851".equals(str)
                         || "2842P533".equals(str)
+                        || "2842P535".equals(str)
                         || "2842P735".equals(str)) {
                     return realtekID2851;
                 }
