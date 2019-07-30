@@ -1,5 +1,6 @@
 package com.wezom.kiviremoteserver;
 
+import android.app.ActivityManager;
 import android.app.Application;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -10,8 +11,10 @@ import android.content.SharedPreferences;
 import android.graphics.PixelFormat;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
+import android.os.Build;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatDelegate;
 import android.util.Log;
 import android.view.Gravity;
@@ -33,6 +36,7 @@ import com.wezom.kiviremoteserver.service.communication.DelegatePlatformsService
 import com.wezom.kiviremoteserver.service.inputs.InputSourceHelper;
 
 import java.lang.reflect.Method;
+import java.util.List;
 import java.util.UUID;
 
 import io.fabric.sdk.android.Fabric;
@@ -126,6 +130,11 @@ public class App extends Application {
     }
 
     private static void startDialog(int type, int id, Context context) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (!checkWizard(context)) {
+                return;
+            }
+        }
         WindowManager wmgr = (WindowManager) context
                 .getSystemService(Context.WINDOW_SERVICE);
         final WindowManager.LayoutParams param = new WindowManager.LayoutParams(
@@ -151,7 +160,7 @@ public class App extends Application {
                 intent.setComponent(new ComponentName("com.hikeen.mediabrowser",
                         "com.hikeen.mediabrowser.activity.MediaBrowser"));
                 context.startActivity(intent);
-               // wmgr.removeView(generalView);
+                // wmgr.removeView(generalView);
             } else if (type == TYPE_HDMI) {
                 int port = InputSourceHelper.INPUT_PORT.INPUT_SOURCE_HDMI.getId();
                 switch (id) {
@@ -175,7 +184,7 @@ public class App extends Application {
             wmgr.removeView(generalView);
         });
         wmgr.addView(generalView, param);
-        new android.os.Handler().postDelayed(() -> {
+        new Handler().postDelayed(() -> {
             try {
 
                 wmgr.removeView(generalView);
@@ -183,6 +192,20 @@ public class App extends Application {
             }
             ;
         }, 30 * 1000);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    public static boolean checkWizard(Context context) {
+        ActivityManager mActivityManager = (ActivityManager) context
+                .getSystemService(Context.ACTIVITY_SERVICE);
+        if (mActivityManager != null) {
+            List<ActivityManager.AppTask> tasks = mActivityManager.getAppTasks();
+            String pkgName = "";
+            if (tasks.size() > 0)
+                pkgName = tasks.get(0).getTaskInfo().topActivity.getPackageName();
+            return pkgName.equals("com.hikeen.setupwizard");
+        }
+        return false;
     }
 
 

@@ -31,6 +31,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.wezom.kiviremoteserver.App;
 import com.wezom.kiviremoteserver.R;
 import com.wezom.kiviremoteserver.environment.EnvironmentFactory;
 import com.wezom.kiviremoteserver.environment.EnvironmentInputsHelper;
@@ -159,7 +160,11 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
     @Override
     public void onCreate() {
         super.onCreate();
-
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (App.checkWizard(this)) {
+                return;
+            }
+        }
         autoCloseTime = Settings.Global.getInt(getContentResolver(), OSD_TIME, 10);
 
         if (autoCloseTime < 10 && autoCloseTime > 0) {
