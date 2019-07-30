@@ -18,7 +18,6 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
 
 import com.android.inputmethod.pinyin.PinyinIME;
-import com.wezom.kiviremoteserver.App;
 import com.wezom.kiviremoteserver.bus.HideKeyboardEvent;
 import com.wezom.kiviremoteserver.bus.NewDataEvent;
 import com.wezom.kiviremoteserver.bus.PingEvent;
@@ -55,7 +54,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
-import static com.wezom.kiviremoteserver.common.Constants.LAST_VOLUME_REALTEK;
+import static com.wezom.kiviremoteserver.common.Constants.LAST_VOLUME;
 import static com.wezom.kiviremoteserver.net.nsd.NsdUtil.DEVICE_NAME_KEY;
 
 /**
@@ -198,12 +197,8 @@ public class ExecutorServiceIME extends PinyinIME implements EventProtocolExecut
         }
 
         if (keyCode == KeyEvent.KEYCODE_VOLUME_MUTE) {
-            if (App.isTVRealtek()) {
-                realtekVolumeWorkAround();
-            } else {
-                keyDownUp(KeyEvent.KEYCODE_VOLUME_MUTE);
-                sendVolume();
-            }
+            muteWorkAround(); //        keyDownUp(KeyEvent.KEYCODE_VOLUME_MUTE); not working on realtek
+            sendVolume();
             return;
         }
 
@@ -235,24 +230,15 @@ public class ExecutorServiceIME extends PinyinIME implements EventProtocolExecut
         );
     }
 
-    private void realtekVolumeWorkAround() {
-        keyDownUp(KeyEvent.KEYCODE_VOLUME_MUTE);
-
-        int oldVolume = prefs.getInt(LAST_VOLUME_REALTEK, DEFAULT_PREF_VOLUME);
+    private void muteWorkAround() {
+        int oldVolume = prefs.getInt(LAST_VOLUME, DEFAULT_PREF_VOLUME);
         int currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
-
         if (currentVolume != 0) {
-            prefs.edit().putInt(LAST_VOLUME_REALTEK, currentVolume).apply();
-            while (currentVolume != 0) {
-                keyDownUp(KeyEvent.KEYCODE_VOLUME_DOWN);
-                currentVolume--;
-            }
+            prefs.edit().putInt(LAST_VOLUME, currentVolume).apply();
+            audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 0, 0);
         } else {
             if (oldVolume != DEFAULT_PREF_VOLUME) {
-                while (currentVolume != oldVolume) {
-                    keyDownUp(KeyEvent.KEYCODE_VOLUME_UP);
-                    currentVolume++;
-                }
+                audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, oldVolume, 0);
             }
         }
         sendVolume();
@@ -368,6 +354,7 @@ public class ExecutorServiceIME extends PinyinIME implements EventProtocolExecut
                 case SET_VOLUME:
                     int volume = parseIntOrLogError(dataStructure.getArgs().get(0));
                     audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, volume, 0);
+                    ViewExtensionsKt.toastOutsource(getBaseContext(), "SET_VOLUME" + volume);
                     break;
 
                 case REQUEST_APPS:

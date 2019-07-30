@@ -18,7 +18,7 @@ public class Constants {
 
 
     public static final String APPLICATION_UID = "app_uid";
-    public static final String LAST_VOLUME_REALTEK = "last_volume_realtek";
+    public static final String LAST_VOLUME = "last_volume";
     public static final String LAST_BACKLIGHT = "last_backlight";
     public static final String LAST_TREBLE = "treble_level";
     public static final String LAST_BASS = "bass_level";
