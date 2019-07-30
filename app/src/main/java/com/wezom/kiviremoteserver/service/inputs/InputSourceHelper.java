@@ -2,9 +2,12 @@ package com.wezom.kiviremoteserver.service.inputs;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
+import android.support.v4.content.res.ResourcesCompat;
+import android.support.v7.content.res.AppCompatResources;
 import android.util.Base64;
 
 import com.wezom.kiviremoteserver.App;
@@ -58,53 +61,52 @@ public class InputSourceHelper {
     //    public static final String SOURCE_REALTEK_9_DVB_T = "com.realtek.dtv/.tvinput.DTVTvInputService/HW33685505";
     //    public static final String SOURCE_REALTEK_9_DVB_S = "com.realtek.dtv/.tvinput.DTVTvInputService/HW33685506";
     public enum INPUT_PORT {
-        INPUT_SOURCE_VGA(0, "vga", R.string.vga, R.drawable.ic_ser_fm, 10, Constants.SOURCE_VGA, Constants.SOURCE_VGA, Constants.SOURCE_REALTEK_9_VGA),//ic_settings_input_component_24dp
-        INPUT_SOURCE_ATV(1, "atv", R.string.atv, R.drawable.ic_ser_tv, 60, Constants.SOURCE_ATV, Constants.SOURCE_ATV, Constants.SOURCE_REALTEK_9_ATV),//ic_settings_input_antenna_24dp
-        INPUT_SOURCE_CVBS(2, "av", R.string.av, R.drawable.ic_ser_fm, 70, Constants.SOURCE_AV, Constants.SOURCE_AV, Constants.SOURCE_REALTEK_9_AV),//ic_settings_input_component_24dp
-        INPUT_SOURCE_CVBS2(3, "cvbs2", R.string.input_cvbs, R.drawable.ic_settings_time, 10),
-        INPUT_SOURCE_CVBS3(4, "cvbs3", R.string.input_cvbs, R.drawable.ic_settings_time, 10),
-        INPUT_SOURCE_CVBS4(5, "cvbs4", R.string.input_cvbs, R.drawable.ic_settings_time, 10),
-        INPUT_SOURCE_CVBS5(6, "cvbs5", R.string.input_cvbs, R.drawable.ic_settings_time, 10),
-        INPUT_SOURCE_CVBS6(7, "cvbs6", R.string.input_cvbs, R.drawable.ic_settings_time, 10),
-        INPUT_SOURCE_CVBS7(8, "cvbs7", R.string.input_cvbs, R.drawable.ic_settings_time, 10),
-        INPUT_SOURCE_CVBS8(9, "cvbs8", R.string.input_cvbs, R.drawable.ic_settings_time, 10),
-        INPUT_SOURCE_CVBS_MAX(10, "cvbs_max", R.string.input_cvbs, R.drawable.ic_settings_time, 10),
-        INPUT_SOURCE_SVIDEO(11, "svideo", R.string.input_svideo, R.drawable.ic_settings_time, 10),
-        INPUT_SOURCE_SVIDEO2(12, "svideo2", R.string.input_svideo, R.drawable.ic_settings_time, 10),
-        INPUT_SOURCE_SVIDEO3(13, "svideo3", R.string.input_svideo, R.drawable.ic_settings_time, 10),
-        INPUT_SOURCE_SVIDEO4(14, "svideo4", R.string.input_svideo, R.drawable.ic_settings_time, 10),
-        INPUT_SOURCE_SVIDEO_MAX(15, "svideo_max", R.string.input_svideo, R.drawable.ic_settings_time, 10),
-        INPUT_SOURCE_YPBPR(16, "ypbpr", R.string.ypbpr, R.drawable.ic_ser_fm, 10, Constants.SOURCE_YPBPR, Constants.SOURCE_YPBPR, Constants.SOURCE_REALTEK_9_YPbPr),//ic_settings_input_component_24dp
-        INPUT_SOURCE_YPBPR2(17, "ypbpr2", R.string.ypbpr, R.drawable.ic_settings_time, 10),
-        INPUT_SOURCE_YPBPR3(18, "ypbpr3", R.string.ypbpr, R.drawable.ic_settings_time, 10),
-        INPUT_SOURCE_YPBPR_MAX(19, "ypbpr_max", R.string.ypbpr, R.drawable.ic_settings_time, 10),
-        INPUT_SOURCE_SCART(20, "scart", R.string.input_scart, R.drawable.ic_settings_time, 10),
-        INPUT_SOURCE_SCART2(21, "scart2", R.string.input_scart, R.drawable.ic_settings_time, 10),
-        INPUT_SOURCE_SCART_MAX(22, "scart_max", R.string.input_scart, R.drawable.ic_settings_time, 10),
-
-        INPUT_SOURCE_HDMI(23, "hdmi", R.string.hdmi, R.drawable.ic_ser_hdmi, 85, Constants.SOURCE_HDMI1, Constants.SOURCE_HDMI3, Constants.SOURCE_REALTEK_9_HDMI1),//ic_settings_input_hdmi_24dp
-        INPUT_SOURCE_HDMI2(24, "hdmi2", R.string.hdmi2, R.drawable.ic_ser_hdmi, 84, Constants.SOURCE_HDMI2, Constants.SOURCE_HDMI2, Constants.SOURCE_REALTEK_9_HDMI2),//ic_settings_input_hdmi_24dp
-        INPUT_SOURCE_HDMI3(25, "hdmi3", R.string.hdmi3, R.drawable.ic_ser_hdmi, 83, Constants.SOURCE_HDMI3, Constants.SOURCE_HDMI1, Constants.SOURCE_REALTEK_9_HDMI3),//ic_settings_input_hdmi_24dp
-        INPUT_SOURCE_HDMI4(26, "hdmi4", R.string.hdmi4, R.drawable.ic_ser_hdmi, 82),//ic_settings_input_hdmi_24dp
-        INPUT_SOURCE_HDMI_MAX(27, "hdmi_max", R.string.hdmi, R.drawable.ic_ser_hdmi, 81),//ic_settings_input_hdmi_24dp
-        INPUT_SOURCE_DTV(28, "dtv", R.string.dtv, R.drawable.ic_ser_tv, 100, Constants.SOURCE_DVB_T, Constants.SOURCE_DVB_T, Constants.SOURCE_REALTEK_9_DVB_T),//ic_settings_input_antenna_24dp
-        INPUT_SOURCE_DVI(29, "dvi", R.string.dvi, R.drawable.ic_ser_tv, 10),//ic_settings_input_antenna_24dp
-        INPUT_SOURCE_DVI2(30, "dvi2", R.string.dvi, R.drawable.ic_settings_time, 10),
-        INPUT_SOURCE_DVI3(31, "dvi3", R.string.dvi, R.drawable.ic_settings_time, 10),
-        INPUT_SOURCE_DVI4(32, "dvi4", R.string.dvi, R.drawable.ic_settings_time, 10),
-        INPUT_SOURCE_DVI_MAX(33, "dvi_max", R.string.dvi, R.drawable.ic_settings_time, 10),
-        INPUT_SOURCE_STORAGE(34, "storage", R.string.input_storage, R.drawable.ic_settings_time, 10),
-        INPUT_SOURCE_KTV(35, "ktv", R.string.input_ktv, R.drawable.ic_settings_time, 10),
-        INPUT_SOURCE_JPEG(36, "jpeg", R.string.input_jpeg, R.drawable.ic_settings_time, 10),
-        INPUT_SOURCE_DTV2(37, "dtv2", R.string.input_dtv, R.drawable.ic_settings_time, 10),
-        INPUT_SOURCE_STORAGE2(38, "storege2", R.string.input_storage, R.drawable.ic_settings_time, 10),
-        INPUT_SOURCE_DIV3(39, "div3", R.string.dvi, R.drawable.ic_settings_time, 10),
-        INPUT_SOURCE_SCALER_OP(40, "scaler_op", R.string.input_scaler_op, R.drawable.ic_settings_time, 10),
-        INPUT_SOURCE_RUV(41, "ruv", R.string.input_ruv, R.drawable.ic_settings_time, 10),
-        INPUT_SOURCE_VGA2(42, "vga2", R.string.input_vga, R.drawable.ic_settings_time, 10),
-        INPUT_SOURCE_VGA3(43, "vga3", R.string.input_vga, R.drawable.ic_settings_time, 10),
-        INPUT_SOURCE_NUM(44, "num", R.string.input_num, R.drawable.ic_settings_time, 10),
-        INPUT_SOURCE_NONE(44, "none", R.string.input_none, R.drawable.ic_settings_time, 10),
+        INPUT_SOURCE_VGA(0, "vga", R.string.vga, R.drawable.ic_kivi_input_icons_05, 10, Constants.SOURCE_VGA, Constants.SOURCE_VGA, Constants.SOURCE_REALTEK_9_VGA),//ic_settings_input_component_24dp
+        INPUT_SOURCE_ATV(1, "atv", R.string.atv, R.drawable.ic_atv, 60, Constants.SOURCE_ATV, Constants.SOURCE_ATV, Constants.SOURCE_REALTEK_9_ATV),//ic_settings_input_antenna_24dp
+        INPUT_SOURCE_CVBS(2, "av", R.string.av, R.drawable.ic_kivi_input_icons_05, 70, Constants.SOURCE_AV, Constants.SOURCE_AV, Constants.SOURCE_REALTEK_9_AV),//ic_settings_input_component_24dp
+        INPUT_SOURCE_CVBS2(3, "cvbs2", R.string.app_name, R.drawable.ic_av, 10),
+        INPUT_SOURCE_CVBS3(4, "cvbs3", R.string.app_name, R.drawable.ic_av, 10),
+        INPUT_SOURCE_CVBS4(5, "cvbs4", R.string.app_name, R.drawable.ic_av, 10),
+        INPUT_SOURCE_CVBS5(6, "cvbs5", R.string.app_name, R.drawable.ic_av, 10),
+        INPUT_SOURCE_CVBS6(7, "cvbs6", R.string.app_name, R.drawable.ic_av, 10),
+        INPUT_SOURCE_CVBS7(8, "cvbs7", R.string.app_name, R.drawable.ic_av, 10),
+        INPUT_SOURCE_CVBS8(9, "cvbs8", R.string.app_name, R.drawable.ic_av, 10),
+        INPUT_SOURCE_CVBS_MAX(10, "cvbs_max", R.string.app_name, R.drawable.ic_av, 10),
+        INPUT_SOURCE_SVIDEO(11, "svideo", R.string.app_name, R.drawable.ic_av, 10),
+        INPUT_SOURCE_SVIDEO2(12, "svideo2", R.string.app_name, R.drawable.ic_av, 10),
+        INPUT_SOURCE_SVIDEO3(13, "svideo3", R.string.app_name, R.drawable.ic_av, 10),
+        INPUT_SOURCE_SVIDEO4(14, "svideo4", R.string.app_name, R.drawable.ic_av, 10),
+        INPUT_SOURCE_SVIDEO_MAX(15, "svideo_max", R.string.app_name, R.drawable.ic_av, 10),
+        INPUT_SOURCE_YPBPR(16, "ypbpr", R.string.ypbpr, R.drawable.ic_kivi_input_icons_05, 10, Constants.SOURCE_YPBPR, Constants.SOURCE_YPBPR, Constants.SOURCE_REALTEK_9_YPbPr),//ic_settings_input_component_24dp
+        INPUT_SOURCE_YPBPR2(17, "ypbpr2", R.string.app_name, R.drawable.ic_av, 10),
+        INPUT_SOURCE_YPBPR3(18, "ypbpr3", R.string.app_name, R.drawable.ic_av, 10),
+        INPUT_SOURCE_YPBPR_MAX(19, "ypbpr_max", R.string.app_name, R.drawable.ic_av, 10),
+        INPUT_SOURCE_SCART(20, "scart", R.string.app_name, R.drawable.ic_av, 10),
+        INPUT_SOURCE_SCART2(21, "scart2", R.string.app_name, R.drawable.ic_av, 10),
+        INPUT_SOURCE_SCART_MAX(22, "scart_max", R.string.app_name, R.drawable.ic_av, 10),
+        INPUT_SOURCE_HDMI(23, "hdmi", R.string.hdmi, R.drawable.ic_kivi_input_icons_02, 85, Constants.SOURCE_HDMI1, Constants.SOURCE_HDMI3, Constants.SOURCE_REALTEK_9_HDMI1),//ic_settings_input_hdmi_24dp
+        INPUT_SOURCE_HDMI2(24, "hdmi2", R.string.hdmi2, R.drawable.ic_kivi_input_icons_03, 84, Constants.SOURCE_HDMI2, Constants.SOURCE_HDMI2, Constants.SOURCE_REALTEK_9_HDMI2),//ic_settings_input_hdmi_24dp
+        INPUT_SOURCE_HDMI3(25, "hdmi3", R.string.hdmi3, R.drawable.ic_kivi_input_icons_04, 83, Constants.SOURCE_HDMI3, Constants.SOURCE_HDMI1, Constants.SOURCE_REALTEK_9_HDMI3),//ic_settings_input_hdmi_24dp
+        INPUT_SOURCE_HDMI4(26, "hdmi4", R.string.hdmi4, R.drawable.ic_kivi_input_icons_04, 82),//ic_settings_input_hdmi_24dp
+        INPUT_SOURCE_HDMI_MAX(27, "hdmi_max", R.string.hdmi, R.drawable.ic_kivi_input_icons_04, 81),//ic_settings_input_hdmi_24dp
+        INPUT_SOURCE_DTV(28, "dtv", R.string.dtv, R.drawable.ic_kivi_input_icons_13, 100, Constants.SOURCE_DVB_T, Constants.SOURCE_DVB_T, Constants.SOURCE_REALTEK_9_DVB_T),//ic_settings_input_antenna_24dp
+        INPUT_SOURCE_DVI(29, "dvi", R.string.dvi, R.drawable.ic_kivi_input_icons_13, 10),//ic_settings_input_antenna_24dp
+        INPUT_SOURCE_DVI2(30, "dvi2", R.string.app_name, R.drawable.ic_av, 10),
+        INPUT_SOURCE_DVI3(31, "dvi3", R.string.app_name, R.drawable.ic_av, 10),
+        INPUT_SOURCE_DVI4(32, "dvi4", R.string.app_name, R.drawable.ic_av, 10),
+        INPUT_SOURCE_DVI_MAX(33, "dvi_max", R.string.app_name, R.drawable.ic_av, 10),
+        INPUT_SOURCE_STORAGE(34, "storage", R.string.app_name, R.drawable.ic_av, 10),
+        INPUT_SOURCE_KTV(35, "ktv", R.string.app_name, R.drawable.ic_av, 10),
+        INPUT_SOURCE_JPEG(36, "jpeg", R.string.app_name, R.drawable.ic_av, 10),
+        INPUT_SOURCE_DTV2(37, "dtv2", R.string.app_name, R.drawable.ic_av, 10),
+        INPUT_SOURCE_STORAGE2(38, "storege2", R.string.app_name, R.drawable.ic_av, 10),
+        INPUT_SOURCE_DIV3(39, "div3", R.string.app_name, R.drawable.ic_av, 10),
+        INPUT_SOURCE_SCALER_OP(40, "scaler_op", R.string.app_name, R.drawable.ic_av, 10),
+        INPUT_SOURCE_RUV(41, "ruv", R.string.app_name, R.drawable.ic_av, 10),
+        INPUT_SOURCE_VGA2(42, "vga2", R.string.app_name, R.drawable.ic_av, 10),
+        INPUT_SOURCE_VGA3(43, "vga3", R.string.app_name, R.drawable.ic_av, 10),
+        INPUT_SOURCE_NUM(44, "num", R.string.app_name, R.drawable.ic_av, 10),
+        INPUT_SOURCE_NONE(45, "none", R.string.app_name, R.drawable.ic_av, 10),
         INPUT_SOURCE_DVBS(46, "dvbs", R.string.dvbs, R.drawable.ic_dvb_s, 20, Constants.SOURCE_DVB_S, Constants.SOURCE_DVB_S, Constants.SOURCE_REALTEK_9_DVB_S),
         INPUT_SOURCE_DVBC(47, "dvbс", R.string.dvbc, R.drawable.ic_dvb_c, 20, Constants.SOURCE_DVB_C, Constants.SOURCE_DVB_C, Constants.SOURCE_REALTEK_9_DVB_C);
 
@@ -257,28 +259,33 @@ public class InputSourceHelper {
         List<InputSourceHelper.INPUT_PORT> inputs = getPortsList(context);
         Set<Input> set = new TreeSet<>();
 
-       int currentPort =  new EnvironmentInputsHelper().getCurrentTvInputSource();
+        int currentPort = new EnvironmentInputsHelper().getCurrentTvInputSource();
 
         for (int i = 0; i < inputs.size(); i++) {
             InputSourceHelper.INPUT_PORT temp = inputs.get(i);
-
             try {
                 byte[] iconBytes;
+                Drawable drawable = ResourcesCompat.getDrawable(context.getResources(), temp.drawable, null);
+                if (drawable != null) {
+                    int width = drawable.getIntrinsicWidth();
+                    int height = drawable.getIntrinsicHeight();
 
-                Bitmap bitmap = ViewExtensionsKt.createBitmap(context.getResources().getDrawable(temp.drawable), ViewExtensionsKt.dpToPx(context, Constants.APP_ICON_W),ViewExtensionsKt.dpToPx(context, Constants.APP_ICON_H));
-                ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 60, stream);
-                iconBytes = stream.toByteArray();
+                    iconBytes = ViewExtensionsKt.getIconBytes(context, width == 0 ? Constants.INPUT_ICON_WH : width, height == 0 ? Constants.INPUT_ICON_WH : height, drawable);
 
-                String byteString = Base64.encodeToString(iconBytes, Base64.DEFAULT);
+                    String byteString = Base64.encodeToString(iconBytes, Base64.DEFAULT);
 
-                set.add(new Input()
-                        .addPortName(context.getResources().getString(temp.getNameResource()))
-                        .addActive(currentPort == temp.getId())
-                        .addInputIcon(byteString)
-                        .addPortNum(temp.getId()));
+                    set.add(new Input()
+                            .addPortName(context.getResources().getString(temp.getNameResource()))
+                            .addActive(currentPort == temp.getId())
+                            .addInputIcon(byteString)
+                            .addPortNum(temp.getId()));
 
-
+                } else {
+                    set.add(new Input()
+                            .addPortName(context.getResources().getString(temp.getNameResource()))
+                            .addActive(currentPort == temp.getId())
+                            .addPortNum(temp.getId()));
+                }
             } catch (Exception e) {
                 Timber.e(e);
                 set.add(new Input()
@@ -291,14 +298,14 @@ public class InputSourceHelper {
     }
 
 
-    public static Single <List<Input>> getInputsSingle(Context context) {
+    public static Single<List<Input>> getInputsSingle(Context context) {
         return Single.create(emitter -> {
 
             Timber.e("getAsInputs started");
-            try{
+            try {
                 List<Input> inputs = getAsInputs(context);
                 emitter.onSuccess(inputs);
-            }catch (Exception e){
+            } catch (Exception e) {
                 emitter.onError(e);
             }
         });

@@ -105,29 +105,36 @@ public class AppsInfoLoader {
 
         // Installed & System Apps
         for (PackageInfo packageInfo : packages) {
+            try {
+                if (!(packageManager.getApplicationLabel(packageInfo.applicationInfo).equals("") || packageInfo.packageName.equals(""))) {
+                    if (packageManager.getLaunchIntentForPackage(packageInfo.packageName) != null && isNotExcluded(packageInfo)) {
+                        Drawable drawable = packageManager.getApplicationBanner(packageInfo.applicationInfo);
+                        if (drawable == null)
+                            drawable = packageManager.getApplicationIcon(packageInfo.applicationInfo);
+                        if (drawable == null)
+                            drawable = packageManager.getApplicationLogo(packageInfo.applicationInfo);
+                        if (drawable != null) {
+                            int width = drawable.getIntrinsicWidth();
+                            int height = drawable.getIntrinsicHeight();
 
-            if (!(packageManager.getApplicationLabel(packageInfo.applicationInfo).equals("") || packageInfo.packageName.equals(""))) {
-                if (packageManager.getLaunchIntentForPackage(packageInfo.packageName) != null && isNotExcluded(packageInfo)) {
-                    Drawable drawable = packageManager.getApplicationBanner(packageInfo.applicationInfo);
-                    if (drawable == null)
-                        drawable = packageManager.getApplicationIcon(packageInfo.applicationInfo);
-                    if (drawable == null)
-                        drawable = packageManager.getApplicationLogo(packageInfo.applicationInfo);
-                    byte[] icon = ViewExtensionsKt.getIconBytes(ctx, drawable);
+                            byte[] icon = ViewExtensionsKt.getIconBytes(ctx, width == 0 ? Constants.APP_ICON_W : width, height == 0 ? Constants.APP_ICON_H : height, drawable);
 
-                    ServerApplicationInfo tempApp = new ServerApplicationInfo()
-                            .setApplicationName(packageManager.getApplicationLabel(packageInfo.applicationInfo).toString())
-                            .setApplicationPackage(packageInfo.packageName)
-                            .setBaseIcon(Base64.encodeToString(icon, Base64.DEFAULT));
+                            ServerApplicationInfo tempApp = new ServerApplicationInfo()
+                                    .setApplicationName(packageManager.getApplicationLabel(packageInfo.applicationInfo).toString())
+                                    .setApplicationPackage(packageInfo.packageName)
+                                    .setBaseIcon(Base64.encodeToString(icon, Base64.DEFAULT));
 
-                    if (withIconOldApi) tempApp.setApplicationIcon(icon);
-                    appList.add(tempApp);
+                            if (withIconOldApi) tempApp.setApplicationIcon(icon);
+                            appList.add(tempApp);
+                        }
+                    }
                 }
+            } catch (Exception e) {
+                Timber.e(e);
             }
         }
         return appList;
     }
-
 
     private static boolean isNotExcluded(PackageInfo info) {
         if (info.packageName.equals("com.ua.mytrinity.tvplayer.kivitv"))

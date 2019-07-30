@@ -22,7 +22,6 @@ import android.util.Pair;
 import com.google.gson.Gson;
 import com.wezom.kiviremoteserver.App;
 import com.wezom.kiviremoteserver.R;
-import com.wezom.kiviremoteserver.bus.AppsChangedEvent;
 import com.wezom.kiviremoteserver.bus.HideKeyboardEvent;
 import com.wezom.kiviremoteserver.bus.Keyboard200;
 import com.wezom.kiviremoteserver.bus.NewDataEvent;
@@ -118,19 +117,6 @@ public class KiviRemoteService extends Service implements ServiceMvpView {
         gson = new Gson();
     }
 
-    private void sentInitValues() {
-        new Thread(() -> {
-            try {
-                InitialMessage message = InitialMessage.getInstance();
-                message.setDriverValueList(getApplicationContext());
-                server.sendInitialMsg(prepareAspect(), AspectAvailable.getInstance(), InitialMessage.getInstance());
-            } catch (Exception e) {
-                Timber.e(e.getMessage());
-            }
-        }).start();
-    }
-
-
     //endregion
     //region Override methods
     @Nullable
@@ -174,10 +160,7 @@ public class KiviRemoteService extends Service implements ServiceMvpView {
 
         disposables.add(bus
                 .listen(SocketAcceptedEvent.class)
-                .subscribe(event -> {
-                    sendVolume();
-                    sentInitValues();
-                }, Timber::e));
+                .subscribe(event -> sendVolume(), Timber::e));
 
         disposables.add(bus.listen(SendAspectEvent.class).subscribe(
                 sendAspectEvent -> server.sendAspect(prepareAspect(), AspectAvailable.getInstance()),

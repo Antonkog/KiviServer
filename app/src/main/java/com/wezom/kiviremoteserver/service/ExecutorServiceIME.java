@@ -38,6 +38,7 @@ import com.wezom.kiviremoteserver.common.DeviceUtils;
 import com.wezom.kiviremoteserver.common.MotionRelay;
 import com.wezom.kiviremoteserver.common.RxBus;
 import com.wezom.kiviremoteserver.common.Utils;
+import com.wezom.kiviremoteserver.common.extensions.ViewExtensionsKt;
 import com.wezom.kiviremoteserver.interfaces.DataStructure;
 import com.wezom.kiviremoteserver.interfaces.EventProtocolExecutor;
 import com.wezom.kiviremoteserver.interfaces.InitialMessage;
@@ -78,6 +79,8 @@ public class ExecutorServiceIME extends PinyinIME implements EventProtocolExecut
     private final Instrumentation instrumentation = new Instrumentation();
     private SharedPreferences prefs;
     private long scrollTime = System.currentTimeMillis();
+    private Disposable disposableInit_II, disposableInit = null;
+
 
     @Override
     public void onWindowShown() {
@@ -328,11 +331,11 @@ public class ExecutorServiceIME extends PinyinIME implements EventProtocolExecut
     public void handleRequest(DataStructure dataStructure) {
         Timber.d("Received action: " + dataStructure.getAction() + " request");
 
-        if (dataStructure.getAction() != null)
+        if (dataStructure.getAction() != null) {
             switch (dataStructure.getAction()) {
                 case KEY_EVENT:
                 case keyevent:
-                    executeCommand(Integer.parseInt(dataStructure.getArgs().get(0)));
+                    executeCommand(parseIntOrLogError(dataStructure.getArgs().get(0)));
                     break;
 
                 case TEXT:
@@ -358,12 +361,21 @@ public class ExecutorServiceIME extends PinyinIME implements EventProtocolExecut
                     executeCommand(KeyEvent.KEYCODE_BACK);
                     break;
 
+                case VOICE_SEARCH:
+                    ViewExtensionsKt.toastOutsource(getBaseContext(), dataStructure.getAction().name() + " " + dataStructure.getArgs().get(0));
+                    break;
+
+                case SET_VOLUME:
+                    int volume = parseIntOrLogError(dataStructure.getArgs().get(0));
+                    audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, volume, 0);
+                    break;
+
                 case REQUEST_APPS:
                     if (requestAppsDisposable != null && !requestAppsDisposable.isDisposed()) {
                         requestAppsDisposable.dispose();
                     }
 
-                    requestAppsDisposable = AppsInfoLoader.getAppsList(getApplicationContext() )
+                    requestAppsDisposable = AppsInfoLoader.getAppsList(getApplicationContext())
                             .subscribeOn(Schedulers.computation())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(
@@ -426,26 +438,35 @@ public class ExecutorServiceIME extends PinyinIME implements EventProtocolExecut
                     RxBus.INSTANCE.publish(new ShowHideAspectEvent());
                     break;
                 case REQUEST_INITIAL:
-                    InitialMessage.getInstance().setDriverValueListSingle(getApplicationContext()).
-                            subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(
-                                    initialMessage -> RxBus.INSTANCE.publish(new SendInitialEvent(initialMessage)),
-                                    e -> Timber.e(e, e.getMessage()));
+                    if (disposableInit == null || disposableInit.isDisposed())
+                        disposableInit =
+                                InitialMessage.getInstance().setDriverValueListSingle(getApplicationContext()).
+                                        subscribeOn(Schedulers.io())
+                                        .observeOn(AndroidSchedulers.mainThread())
+                                        .subscribe(
+                                                initialMessage -> RxBus.INSTANCE.publish(new SendInitialEvent(initialMessage)),
+                                                e -> Timber.e(e, e.getMessage()));
+                    disposables.add(disposableInit);
+                    ViewExtensionsKt.toastOutsource(getBaseContext(), dataStructure.getAction().name());
                     break;
                 case REQUEST_INITIAL_II:
-                    DeviceUtils.getPreviewCommonStructureSingle(getApplicationContext()).
-                            subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(
-                                    previewCommonStructures -> RxBus.INSTANCE.publish(new SendInitialEvent(previewCommonStructures)),
-                                    e -> Timber.e(e, e.getMessage()));
+                    if (disposableInit_II == null || disposableInit_II.isDisposed())
+                        disposableInit_II =
+                                DeviceUtils.getPreviewCommonStructureSingle(getApplicationContext()).
+                                        subscribeOn(Schedulers.io())
+                                        .observeOn(AndroidSchedulers.mainThread())
+                                        .subscribe(
+                                                previewCommonStructures -> RxBus.INSTANCE.publish(new SendInitialEvent(previewCommonStructures)),
+                                                e -> Timber.e(e, e.getMessage()));
+                    disposables.add(disposableInit_II);
+                    ViewExtensionsKt.toastOutsource(getBaseContext(), dataStructure.getAction().name());
                     break;
                 case REQUEST_CHANNELS:
                     RxBus.INSTANCE.publish(new SendChannelsEvent());
                     break;
                 case LAUNCH_CHANNEL:
                     startLauncherIntent(LauncherBasedData.TYPE.CHANNEL, dataStructure.getArgs().get(0));
+                    ViewExtensionsKt.toastOutsource(getBaseContext(), dataStructure.getAction().name() + " " + dataStructure.getArgs().get(0));
                     break;
                 case REQUEST_RECOMMENDATIONS:
                     RxBus.INSTANCE.publish(new SendRecommendationsEvent());
@@ -455,6 +476,7 @@ public class ExecutorServiceIME extends PinyinIME implements EventProtocolExecut
                     break;
                 case LAUNCH_RECOMMENDATION:
                     startLauncherIntent(LauncherBasedData.TYPE.RECOMMENDATION, dataStructure.getArgs().get(0));
+                    ViewExtensionsKt.toastOutsource(getBaseContext(), dataStructure.getAction().name() + " " + dataStructure.getArgs().get(0));
                     break;
                 case LAUNCH_FAVORITE:
                     startLauncherIntent(LauncherBasedData.TYPE.FAVOURITE, dataStructure.getArgs().get(0));
@@ -464,12 +486,24 @@ public class ExecutorServiceIME extends PinyinIME implements EventProtocolExecut
                     RxBus.INSTANCE.publish(new SendInputsEvent());
                     break;
                 case CHANGE_INPUT:
-                    changeInput(Integer.parseInt(dataStructure.getArgs().get(0)));
+                    changeInput(parseIntOrLogError(dataStructure.getArgs().get(0)));
                     break;
                 default:
                     Timber.e("some not handled action in IME => %s", dataStructure.getAction());
                     break;
             }
+        } else {
+            ViewExtensionsKt.toastOutsource(getBaseContext(), "server got message but dataStructure.getAction() == null");
+        }
+    }
+
+    private int parseIntOrLogError(String s) {
+        try {
+           return Integer.parseInt(s);
+        } catch (NumberFormatException e) {
+            Timber.e(e);
+        }
+        return 0;
     }
 
     private void changeInput(int inputId) {
