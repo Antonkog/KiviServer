@@ -7,32 +7,38 @@ import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
+import android.widget.Toast
+import com.wezom.kiviremoteserver.BuildConfig
 import com.wezom.kiviremoteserver.common.Constants
+import org.jetbrains.anko.runOnUiThread
 import timber.log.Timber
 import java.io.ByteArrayOutputStream
 
 
 fun dpToPx(context: Context, dps: Int) = Math.round(context.resources.displayMetrics.density * dps)
 
-fun createBitmap(drawable: Drawable, width: Int, height: Int): Bitmap {
-    val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565)
+fun Context.toastOutsource(message: CharSequence) =
+        if (BuildConfig.VERSION_NAME.toLowerCase().contains("test")) Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+        else Timber.v("" + message)
+
+private fun createBitmap(drawable: Drawable, width: Int, height: Int): Bitmap {
+    val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
     val canvas = Canvas(bitmap)
     drawable.setBounds(0, 0, canvas.width, canvas.height)
     drawable.draw(canvas)
     return bitmap
 }
 
-fun getIconBytes(context: Context, banner: Drawable?): ByteArray? {
-        ByteArrayOutputStream().use { stream ->
-            var iconBytes = byteArrayOf()
-            if (banner != null) {
-                val bitmap = createBitmap(banner, dpToPx(context, Constants.APP_ICON_W), dpToPx(context, Constants.APP_ICON_H))
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 60, stream)
-                iconBytes = stream.toByteArray()
-            }
-            return iconBytes
+fun getIconBytes(context: Context, w: Int, h: Int, banner: Drawable?): ByteArray? {
+    ByteArrayOutputStream().use { stream ->
+        var iconBytes = byteArrayOf()
+        if (banner != null) {
+            val bitmap = createBitmap(banner, dpToPx(context, w), dpToPx(context, h))
+            bitmap.compress(Bitmap.CompressFormat.PNG, 60, stream)
+            iconBytes = stream.toByteArray()
         }
-    return null
+        return iconBytes
+    }
 }
 
 fun drawableToBitmap(drawable: Drawable): Bitmap {

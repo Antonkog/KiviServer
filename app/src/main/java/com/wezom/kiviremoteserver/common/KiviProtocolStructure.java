@@ -34,6 +34,8 @@ public class KiviProtocolStructure {
         REQUEST_VOLUME,
         PING,
         SWITCH_OFF,
+        SET_VOLUME,
+        VOICE_SEARCH,
         SCROLL,
         OPEN_SETTINGS,
         HOME_DOWN,

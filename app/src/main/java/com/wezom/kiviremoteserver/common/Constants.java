@@ -32,7 +32,7 @@ public class Constants {
     public static final int SERV_MSTAR = 0;
     public static final int APP_ICON_W = 160;
     public static final int APP_ICON_H = 90;
-    public static final int INPUT_ICON_WH = 85;
+    public static final int INPUT_ICON_WH = 30;
 
 
 
