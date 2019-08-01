@@ -140,20 +140,20 @@ public class ExecutorServiceIME extends PinyinIME implements EventProtocolExecut
         ic.performContextMenuAction(android.R.id.selectAll);
         ic.commitText("", 0);
     }
-
-    /**
-     * Helper to send a character to the editor as raw key events.
-     */
-    private void sendKey(int keyCode) {
-        if (keyCode >= '0' && keyCode <= '9') {
-            keyDownUp(keyCode - '0' + KeyEvent.KEYCODE_0);
-            Timber.d("Key value: " + String.valueOf((char) keyCode));
-        } else {
-            getCurrentInputConnection().commitText(String.valueOf((char) keyCode), 1);
-            Timber.d("Key value: " + String.valueOf((char) keyCode));
-        }
-    }
-
+//
+//    /**
+//     * Helper to send a character to the editor as raw key events.
+//     */
+//    private void sendKey(int keyCode) {
+//        if (keyCode >= '0' && keyCode <= '9') {
+//            keyDownUp(keyCode - '0' + KeyEvent.KEYCODE_0);
+//            Timber.d("Key value: " + String.valueOf((char) keyCode));
+//        } else {
+//            getCurrentInputConnection().commitText(String.valueOf((char) keyCode), 1);
+//            Timber.d("Key value: " + String.valueOf((char) keyCode));
+//        }
+//    }
+//
     private void keyDownUp(int keyEventCode) {
         getCurrentInputConnection().sendKeyEvent(
                 new KeyEvent(KeyEvent.ACTION_DOWN, keyEventCode));
@@ -235,12 +235,25 @@ public class ExecutorServiceIME extends PinyinIME implements EventProtocolExecut
         int currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
         if (currentVolume != 0) {
             prefs.edit().putInt(LAST_VOLUME, currentVolume).apply();
-            audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 0, 0);
+            audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 0,  AudioManager.FLAG_SHOW_UI);
         } else {
             if (oldVolume != DEFAULT_PREF_VOLUME) {
-                audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, oldVolume, 0);
+                audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, oldVolume,  AudioManager.FLAG_SHOW_UI);
             }
         }
+        sendVolume();
+    }
+
+    private void volumeWorkAround(boolean volumeUp) {
+        int currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+        int newVolume = currentVolume + (volumeUp ? + 1 : -1);
+        if(newVolume > 100) newVolume = 100;
+        if(newVolume < 0) newVolume = 0;
+        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, newVolume, AudioManager.FLAG_SHOW_UI);
+        prefs.edit().putInt(LAST_VOLUME, currentVolume).apply();
+        audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_RAISE, AudioManager.FLAG_SHOW_UI);
+//To decrease media player volume
+        audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_LOWER, AudioManager.FLAG_SHOW_UI);
         sendVolume();
     }
 
@@ -353,7 +366,7 @@ public class ExecutorServiceIME extends PinyinIME implements EventProtocolExecut
 
                 case SET_VOLUME:
                     int volume = parseIntOrLogError(dataStructure.getArgs().get(0));
-                    audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, volume, 0);
+                    audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, volume,  AudioManager.FLAG_SHOW_UI);
                     ViewExtensionsKt.toastOutsource(getBaseContext(), "SET_VOLUME" + volume);
                     break;
 
