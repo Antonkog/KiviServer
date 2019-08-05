@@ -25,6 +25,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.crashlytics.android.Crashlytics;
+import com.wezom.kiviremoteserver.common.Constants;
 import com.wezom.kiviremoteserver.di.components.ApplicationComponent;
 import com.wezom.kiviremoteserver.di.components.DaggerApplicationComponent;
 import com.wezom.kiviremoteserver.di.modules.ApplicationModule;
@@ -131,7 +132,7 @@ public class App extends Application {
 
     private static void startDialog(int type, int id, Context context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (!checkWizard(context)) {
+            if (checkWizard(context)) {
                 return;
             }
         }
@@ -189,21 +190,26 @@ public class App extends Application {
 
                 wmgr.removeView(generalView);
             } catch (Exception e) {
+                Timber.e(e);
             }
-            ;
         }, 30 * 1000);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     public static boolean checkWizard(Context context) {
-        ActivityManager mActivityManager = (ActivityManager) context
+        ActivityManager activityManager = (ActivityManager) context
                 .getSystemService(Context.ACTIVITY_SERVICE);
-        if (mActivityManager != null) {
-            List<ActivityManager.AppTask> tasks = mActivityManager.getAppTasks();
-            String pkgName = "";
-            if (tasks.size() > 0)
-                pkgName = tasks.get(0).getTaskInfo().topActivity.getPackageName();
-            return pkgName.equals("com.hikeen.setupwizard");
+        if (activityManager != null) {
+            final List<ActivityManager.RunningAppProcessInfo> runningProcesses = activityManager.getRunningAppProcesses();
+            for (ActivityManager.RunningAppProcessInfo processInfo : runningProcesses) {
+                if (processInfo.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND) {
+                    for (String activeProcess : processInfo.pkgList) {
+                        if (Constants.PKG_SETUP_WIZARD.equals(activeProcess)) {
+                            return true;
+                        }
+                    }
+                }
+            }
         }
         return false;
     }

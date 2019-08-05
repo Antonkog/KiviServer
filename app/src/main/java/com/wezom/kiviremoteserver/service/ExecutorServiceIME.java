@@ -223,7 +223,7 @@ public class ExecutorServiceIME extends PinyinIME implements EventProtocolExecut
                     if (isMuted) {
                         RxBus.INSTANCE.publish(new SendVolumeEvent(0));
                     } else {
-                        RxBus.INSTANCE.publish(new SendVolumeEvent(1));
+                        RxBus.INSTANCE.publish(new SendVolumeEvent(currentVolume));
                     }
 
                 }, Timber::e
@@ -367,7 +367,7 @@ public class ExecutorServiceIME extends PinyinIME implements EventProtocolExecut
                 case SET_VOLUME:
                     int volume = parseIntOrLogError(dataStructure.getArgs().get(0));
                     audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, volume,  AudioManager.FLAG_SHOW_UI);
-                    ViewExtensionsKt.toastOutsource(getBaseContext(), "SET_VOLUME" + volume);
+                    Timber.d("SET_VOLUME" + volume);
                     break;
 
                 case REQUEST_APPS:

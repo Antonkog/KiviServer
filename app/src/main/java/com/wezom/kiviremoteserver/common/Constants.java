@@ -9,6 +9,7 @@ public class Constants {
 
     public static final String LAUNCHER_PACKAGE = "com.kivi.launcher_v2";
     public static final String LAUNCHER_SERVICE = "com.kivi.launcher_v2.services.StartContentService";
+    public static final String PKG_SETUP_WIZARD = "com.hikeen.setupwizard";
     public static final String LAUNCHER_PREF_KEY = "pref_key_data";
 
     public static final String PREFERENCE_CATEGORY = "AbsManager";

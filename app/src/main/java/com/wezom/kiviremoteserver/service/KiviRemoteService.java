@@ -384,7 +384,7 @@ public class KiviRemoteService extends Service implements ServiceMvpView {
                     if (isMuted) {
                         RxBus.INSTANCE.publish(new SendVolumeEvent(0));
                     } else {
-                        RxBus.INSTANCE.publish(new SendVolumeEvent(1));
+                        RxBus.INSTANCE.publish(new SendVolumeEvent(currentVolume));
                     }
                 }, Timber::e
         );
