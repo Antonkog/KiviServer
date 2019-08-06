@@ -72,6 +72,7 @@ import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
 import static com.wezom.kiviremoteserver.common.KiviProtocolStructure.ExecActionEnum.OPEN_SETTINGS;
@@ -139,6 +140,14 @@ public class KiviRemoteService extends Service implements ServiceMvpView {
         receiveScreenOn();
         receiveAppsChange();
         initObservers();
+        preparePreviewCommonStructure();
+    }
+
+    private void preparePreviewCommonStructure() {
+        DeviceUtils.getPreviewCommonStructureSingle(getApplicationContext()).subscribeOn(Schedulers.computation())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(previewCommonStructures ->
+                        Timber.d("prepare CommonStructureSingle complete size" + previewCommonStructures.size()), e -> Timber.e(e, e.getMessage()));
     }
 
     private void receiveAppsChange() {

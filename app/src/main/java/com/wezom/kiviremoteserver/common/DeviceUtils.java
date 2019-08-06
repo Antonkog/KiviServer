@@ -12,7 +12,9 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
+import android.text.format.DateUtils;
 import android.util.Base64;
+import android.util.TimeUtils;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -41,10 +43,12 @@ import static android.content.Context.UI_MODE_SERVICE;
 public class DeviceUtils {
     private DeviceUtils() {
     }
+
     private static final List<Channel> channels = new ArrayList<>();
     private static final List<Recommendation> recommendations = new ArrayList<>();
     private static final List<Recommendation> favourites = new ArrayList<>();
     private static final List<PreviewCommonStructure> previewCommonStructures = new ArrayList<>();
+    private static long previewsCollectedTime = 0;
 
     public static boolean isTvDevice(Context context) {
         UiModeManager uiModeManager = (UiModeManager) context.getSystemService(UI_MODE_SERVICE);
@@ -63,8 +67,14 @@ public class DeviceUtils {
     public static Single<List<PreviewCommonStructure>> getPreviewCommonStructureSingle(Context context) {
         return Single.create(emitter -> {
             try {
-                List<PreviewCommonStructure> s = getPreviewCommonStructure(context);
-                emitter.onSuccess(s);
+                if (!previewCommonStructures.isEmpty() &&
+                        previewsCollectedTime != 0 &&
+                        ((System.currentTimeMillis() - previewsCollectedTime) < DateUtils.HOUR_IN_MILLIS)) {
+                    emitter.onSuccess(previewCommonStructures);
+                } else {
+                    List<PreviewCommonStructure> s = getPreviewCommonStructure(context);
+                    emitter.onSuccess(s);
+                }
             } catch (Exception e) {
                 emitter.onError(e);
             }
@@ -104,7 +114,7 @@ public class DeviceUtils {
                     data.getImageUrl(),
                     data.isActive(), data.getAdditionalData()));
         }
-
+        previewsCollectedTime = System.currentTimeMillis();
         return previewCommonStructures;
     }
 

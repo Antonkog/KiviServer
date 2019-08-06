@@ -207,29 +207,21 @@ public class KiviServer implements RemoteServer {
 
     @Override
     public void sendInputs(List<Input> inputs) {
-        if(!inputs.isEmpty())
-        Utils.appendLog(" sending from server " + inputs.get(0).getName());
         postMessage(new ServerEventStructure(KiviProtocolStructure.ServerEventType.INPUTS).setAvailableInputs(inputs));
     }
 
     @Override
     public void sendRecommendations(List<Recommendation> recommendations) {
-        if(!recommendations.isEmpty())
-            Utils.appendLog(" sending from server " + recommendations.get(0).getName());
         postMessage(new ServerEventStructure(KiviProtocolStructure.ServerEventType.RECOMMENDATIONS).setAvailableRecommendations(recommendations));
     }
 
     @Override
     public void sendFavourites(List<Recommendation> favourites) {
-        if(!favourites.isEmpty())
-            Utils.appendLog(" sending from server " + favourites.get(0).getName());
         postMessage(new ServerEventStructure(KiviProtocolStructure.ServerEventType.FAVORITES).setAvailableFavourites(favourites));
     }
 
     @Override
     public void sendChannels(List<Channel> channels) {
-        if(!channels.isEmpty())
-            Utils.appendLog(" sending from server " + channels.get(0).getName());
         postMessage(new ServerEventStructure(KiviProtocolStructure.ServerEventType.CHANNELS).setAvailableChannels(channels));
     }
 

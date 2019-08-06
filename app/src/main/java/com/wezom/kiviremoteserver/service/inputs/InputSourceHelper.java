@@ -181,7 +181,7 @@ public class InputSourceHelper {
             return INPUT_SOURCE_NONE;
         }
 
-        static INPUT_PORT getPortByID(int id) {
+       public static INPUT_PORT getPortByID(int id) {
             for (INPUT_PORT port : values()) {
                 if (port.id == id) {
                     return port;

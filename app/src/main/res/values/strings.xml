@@ -108,9 +108,11 @@
     <string name="vivid">Vivid</string>
     <string name="auto">Auto</string>
     <string name="user">User</string>
+    <string name="r_full">Full</string>
     <string name="r_16x9" translatable="false">16x9</string>
     <string name="default_r">Default</string>
     <string name="r_4x3" translatable="false">4x3</string>
+    <string name="r_native" translatable="false">Native</string>
     <string name="picture_des">Picture settings *Video content required</string>
     <string name="sleep_desc">Turn off in %s</string>
     <string name="temperature_des">Temperature</string>

@@ -3,13 +3,22 @@ package wezom.kiviremoteserver.environment.bridge.driver_set;
 import android.content.Context;
 import android.support.annotation.Nullable;
 
+import com.realtek.tv.Tv;
+import com.wezom.kiviremoteserver.App;
 import com.wezom.kiviremoteserver.R;
+import com.wezom.kiviremoteserver.common.Constants;
+import com.wezom.kiviremoteserver.environment.EnvironmentInputsHelper;
 import com.wezom.kiviremoteserver.interfaces.DriverValue;
 import com.wezom.kiviremoteserver.service.aspect.AvailableValues;
+import com.wezom.kiviremoteserver.service.inputs.InputSourceHelper;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+
+import static com.wezom.kiviremoteserver.service.inputs.InputSourceHelper.INPUT_PORT.INPUT_SOURCE_NONE;
 
 
 public enum Ratio implements AvailableValues {
@@ -32,6 +41,8 @@ public enum Ratio implements AvailableValues {
 //    VIDEO_ARC_4x3(5, R.string.r_4x3),
 //    VIDEO_ARC_AUTO(10, R.string.auto);
     VIDEO_ARC_DEFAULT(8, R.string.auto),
+    VIDEO_ARC_NATIVE(4, R.string.r_native),
+    VIDEO_ARC_FULL(2, R.string.r_full),
     VIDEO_ARC_16x9(10, R.string.r_16x9),
     VIDEO_ARC_4x3(5, R.string.r_4x3),
     VIDEO_ARC_ZOOM1(6, R.string.zoom1),
@@ -93,16 +104,43 @@ public enum Ratio implements AvailableValues {
         return linkedList;
     }
 
-
-
     public List<Ratio> getRatios() {
-        return Arrays.asList(
-                Ratio.VIDEO_ARC_DEFAULT,
+        final String s = App.getProperty(Constants.REALTEK_INPUT_SOURCE);
+        InputSourceHelper.INPUT_PORT currentInput = InputSourceHelper.INPUT_PORT.getPortByRealtekID(s);
+
+        List ratios =  Arrays.asList(
                 Ratio.VIDEO_ARC_16x9,
                 Ratio.VIDEO_ARC_4x3,
                 Ratio.VIDEO_ARC_ZOOM1,
-                Ratio.VIDEO_ARC_ZOOM2,
-                Ratio.VIDEO_ARC_PANORAMA
-        );
+                Ratio.VIDEO_ARC_ZOOM2);
+
+        switch (currentInput){
+            case INPUT_SOURCE_ATV:
+            case INPUT_SOURCE_CVBS:
+                ratios.add(Ratio.VIDEO_ARC_DEFAULT);
+                break;
+            case INPUT_SOURCE_DTV:
+                ratios.add(Ratio.VIDEO_ARC_DEFAULT);
+                ratios.add(Ratio.VIDEO_ARC_PANORAMA);
+                break;
+            case INPUT_SOURCE_HDMI:
+            case INPUT_SOURCE_HDMI2:
+            case INPUT_SOURCE_HDMI3:
+            case INPUT_SOURCE_HDMI4:
+                ratios.add(Ratio.VIDEO_ARC_FULL);
+                ratios.add(Ratio.VIDEO_ARC_NATIVE);
+                break;
+            case INPUT_SOURCE_VGA:
+                return ratios;
+            case INPUT_SOURCE_YPBPR:
+                return Arrays.asList(
+                        Ratio.VIDEO_ARC_16x9,
+                        Ratio.VIDEO_ARC_4x3,
+                        Ratio.VIDEO_ARC_NATIVE);
+            default:
+                ratios.add(Ratio.VIDEO_ARC_FULL);
+                break;
+        }
+        return ratios;
     }
 }
