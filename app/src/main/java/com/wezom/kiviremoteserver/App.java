@@ -24,7 +24,6 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.crashlytics.android.Crashlytics;
 import com.wezom.kiviremoteserver.common.Constants;
 import com.wezom.kiviremoteserver.di.components.ApplicationComponent;
 import com.wezom.kiviremoteserver.di.components.DaggerApplicationComponent;
@@ -90,9 +89,7 @@ public class App extends Application {
                 .applicationModule(new ApplicationModule(this))
                 .build();
 
-        if ("release".equals(BuildConfig.BUILD_TYPE)) {
-            Fabric.with(this, new Crashlytics());
-        } else {
+        if (!"release".equals(BuildConfig.BUILD_TYPE)) {
             Timber.plant(new Timber.DebugTree());
         }
 

@@ -1,7 +1,6 @@
 package com.wezom.kiviremoteserver.net.server.threads
 
 import com.crashlytics.android.Crashlytics
-import io.fabric.sdk.android.Fabric
 import timber.log.Timber
 import java.io.OutputStream
 import java.io.PrintWriter
@@ -32,9 +31,7 @@ class SendingThread(private val threadedModel: WriteThreadedModel<String>) : Thr
             }
         } catch (e: Exception) {
             Timber.e(e, e.message)
-            if (Fabric.isInitialized()) {
-                Crashlytics.logException(e)
-            }
+            Crashlytics.logException(e)
         } finally {
             outputStream?.close()
         }
