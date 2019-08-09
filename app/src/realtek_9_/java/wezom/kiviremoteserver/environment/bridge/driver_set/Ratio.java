@@ -3,43 +3,33 @@ package wezom.kiviremoteserver.environment.bridge.driver_set;
 import android.content.Context;
 import android.support.annotation.Nullable;
 
-import com.realtek.tv.Tv;
 import com.wezom.kiviremoteserver.App;
 import com.wezom.kiviremoteserver.R;
 import com.wezom.kiviremoteserver.common.Constants;
-import com.wezom.kiviremoteserver.environment.EnvironmentInputsHelper;
 import com.wezom.kiviremoteserver.interfaces.DriverValue;
 import com.wezom.kiviremoteserver.service.aspect.AvailableValues;
 import com.wezom.kiviremoteserver.service.inputs.InputSourceHelper;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-import static com.wezom.kiviremoteserver.service.inputs.InputSourceHelper.INPUT_PORT.INPUT_SOURCE_NONE;
-
 
 public enum Ratio implements AvailableValues {
-
-    //public static final int ASPECT_RATIO_Wide = 0;
-    //    public static final int ASPECT_RATIO_NORMAL = 1;
-    //    public static final int ASPECT_RATIO_FULL = 2;
-    //    public static final int ASPECT_RATIO_ZOOM = 3;
-    //    public static final int ASPECT_RATIO_Native = 4;  // Pixel to Pixel mode
-    //    public static final int ASPECT_RATIO_4_3 = 5;
-    //    public static final int ASPECT_RATIO_Zoom1 = 6;
-    //    public static final int ASPECT_RATIO_Zoom2 = 7;
-    //     public static final int ASPECT_RATIO_Auto = 8;
-    //    public static final int ASPECT_RATIO_14_9 = 9;
-    //    public static final int ASPECT_RATIO_16_9 = 10;
-    //    public static final int ASPECT_RATIO_Panorama = 11;
-    //    public static final int ASPECT_RATIO_Movie = 12;
-    //    VIDEO_ARC_DEFAULT(1, R.string.default_r),
-//    VIDEO_ARC_16x9(9, R.string.r_16x9),
-//    VIDEO_ARC_4x3(5, R.string.r_4x3),
-//    VIDEO_ARC_AUTO(10, R.string.auto);
+//    public static final int ASPECT_RATIO_Wide = 0;
+//    public static final int ASPECT_RATIO_NORMAL = 1;
+//    public static final int ASPECT_RATIO_FULL = 2;
+//    public static final int ASPECT_RATIO_ZOOM = 3;
+//    public static final int ASPECT_RATIO_Native = 4;  // Pixel to Pixel mode
+//    public static final int ASPECT_RATIO_4_3 = 5;
+//    public static final int ASPECT_RATIO_Zoom1 = 6;
+//    public static final int ASPECT_RATIO_Zoom2 = 7;
+//    public static final int ASPECT_RATIO_Auto = 8;
+//    public static final int ASPECT_RATIO_14_9 = 9;
+//    public static final int ASPECT_RATIO_16_9 = 10;
+//    public static final int ASPECT_RATIO_Panorama = 11;
+//    public static final int ASPECT_RATIO_Movie = 12;
     VIDEO_ARC_DEFAULT(8, R.string.auto),
     VIDEO_ARC_NATIVE(4, R.string.r_native),
     VIDEO_ARC_FULL(2, R.string.r_full),
@@ -107,12 +97,11 @@ public enum Ratio implements AvailableValues {
     public List<Ratio> getRatios() {
         final String s = App.getProperty(Constants.REALTEK_INPUT_SOURCE);
         InputSourceHelper.INPUT_PORT currentInput = InputSourceHelper.INPUT_PORT.getPortByRealtekID(s);
-
-        List ratios =  Arrays.asList(
-                Ratio.VIDEO_ARC_16x9,
-                Ratio.VIDEO_ARC_4x3,
-                Ratio.VIDEO_ARC_ZOOM1,
-                Ratio.VIDEO_ARC_ZOOM2);
+        List<Ratio> ratios =  new ArrayList<>();
+        ratios.add(Ratio.VIDEO_ARC_16x9);
+        ratios.add(Ratio.VIDEO_ARC_4x3);
+        ratios.add(Ratio.VIDEO_ARC_ZOOM1);
+        ratios.add(Ratio.VIDEO_ARC_ZOOM2);
 
         switch (currentInput){
             case INPUT_SOURCE_ATV:
