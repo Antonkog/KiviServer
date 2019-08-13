@@ -102,7 +102,7 @@ public class Channel implements LauncherBasedData {
         additional.put("edited_at" , "" +edited_at);
         additional.put("has_timeshift" , "" +has_timeshift);
         additional.put("adult_content" , "" +adult_content);
-        return null;
+        return additional;
     }
 
     @Override

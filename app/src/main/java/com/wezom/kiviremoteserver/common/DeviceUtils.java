@@ -6,19 +6,10 @@ import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-import android.os.Build;
-import android.support.annotation.RequiresApi;
 import android.text.format.DateUtils;
-import android.util.Base64;
-import android.util.TimeUtils;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.wezom.kiviremoteserver.common.extensions.ViewExtensionsKt;
 import com.wezom.kiviremoteserver.net.server.model.Channel;
 import com.wezom.kiviremoteserver.net.server.model.LauncherBasedData;
 import com.wezom.kiviremoteserver.net.server.model.PreviewCommonStructure;
@@ -29,7 +20,6 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
-
 
 import io.reactivex.Single;
 import timber.log.Timber;
@@ -121,28 +111,39 @@ public class DeviceUtils {
 
     public static List<Recommendation> getRecommendations(Context context) {
         recommendations.clear();
-        for (LauncherBasedData data : readData(new TypeToken<ArrayList<Recommendation>>() {
-        }.getType(), LauncherBasedData.TYPE.RECOMMENDATION, context)) {
-            recommendations.add((Recommendation) data);
-        }
+        List<LauncherBasedData> recsList = readData(new TypeToken<ArrayList<Recommendation>>() {
+        }.getType(), LauncherBasedData.TYPE.RECOMMENDATION, context);
+        if (recsList != null)
+            for (int i = 0; i < recsList.size(); i++) {
+                recommendations.add((Recommendation) recsList.get(i));
+            }
+
+            Timber.e(" get recoomendations , size is : " +((recsList == null) ? " null" :  recsList.size()));
         return recommendations;
     }
 
     public static List<Recommendation> getFavourites(Context context) {
         favourites.clear();
-        for (LauncherBasedData data : readData(new TypeToken<ArrayList<Recommendation>>() {
-        }.getType(), LauncherBasedData.TYPE.FAVOURITE, context)) {
-            favourites.add((Recommendation) data);
-        }
+        List<LauncherBasedData> recsList = readData(new TypeToken<ArrayList<Recommendation>>() {
+        }.getType(), LauncherBasedData.TYPE.FAVOURITE, context);
+        if (recsList != null)
+            for (int i = 0; i < recsList.size(); i++) {
+                favourites.add((Recommendation) recsList.get(i));
+            }
         return favourites;
     }
 
     public static List<Channel> getChannels(Context context) {
         channels.clear();
-        for (LauncherBasedData data : readData(new TypeToken<ArrayList<Channel>>() {
-        }.getType(), LauncherBasedData.TYPE.CHANNEL, context)) {
-            channels.add((Channel) data);
-        }
+
+        List<LauncherBasedData> recsList = readData(new TypeToken<ArrayList<Recommendation>>() {
+        }.getType(), LauncherBasedData.TYPE.CHANNEL, context);
+        if (recsList != null)
+            for (int i = 0; i < recsList.size(); i++) {
+                channels.add((Channel) recsList.get(i));
+            }
+        Timber.e("getChannels , size is : " +((recsList == null) ? " null" :  recsList.size()));
+
         return channels;
     }
 

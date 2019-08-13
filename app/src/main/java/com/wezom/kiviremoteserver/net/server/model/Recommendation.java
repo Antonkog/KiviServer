@@ -86,7 +86,7 @@ public class Recommendation implements LauncherBasedData {
         additional.put("subTitle" , subTitle);
         additional.put("description" ,  description);
         additional.put("monetizationType" ,  monetizationType);
-        return null;
+        return additional;
     }
 
     @Override
