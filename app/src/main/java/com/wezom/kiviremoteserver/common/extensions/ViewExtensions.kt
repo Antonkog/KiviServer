@@ -7,21 +7,12 @@ import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
-import android.widget.Toast
-import com.wezom.kiviremoteserver.BuildConfig
-import com.wezom.kiviremoteserver.common.Constants
-import org.jetbrains.anko.runOnUiThread
-import org.jetbrains.anko.toast
 import timber.log.Timber
 import java.io.ByteArrayOutputStream
 
 
 fun dpToPx(context: Context, dps: Int) = Math.round(context.resources.displayMetrics.density * dps)
 
-fun Context.toastOutsource(message: CharSequence) =
-//        if (BuildConfig.VERSION_NAME.toLowerCase().contains("test")) applicationContext.toast(message)
-//        else
-            Timber.v("" + message)
 
 private fun createBitmap(drawable: Drawable, width: Int, height: Int): Bitmap {
     val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)

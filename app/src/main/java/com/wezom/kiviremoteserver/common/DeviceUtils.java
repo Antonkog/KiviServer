@@ -16,7 +16,8 @@ import com.wezom.kiviremoteserver.net.server.model.PreviewCommonStructure;
 import com.wezom.kiviremoteserver.net.server.model.Recommendation;
 import com.wezom.kiviremoteserver.service.inputs.InputSourceHelper;
 
-import java.lang.reflect.Type;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -74,14 +75,14 @@ public class DeviceUtils {
     public static List<PreviewCommonStructure> getPreviewCommonStructure(Context context) {
         previewCommonStructures.clear();
 
-        for (LauncherBasedData data : getRecommendations(context)) {
+        for (LauncherBasedData data : getRecommendations(recommendations, LauncherBasedData.TYPE.RECOMMENDATION, context)) {
             previewCommonStructures.add(new PreviewCommonStructure(data.getType().name(),
                     data.getID(), data.getName(),
                     data.getBaseIcon(),
                     data.getImageUrl(),
                     data.isActive(), data.getAdditionalData()));
         }
-        for (LauncherBasedData data : getChannels(context)) {
+        for (LauncherBasedData data : getRecommendations(channels, LauncherBasedData.TYPE.CHANNEL, context)) {
             previewCommonStructures.add(new PreviewCommonStructure(data.getType().name(),
                     data.getID(), data.getName(),
                     data.getBaseIcon(),
@@ -108,81 +109,45 @@ public class DeviceUtils {
         return previewCommonStructures;
     }
 
-
-    public static List<Recommendation> getRecommendations(Context context) {
-        recommendations.clear();
-        List<LauncherBasedData> recsList = readData(new TypeToken<ArrayList<Recommendation>>() {
-        }.getType(), LauncherBasedData.TYPE.RECOMMENDATION, context);
+    public static  <T  extends  LauncherBasedData> List<T> getRecommendations(@Nullable List<T> recs, LauncherBasedData.TYPE type, Context context) {
+        if (recs == null) recs = new ArrayList<>();
+        recs.clear();
+        List<LauncherBasedData> recsList = getLauncherPreference(type, context);
         if (recsList != null)
             for (int i = 0; i < recsList.size(); i++) {
-                recommendations.add((Recommendation) recsList.get(i));
+                recs.add((T) recsList.get(i));
             }
 
-            Timber.e(" get recoomendations , size is : " +((recsList == null) ? " null" :  recsList.size()));
-        return recommendations;
+        Timber.e(" get LauncherBasedData , size is : " + ((recsList == null) ? " null" : recsList.size()));
+        return recs;
     }
 
-    public static List<Recommendation> getFavourites(Context context) {
-        favourites.clear();
-        List<LauncherBasedData> recsList = readData(new TypeToken<ArrayList<Recommendation>>() {
-        }.getType(), LauncherBasedData.TYPE.FAVOURITE, context);
-        if (recsList != null)
-            for (int i = 0; i < recsList.size(); i++) {
-                favourites.add((Recommendation) recsList.get(i));
-            }
-        return favourites;
-    }
+    private static List<LauncherBasedData> getLauncherPreference(LauncherBasedData.TYPE type, Context context) {
 
-    public static List<Channel> getChannels(Context context) {
-        channels.clear();
-
-        List<LauncherBasedData> recsList = readData(new TypeToken<ArrayList<Recommendation>>() {
-        }.getType(), LauncherBasedData.TYPE.CHANNEL, context);
-        if (recsList != null)
-            for (int i = 0; i < recsList.size(); i++) {
-                channels.add((Channel) recsList.get(i));
-            }
-        Timber.e("getChannels , size is : " +((recsList == null) ? " null" :  recsList.size()));
-
-        return channels;
-    }
-
-    private static List<LauncherBasedData> readData(Type typeOfT, LauncherBasedData.TYPE type, Context context) {
-        SharedPreferences preferences = getLauncherPreference(type, context);
-
-        if (preferences != null) {
-            try {
-                String value = preferences.getString(Constants.LAUNCHER_PREF_KEY, "");
-                return new Gson().fromJson(value, typeOfT);
-            } catch (Exception e) {
-                Timber.e("Can't get launcher based from gson  " + type.name());
-            }
-        } else {
-            Timber.e("Can't get launcher based preference  preferences = null " + type.name());
-        }
-        return new ArrayList<>();
-    }
-
-
-    private static SharedPreferences getLauncherPreference(LauncherBasedData.TYPE type, Context context) {
-        SharedPreferences dataprefs = null;
+        SharedPreferences p = null;
         try {
             Context myContext = context.createPackageContext(Constants.LAUNCHER_PACKAGE, Context.MODE_PRIVATE);
             switch (type) {
                 case RECOMMENDATION:
-                    dataprefs = myContext.getSharedPreferences(Constants.PREFERENCE_CATEGORY + Constants.RECOMMENDATION_MANAGER, Context.MODE_PRIVATE);
-                    break;
+                    p = myContext.getSharedPreferences(Constants.PREFERENCE_CATEGORY + Constants.RECOMMENDATION_MANAGER, Context.MODE_PRIVATE);
+                    return new Gson().fromJson(p.getString(Constants.LAUNCHER_PREF_KEY, ""), new TypeToken<ArrayList<Recommendation>>() {
+                    }.getType());
                 case CHANNEL:
-                    dataprefs = myContext.getSharedPreferences(Constants.PREFERENCE_CATEGORY + Constants.CHANNEL_MANAGER, Context.MODE_PRIVATE);
-                    break;
+                    p = myContext.getSharedPreferences(Constants.PREFERENCE_CATEGORY + Constants.CHANNEL_MANAGER, Context.MODE_PRIVATE);
+                    return new Gson().fromJson(p.getString(Constants.LAUNCHER_PREF_KEY, ""), new TypeToken<ArrayList<Channel>>() {
+                    }.getType());
                 case FAVOURITE:
-                    dataprefs = myContext.getSharedPreferences(Constants.PREFERENCE_CATEGORY + Constants.FAVORITES_MANAGER, Context.MODE_PRIVATE);
-                    break;
+                    p = myContext.getSharedPreferences(Constants.PREFERENCE_CATEGORY + Constants.FAVORITES_MANAGER, Context.MODE_PRIVATE);
+                    return new Gson().fromJson(p.getString(Constants.LAUNCHER_PREF_KEY, ""), new TypeToken<ArrayList<Recommendation>>() {
+                    }.getType());
+
             }
         } catch (PackageManager.NameNotFoundException e) {
             Timber.e(" launcher based data error, type: " + type.name() + " " + e);
+        } catch (Exception e) {
+            Timber.e("Can't get launcher based from gson  " + type.name());
         }
-        return dataprefs;
+        return null;
     }
 
 

@@ -26,9 +26,11 @@ class ReceivingThread(private val socket: Socket) : Thread() {
                 message?.takeIf { it.isNotEmpty() }?.let { RxBus.publish(NewMessageEvent(it)) }
             }
         } catch (e: Exception) {
+            isRunning = false
             Timber.e(e, e.message)
             Crashlytics.logException(e)
         } finally {
+            isRunning = false
             stream?.close()
         }
     }

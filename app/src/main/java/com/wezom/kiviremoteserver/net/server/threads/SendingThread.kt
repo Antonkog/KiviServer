@@ -30,9 +30,11 @@ class SendingThread(private val threadedModel: WriteThreadedModel<String>) : Thr
                 }
             }
         } catch (e: Exception) {
+            isStopped = true
             Timber.e(e, e.message)
             Crashlytics.logException(e)
         } finally {
+            isStopped = true
             outputStream?.close()
         }
 

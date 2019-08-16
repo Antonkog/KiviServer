@@ -56,6 +56,7 @@ import com.wezom.kiviremoteserver.interfaces.RemoteServer;
 import com.wezom.kiviremoteserver.mvp.view.ServiceMvpView;
 import com.wezom.kiviremoteserver.net.nsd.NsdUtil;
 import com.wezom.kiviremoteserver.net.server.KiviServer;
+import com.wezom.kiviremoteserver.net.server.model.LauncherBasedData;
 import com.wezom.kiviremoteserver.receiver.AppsChangeReceiver;
 import com.wezom.kiviremoteserver.receiver.ScreenOnReceiver;
 import com.wezom.kiviremoteserver.service.inputs.InputSourceHelper;
@@ -255,11 +256,11 @@ public class KiviRemoteService extends Service implements ServiceMvpView {
 
         disposables.add(bus.listen(SendInputsEvent.class).subscribe(event -> server.sendInputs(InputSourceHelper.getAsInputs(getApplicationContext())), Timber::e));
 
-        disposables.add(bus.listen(SendRecommendationsEvent.class).subscribe(event -> server.sendRecommendations(DeviceUtils.getRecommendations(getApplicationContext())), Timber::e));
+        disposables.add(bus.listen(SendRecommendationsEvent.class).subscribe(event -> server.sendRecommendations(DeviceUtils.getRecommendations(null, LauncherBasedData.TYPE.RECOMMENDATION, getApplicationContext())), Timber::e));
 
-        disposables.add(bus.listen(SendChannelsEvent.class).subscribe(event -> server.sendChannels(DeviceUtils.getChannels(getApplicationContext())), Timber::e));
+        disposables.add(bus.listen(SendChannelsEvent.class).subscribe(event -> server.sendChannels(DeviceUtils.getRecommendations(null, LauncherBasedData.TYPE.CHANNEL, getApplicationContext())), Timber::e));
 
-        disposables.add(bus.listen(SendFavouritesEvent.class).subscribe(event -> server.sendFavourites(DeviceUtils.getFavourites(getApplicationContext())), Timber::e));
+        disposables.add(bus.listen(SendFavouritesEvent.class).subscribe(event -> server.sendFavourites(DeviceUtils.getRecommendations(null, LauncherBasedData.TYPE.FAVOURITE, getApplicationContext())), Timber::e));
 
 
         disposables.add(bus.listen(SendVolumeEvent.class).subscribe(event ->
