@@ -6,9 +6,9 @@ buildscript {
             'buildTools'    : '27.0.3',
             'minSdk'        : 21,
             'targetSdk'     : 27,
-            'versionMajor'             : 1,
-            'versionMinor'             : 2,
-            'versionPatch'             : 39,
+            'versionMajor'  : 1,
+            'versionMinor'  : 2,
+            'versionPatch'  : 40,
             //versioning see  https://medium.com/@maxirosson/versioning-android-apps-d6ec171cfd82
             'supportLibrary': '27.1.1',
             'dagger'        : '2.0.1',
@@ -24,12 +24,12 @@ buildscript {
                     'design'      : "com.android.support:design:${versions.supportLibrary}",
                     'recyclerView': "com.android.support:recyclerview-v7:${versions.supportLibrary}",
                     'cardView'    : "com.android.support:cardview-v7:${versions.supportLibrary}",
-                    'leanback':  "com.android.support:leanback-v17:${versions.supportLibrary}"
+                    'leanback'    : "com.android.support:leanback-v17:${versions.supportLibrary}"
             ],
             'rx'         : [
                     'core'   : "io.reactivex.rxjava2:rxjava:${versions.rx}",
                     'android': "io.reactivex.rxjava2:rxandroid:${versions.rx}",
-                    'relay' : "com.jakewharton.rxrelay2:rxrelay:2.0.0"
+                    'relay'  : "com.jakewharton.rxrelay2:rxrelay:2.0.0"
 
             ],
             'dagger'     : [
@@ -55,7 +55,7 @@ buildscript {
     repositories {
         google()
         jcenter()
-        maven { url 'https://maven.google.com'  }
+        maven { url 'https://maven.google.com' }
         maven { url 'https://maven.fabric.io/public' }
     }
     dependencies {

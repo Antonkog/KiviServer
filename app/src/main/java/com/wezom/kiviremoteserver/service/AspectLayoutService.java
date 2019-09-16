@@ -1,7 +1,6 @@
 package com.wezom.kiviremoteserver.service;
 
 
-import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.ComponentName;
@@ -9,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PixelFormat;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
@@ -16,7 +16,8 @@ import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.support.annotation.Nullable;
-import android.support.v4.app.NotificationCompat;
+import android.support.v4.graphics.drawable.DrawableCompat;
+import android.support.v7.content.res.AppCompatResources;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -1004,7 +1005,10 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
             if (port == InputSourceHelper.INPUT_PORT.INPUT_SOURCE_HDMI3) {
                 hdmi3 = new SoftReference<>(view.findViewById(R.id.label));
             }
-            ((ImageView) view.findViewById(R.id.image)).setImageResource(port.getDrawable());
+            Drawable unwrappedDrawable = AppCompatResources.getDrawable(getBaseContext(), port.getDrawable());
+            Drawable wrappedDrawable = DrawableCompat.wrap(unwrappedDrawable);
+            DrawableCompat.setTint(wrappedDrawable, Color.WHITE);
+            ((ImageView) view.findViewById(R.id.image)).setImageDrawable(wrappedDrawable);
             view.setOnClickListener(v -> {
                 new InputSourceHelper().changeInput(port.getId(), this);
                 stopSelf();

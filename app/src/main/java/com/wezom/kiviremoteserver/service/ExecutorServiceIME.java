@@ -37,7 +37,6 @@ import com.wezom.kiviremoteserver.common.DeviceUtils;
 import com.wezom.kiviremoteserver.common.MotionRelay;
 import com.wezom.kiviremoteserver.common.RxBus;
 import com.wezom.kiviremoteserver.common.Utils;
-import com.wezom.kiviremoteserver.common.extensions.ViewExtensionsKt;
 import com.wezom.kiviremoteserver.interfaces.DataStructure;
 import com.wezom.kiviremoteserver.interfaces.EventProtocolExecutor;
 import com.wezom.kiviremoteserver.interfaces.InitialMessage;
@@ -362,7 +361,7 @@ public class ExecutorServiceIME extends PinyinIME implements EventProtocolExecut
                     break;
 
                 case VOICE_SEARCH:
-                    ViewExtensionsKt.toastOutsource(getBaseContext(), dataStructure.getAction().name() + " " + dataStructure.getArgs().get(0));
+                    Timber.e("VOICE_SEARCH" + dataStructure.getArgs().get(0));
                     break;
 
                 case SET_VOLUME:
@@ -448,7 +447,6 @@ public class ExecutorServiceIME extends PinyinIME implements EventProtocolExecut
                                             initialMessage -> RxBus.INSTANCE.publish(new SendInitialEvent(initialMessage)),
                                             e -> Timber.e(e, e.getMessage()));
                     disposables.add(disposableInit);
-                    ViewExtensionsKt.toastOutsource(getBaseContext(), dataStructure.getAction().name());
                     break;
                 case REQUEST_INITIAL_II:
                     dispose(disposableInit_II);
@@ -462,14 +460,12 @@ public class ExecutorServiceIME extends PinyinIME implements EventProtocolExecut
                                             },
                                             e -> Timber.e(e, e.getMessage()));
                     disposables.add(disposableInit_II);
-                    ViewExtensionsKt.toastOutsource(getBaseContext(), dataStructure.getAction().name());
                     break;
                 case REQUEST_CHANNELS:
                     RxBus.INSTANCE.publish(new SendChannelsEvent());
                     break;
                 case LAUNCH_CHANNEL:
                     startLauncherIntent(LauncherBasedData.TYPE.CHANNEL, dataStructure.getArgs().get(0));
-                    ViewExtensionsKt.toastOutsource(getBaseContext(), dataStructure.getAction().name() + " " + dataStructure.getArgs().get(0));
                     break;
                 case REQUEST_RECOMMENDATIONS:
                     RxBus.INSTANCE.publish(new SendRecommendationsEvent());
@@ -479,7 +475,6 @@ public class ExecutorServiceIME extends PinyinIME implements EventProtocolExecut
                     break;
                 case LAUNCH_RECOMMENDATION:
                     startLauncherIntent(LauncherBasedData.TYPE.RECOMMENDATION, dataStructure.getArgs().get(0));
-                    ViewExtensionsKt.toastOutsource(getBaseContext(), dataStructure.getAction().name() + " " + dataStructure.getArgs().get(0));
                     break;
                 case LAUNCH_FAVORITE:
                     startLauncherIntent(LauncherBasedData.TYPE.FAVOURITE, dataStructure.getArgs().get(0));
@@ -496,7 +491,7 @@ public class ExecutorServiceIME extends PinyinIME implements EventProtocolExecut
                     break;
             }
         } else {
-            ViewExtensionsKt.toastOutsource(getBaseContext(), "server got message but dataStructure.getAction() == null");
+            Timber.e("server got message but dataStructure.getAction() == null");
         }
     }
 

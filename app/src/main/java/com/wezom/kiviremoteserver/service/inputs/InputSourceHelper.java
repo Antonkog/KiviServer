@@ -1,25 +1,21 @@
 package com.wezom.kiviremoteserver.service.inputs;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.v4.content.res.ResourcesCompat;
-import android.support.v7.content.res.AppCompatResources;
 import android.util.Base64;
 
 import com.wezom.kiviremoteserver.App;
 import com.wezom.kiviremoteserver.R;
 import com.wezom.kiviremoteserver.common.Constants;
-import com.wezom.kiviremoteserver.common.DeviceUtils;
 import com.wezom.kiviremoteserver.common.extensions.ViewExtensionsKt;
 import com.wezom.kiviremoteserver.environment.EnvironmentInputsHelper;
 import com.wezom.kiviremoteserver.interfaces.DriverValue;
 import com.wezom.kiviremoteserver.net.server.model.Input;
 
-import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -181,7 +177,7 @@ public class InputSourceHelper {
             return INPUT_SOURCE_NONE;
         }
 
-       public static INPUT_PORT getPortByID(int id) {
+        public static INPUT_PORT getPortByID(int id) {
             for (INPUT_PORT port : values()) {
                 if (port.id == id) {
                     return port;
@@ -270,7 +266,7 @@ public class InputSourceHelper {
                     int width = drawable.getIntrinsicWidth();
                     int height = drawable.getIntrinsicHeight();
 
-                    iconBytes = ViewExtensionsKt.getIconBytes(context, width == 0 ? Constants.INPUT_ICON_WH : width, height == 0 ? Constants.INPUT_ICON_WH : height, drawable);
+                    iconBytes = ViewExtensionsKt.getIconBytes(context, ViewExtensionsKt.dpToPx(context, Constants.INPUT_ICON_WH), ViewExtensionsKt.dpToPx(context, Constants.INPUT_ICON_WH), drawable);
 
                     String byteString = Base64.encodeToString(iconBytes, Base64.DEFAULT);
 

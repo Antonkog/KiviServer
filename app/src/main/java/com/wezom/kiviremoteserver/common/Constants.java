@@ -16,7 +16,7 @@ public class Constants {
     public static final String RECOMMENDATION_MANAGER = "recommendation";
     public static final String FAVORITES_MANAGER = "favorites";
     public static final String CHANNEL_MANAGER = "kiviTV";
-
+    public static final String APP_MANAGER = "apps";
 
     public static final String APPLICATION_UID = "app_uid";
     public static final String LAST_VOLUME = "last_volume";
@@ -34,7 +34,6 @@ public class Constants {
     public static final int APP_ICON_W = 160;
     public static final int APP_ICON_H = 90;
     public static final int INPUT_ICON_WH = 30;
-
 
 
     public static final int APPS_SENDING_DELAY = 300; // for some reason PM collecting old app's if asking immediately after package removed

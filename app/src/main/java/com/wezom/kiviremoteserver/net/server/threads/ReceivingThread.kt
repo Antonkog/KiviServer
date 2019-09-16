@@ -16,9 +16,9 @@ class ReceivingThread(private val socket: Socket) : Thread() {
 
     override fun run() {
         Timber.d("Start receiving")
-        val stream: InputStream?  = null
+        val stream: InputStream? = null
         try {
-            val stream : InputStream = socket.getInputStream()
+            val stream: InputStream = socket.getInputStream()
             val reader = BufferedReader(InputStreamReader(stream))
             var message: String? = ""
 
@@ -26,9 +26,11 @@ class ReceivingThread(private val socket: Socket) : Thread() {
                 message?.takeIf { it.isNotEmpty() }?.let { RxBus.publish(NewMessageEvent(it)) }
             }
         } catch (e: Exception) {
+            isRunning = false
             Timber.e(e, e.message)
             Crashlytics.logException(e)
         } finally {
+            isRunning = false
             stream?.close()
         }
     }

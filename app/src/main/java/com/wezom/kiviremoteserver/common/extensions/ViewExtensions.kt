@@ -7,21 +7,12 @@ import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
-import android.widget.Toast
-import com.wezom.kiviremoteserver.BuildConfig
-import com.wezom.kiviremoteserver.common.Constants
-import org.jetbrains.anko.runOnUiThread
-import org.jetbrains.anko.toast
 import timber.log.Timber
 import java.io.ByteArrayOutputStream
 
 
 fun dpToPx(context: Context, dps: Int) = Math.round(context.resources.displayMetrics.density * dps)
 
-fun Context.toastOutsource(message: CharSequence) =
-//        if (BuildConfig.VERSION_NAME.toLowerCase().contains("test")) applicationContext.toast(message)
-//        else
-            Timber.v("" + message)
 
 private fun createBitmap(drawable: Drawable, width: Int, height: Int): Bitmap {
     val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
@@ -31,11 +22,28 @@ private fun createBitmap(drawable: Drawable, width: Int, height: Int): Bitmap {
     return bitmap
 }
 
-fun getIconBytes(context: Context, w: Int, h: Int, banner: Drawable?): ByteArray? {
+fun getIconBytes(context: Context, outWidth: Int, outHeight: Int, banner: Drawable): ByteArray? {
     ByteArrayOutputStream().use { stream ->
         var iconBytes = byteArrayOf()
+        val w = if (banner.intrinsicWidth > 1) {
+            banner.intrinsicWidth
+        } else {
+            outWidth
+        }
+        val h = if (banner.intrinsicHeight > 1) {
+            banner.intrinsicHeight
+        } else {
+            outHeight
+        }
+
         if (banner != null) {
-            val bitmap = createBitmap(banner, dpToPx(context, w), dpToPx(context, h))
+            var bitmap = createBitmap(banner, w, h)
+            val scaleFactor = bitmap.width / outWidth
+
+            if (scaleFactor > 1) {
+                bitmap = Bitmap.createScaledBitmap(bitmap, bitmap.width / scaleFactor, bitmap.height / scaleFactor, false)
+            }
+
             bitmap.compress(Bitmap.CompressFormat.PNG, 60, stream)
             iconBytes = stream.toByteArray()
         }
