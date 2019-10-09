@@ -899,7 +899,8 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
 
     private void setAlarmAllApi(TextView textView) {
         int minutes = showMinutesLeft(textView);
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.O) {
+        if(minutes > 0)
+            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.O) {
             try {
                 sleepInRealtek9(minutes * 60 * 1000);
             } catch (Exception e) {
