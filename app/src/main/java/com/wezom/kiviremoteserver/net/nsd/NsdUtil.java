@@ -48,9 +48,9 @@ public class NsdUtil {
 
     private String setServiceName() {
         mServiceName = Build.MODEL;
-        if(App.isTVRealtek()){
+        if (App.isTVRealtek()) {
             mServiceName = App.getProperty("ro.product.panel");
-            if(mServiceName.isEmpty()) mServiceName = Build.MODEL;
+            if (mServiceName.isEmpty()) mServiceName = Build.MODEL;
         }
         return mServiceName;
     }
@@ -60,8 +60,6 @@ public class NsdUtil {
         nameChangeObserver = new NameChangeObserver(handler);
         context.getContentResolver().registerContentObserver(Settings.Global.CONTENT_URI, true, nameChangeObserver);
     }
-
-
 
 
     public void initializeDiscoveryListener() {
@@ -87,7 +85,10 @@ public class NsdUtil {
 
             @Override
             public void onServiceLost(NsdServiceInfo service) {
-                Timber.e(TAG + "service lost" + service.toString() + "\n old service :  \n" + nsdServiceInfo.toString());
+                if(service !=null)
+                Timber.e(TAG + "service lost" + service.toString());
+                if(nsdServiceInfo !=null)
+                Timber.e("\n old service :  \n" + nsdServiceInfo.toString());
                 if (nsdServiceInfo == service) {
                     nsdServiceInfo = null;
                 }
