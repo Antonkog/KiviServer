@@ -13,9 +13,11 @@ class SendingThread(private val threadedModel: WriteThreadedModel<String>) : Thr
 
     override fun run() {
         var outputStream: OutputStream? = null
-
+        var printWriter: PrintWriter? = null
         try {
-            PrintWriter(clientSocket.getOutputStream(), true).use { writer ->
+            outputStream = clientSocket.getOutputStream();
+            printWriter = PrintWriter(outputStream, true)
+            printWriter.use { writer ->
                 while (!isStopped) {
                     val message = threadedModel.queue.take()
                     if (message.length > 150)
@@ -25,7 +27,8 @@ class SendingThread(private val threadedModel: WriteThreadedModel<String>) : Thr
                     writer.println(message + "\r\n")
                     if (writer.checkError()) {
                         Timber.d("Error during writing")
-                        interrupt()
+                        writer.close()
+                        return
                     }
                 }
             }
@@ -36,6 +39,7 @@ class SendingThread(private val threadedModel: WriteThreadedModel<String>) : Thr
         } finally {
             isStopped = true
             outputStream?.close()
+            printWriter?.close()
         }
 
 
@@ -43,6 +47,7 @@ class SendingThread(private val threadedModel: WriteThreadedModel<String>) : Thr
 
     fun stopSelf() {
         isStopped = true
+        interrupt()
     }
 }
 //

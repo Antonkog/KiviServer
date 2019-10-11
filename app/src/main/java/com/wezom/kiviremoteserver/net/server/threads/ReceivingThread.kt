@@ -1,6 +1,5 @@
 package com.wezom.kiviremoteserver.net.server.threads
 
-import com.crashlytics.android.Crashlytics
 import com.wezom.kiviremoteserver.bus.NewMessageEvent
 import com.wezom.kiviremoteserver.common.RxBus
 import timber.log.Timber
@@ -28,7 +27,6 @@ class ReceivingThread(private val socket: Socket) : Thread() {
         } catch (e: Exception) {
             isRunning = false
             Timber.e(e, e.message)
-            Crashlytics.logException(e)
         } finally {
             isRunning = false
             stream?.close()
@@ -37,5 +35,6 @@ class ReceivingThread(private val socket: Socket) : Thread() {
 
     fun stopSelf() {
         isRunning = false
+        interrupt()
     }
 }
