@@ -113,5 +113,6 @@
             android:exported="true"></service>
 
     </application>
+    <!--<protected-broadcast android:name="com.wezom.kiviremoteserver.current_locale" />-->
 
 </manifest>
