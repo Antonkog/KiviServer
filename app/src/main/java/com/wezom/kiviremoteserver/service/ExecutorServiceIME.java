@@ -18,16 +18,15 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
 
 import com.android.inputmethod.pinyin.PinyinIME;
+import com.wezom.kiviremoteserver.App;
+import com.wezom.kiviremoteserver.bus.ExecutorPlayerEvent;
 import com.wezom.kiviremoteserver.bus.HideKeyboardEvent;
 import com.wezom.kiviremoteserver.bus.NewDataEvent;
 import com.wezom.kiviremoteserver.bus.PingEvent;
 import com.wezom.kiviremoteserver.bus.SendAppsListEvent;
 import com.wezom.kiviremoteserver.bus.SendAspectEvent;
-import com.wezom.kiviremoteserver.bus.SendChannelsEvent;
-import com.wezom.kiviremoteserver.bus.SendFavouritesEvent;
+import com.wezom.kiviremoteserver.bus.SendImgByIds;
 import com.wezom.kiviremoteserver.bus.SendInitialEvent;
-import com.wezom.kiviremoteserver.bus.SendInputsEvent;
-import com.wezom.kiviremoteserver.bus.SendRecommendationsEvent;
 import com.wezom.kiviremoteserver.bus.SendVolumeEvent;
 import com.wezom.kiviremoteserver.bus.ShowHideAspectEvent;
 import com.wezom.kiviremoteserver.bus.ShowKeyboardEvent;
@@ -44,6 +43,8 @@ import com.wezom.kiviremoteserver.net.server.model.LauncherBasedData;
 import com.wezom.kiviremoteserver.service.inputs.InputSourceHelper;
 
 import java.util.concurrent.TimeUnit;
+
+import javax.inject.Inject;
 
 import io.reactivex.Completable;
 import io.reactivex.Observable;
@@ -65,6 +66,12 @@ public class ExecutorServiceIME extends PinyinIME implements EventProtocolExecut
     private AudioManager audioManager;
     private InputSourceHelper inputSourceHelper = null;
 
+    @Inject
+    AppsInfoLoader appsInfoLoader;
+
+    @Inject
+    DeviceUtils deviceUtils;
+
     private Disposable scrollDisposable;
     private Disposable requestAppsDisposable;
 
@@ -78,7 +85,6 @@ public class ExecutorServiceIME extends PinyinIME implements EventProtocolExecut
     private SharedPreferences prefs;
     private long scrollTime = System.currentTimeMillis();
     private Disposable disposableInit_II, disposableInit = null;
-
 
     @Override
     public void onWindowShown() {
@@ -97,12 +103,12 @@ public class ExecutorServiceIME extends PinyinIME implements EventProtocolExecut
     @Override
     public void onCreate() {
         super.onCreate();
+        App.getApplicationComponent().inject(this);
         dispose();
         prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         disposables = new CompositeDisposable();
         Timber.d("create IME_Service");
         audioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
-
         initObservers();
     }
 
@@ -111,12 +117,6 @@ public class ExecutorServiceIME extends PinyinIME implements EventProtocolExecut
                 .listen(NewDataEvent.class)
                 .map(NewDataEvent::getDataEvent)
                 .subscribe(this::handleRequest, Timber::e));
-    }
-
-    @Override
-    public void onDestroy() {
-        dispose();
-        super.onDestroy();
     }
 
     @Override
@@ -375,7 +375,7 @@ public class ExecutorServiceIME extends PinyinIME implements EventProtocolExecut
                         requestAppsDisposable.dispose();
                     }
 
-                    requestAppsDisposable = AppsInfoLoader.getAppsList(getApplicationContext())
+                    requestAppsDisposable = appsInfoLoader.getAppsList()
                             .subscribeOn(Schedulers.computation())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(
@@ -434,6 +434,11 @@ public class ExecutorServiceIME extends PinyinIME implements EventProtocolExecut
                 case REQUEST_ASPECT:
                     RxBus.INSTANCE.publish(new SendAspectEvent());
                     break;
+                case REQUEST_IMG_BY_IDS:
+                    if(dataStructure.getArgs()!=null)
+                    RxBus.INSTANCE.publish(new SendImgByIds(dataStructure.getArgs()));
+                    else Timber.e("asking for previews but no id");
+                    break;
                 case SHOW_OR_HIDE_ASPECT:
                     RxBus.INSTANCE.publish(new ShowHideAspectEvent());
                     break;
@@ -451,27 +456,15 @@ public class ExecutorServiceIME extends PinyinIME implements EventProtocolExecut
                 case REQUEST_INITIAL_II:
                     dispose(disposableInit_II);
                     disposableInit_II =
-                            DeviceUtils.getPreviewCommonStructureSingle(getApplicationContext()).
+                            deviceUtils.getPreviewCommonStructureSingle(getApplicationContext()).
                                     subscribeOn(Schedulers.io())
                                     .observeOn(AndroidSchedulers.mainThread())
-                                    .subscribe(
-                                            previewCommonStructures -> {
-                                                RxBus.INSTANCE.publish(new SendInitialEvent(previewCommonStructures));
-                                            },
+                                    .subscribe(previewCommonStructures -> RxBus.INSTANCE.publish(new SendInitialEvent(previewCommonStructures)),
                                             e -> Timber.e(e, e.getMessage()));
                     disposables.add(disposableInit_II);
                     break;
-                case REQUEST_CHANNELS:
-                    RxBus.INSTANCE.publish(new SendChannelsEvent());
-                    break;
                 case LAUNCH_CHANNEL:
                     startLauncherIntent(LauncherBasedData.TYPE.CHANNEL, dataStructure.getArgs().get(0));
-                    break;
-                case REQUEST_RECOMMENDATIONS:
-                    RxBus.INSTANCE.publish(new SendRecommendationsEvent());
-                    break;
-                case REQUEST_FAVORITES:
-                    RxBus.INSTANCE.publish(new SendFavouritesEvent());
                     break;
                 case LAUNCH_RECOMMENDATION:
                     startLauncherIntent(LauncherBasedData.TYPE.RECOMMENDATION, dataStructure.getArgs().get(0));
@@ -479,9 +472,8 @@ public class ExecutorServiceIME extends PinyinIME implements EventProtocolExecut
                 case LAUNCH_FAVORITE:
                     startLauncherIntent(LauncherBasedData.TYPE.FAVOURITE, dataStructure.getArgs().get(0));
                     break;
-                case REQUEST_INPUTS:
-                    Timber.d("Inputs requested");
-                    RxBus.INSTANCE.publish(new SendInputsEvent());
+                case PLAYER_ACTION:
+                    RxBus.INSTANCE.publish(new ExecutorPlayerEvent(dataStructure.getArgs().get(0), dataStructure.getMotion()));
                     break;
                 case CHANGE_INPUT:
                     changeInput(parseIntOrLogError(dataStructure.getArgs().get(0)));
@@ -497,6 +489,7 @@ public class ExecutorServiceIME extends PinyinIME implements EventProtocolExecut
 
     private int parseIntOrLogError(String s) {
         try {
+            if (s.contains(".")) Double.parseDouble(s);
             return Integer.parseInt(s);
         } catch (NumberFormatException e) {
             Timber.e(e);

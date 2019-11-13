@@ -1,17 +1,13 @@
 package com.wezom.kiviremoteserver.service.inputs;
 
 import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
-import android.support.v4.content.res.ResourcesCompat;
-import android.util.Base64;
 
 import com.wezom.kiviremoteserver.App;
 import com.wezom.kiviremoteserver.R;
 import com.wezom.kiviremoteserver.common.Constants;
-import com.wezom.kiviremoteserver.common.extensions.ViewExtensionsKt;
 import com.wezom.kiviremoteserver.environment.EnvironmentInputsHelper;
 import com.wezom.kiviremoteserver.interfaces.DriverValue;
 import com.wezom.kiviremoteserver.net.server.model.Input;
@@ -244,36 +240,22 @@ public class InputSourceHelper {
 
         for (int i = 0; i < inputs.size(); i++) {
             InputSourceHelper.INPUT_PORT temp = inputs.get(i);
-            try {
-                byte[] iconBytes;
-                Drawable drawable = ResourcesCompat.getDrawable(context.getResources(), temp.drawable, null);
-                if (drawable != null) {
-                    int width = drawable.getIntrinsicWidth();
-                    int height = drawable.getIntrinsicHeight();
+            set.add(new Input()
+                    .addPortName(context.getResources().getString(temp.getNameResource()))
+                    .addActive(currentPort == temp.getId())
+                    .addPortNum(temp.getId()));
 
-                    iconBytes = ViewExtensionsKt.getIconBytes(context, ViewExtensionsKt.dpToPx(context, Constants.INPUT_ICON_WH), ViewExtensionsKt.dpToPx(context, Constants.INPUT_ICON_WH), drawable);
-
-                    String byteString = Base64.encodeToString(iconBytes, Base64.DEFAULT);
-
-                    set.add(new Input()
-                            .addPortName(context.getResources().getString(temp.getNameResource()))
-                            .addActive(currentPort == temp.getId())
-                            .addInputIcon(byteString)
-                            .addPortNum(temp.getId()));
-
-                } else {
-                    set.add(new Input()
-                            .addPortName(context.getResources().getString(temp.getNameResource()))
-                            .addActive(currentPort == temp.getId())
-                            .addPortNum(temp.getId()));
-                }
-            } catch (Exception e) {
-                Timber.e(e);
-                set.add(new Input()
-                        .addPortName(context.getResources().getString(temp.getNameResource()))
-                        .addActive(currentPort == temp.getId())
-                        .addPortNum(temp.getId()));
-            }
+//            try {
+//                byte[] iconBytes;
+//                Drawable drawable = ResourcesCompat.getDrawable(context.getResources(), temp.drawable, null);
+//                if (drawable != null) {
+//                    iconBytes = ViewExtensionsKt.getIconBytes(context, ViewExtensionsKt.dpToPx(context, Constants.INPUT_ICON_WH), ViewExtensionsKt.dpToPx(context, Constants.INPUT_ICON_WH), drawable);
+//                    String byteString = Base64.encodeToString(iconBytes, Base64.DEFAULT);
+//                }
+//
+//            } catch (Exception e) {
+//                Timber.e(e);
+//            }
         }
         return new LinkedList<>(set);
     }

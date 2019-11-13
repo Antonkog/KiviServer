@@ -8,7 +8,6 @@ public interface LauncherBasedData extends Parcelable {
     String getID ();
     String getName();
     String getImageUrl();
-    String getBaseIcon();
     Boolean isActive();
     TYPE getType();
     HashMap<String,String> getAdditionalData();
@@ -18,6 +17,7 @@ public interface LauncherBasedData extends Parcelable {
         CHANNEL,
         FAVOURITE,
         APPLICATION,
-        INPUT
+        INPUT,
+        TV_PREVIEW
     }
 }

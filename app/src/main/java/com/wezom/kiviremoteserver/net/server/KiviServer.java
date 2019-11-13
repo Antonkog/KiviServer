@@ -14,18 +14,15 @@ import com.wezom.kiviremoteserver.bus.SocketAcceptedEvent;
 import com.wezom.kiviremoteserver.common.ImeUtils;
 import com.wezom.kiviremoteserver.common.KiviProtocolStructure;
 import com.wezom.kiviremoteserver.common.RxBus;
-import com.wezom.kiviremoteserver.common.Utils;
 import com.wezom.kiviremoteserver.interfaces.AspectAvailable;
 import com.wezom.kiviremoteserver.interfaces.AspectMessage;
 import com.wezom.kiviremoteserver.interfaces.InitialMessage;
 import com.wezom.kiviremoteserver.interfaces.RemoteServer;
 import com.wezom.kiviremoteserver.mvp.view.ServiceMvpView;
-import com.wezom.kiviremoteserver.net.server.model.Channel;
-import com.wezom.kiviremoteserver.net.server.model.Input;
-import com.wezom.kiviremoteserver.net.server.model.Recommendation;
-import com.wezom.kiviremoteserver.net.server.threads.WriteThreadedModel;
+import com.wezom.kiviremoteserver.net.server.model.PreviewContent;
 import com.wezom.kiviremoteserver.net.server.threads.ReceivingThread;
 import com.wezom.kiviremoteserver.net.server.threads.SendingThread;
+import com.wezom.kiviremoteserver.net.server.threads.WriteThreadedModel;
 import com.wezom.kiviremoteserver.service.protocol.ServerEventStructure;
 
 import java.io.IOException;
@@ -102,6 +99,15 @@ public class KiviServer implements RemoteServer {
             Timber.d("POST MESSAGE: " + structureJson);
         queue.offer(structureJson);
     }
+//
+//    @Override
+//    public void postMessage(String rawJsonServerEventStructure) {
+//        if (rawJsonServerEventStructure.length() > 150)
+//            Timber.d("POST MESSAGE: " + rawJsonServerEventStructure.substring(0, 150));
+//        else
+//            Timber.d("POST MESSAGE: " + rawJsonServerEventStructure);
+//        queue.offer(rawJsonServerEventStructure);
+//    }
 
     public void dispatchRequest(String input) {
         sendMessage(input);
@@ -206,24 +212,13 @@ public class KiviServer implements RemoteServer {
     }
 
     @Override
-    public void sendInputs(List<Input> inputs) {
-        postMessage(new ServerEventStructure(KiviProtocolStructure.ServerEventType.INPUTS).setAvailableInputs(inputs));
+    public void sendImgById(List<PreviewContent> previewContents) {
+        postMessage(new ServerEventStructure(KiviProtocolStructure.ServerEventType.IMG_BY_IDS).addPreviewContents(previewContents));
     }
 
-    @Override
-    public void sendRecommendations(List<Recommendation> recommendations) {
-        postMessage(new ServerEventStructure(KiviProtocolStructure.ServerEventType.RECOMMENDATIONS).setAvailableRecommendations(recommendations));
-    }
-
-    @Override
-    public void sendFavourites(List<Recommendation> favourites) {
-        postMessage(new ServerEventStructure(KiviProtocolStructure.ServerEventType.FAVORITES).setAvailableFavourites(favourites));
-    }
-
-    @Override
-    public void sendChannels(List<Channel> channels) {
-        postMessage(new ServerEventStructure(KiviProtocolStructure.ServerEventType.CHANNELS).setAvailableChannels(channels));
-    }
+//    public void sendPlayerAction(RemotePlayerEvent event) {
+//        postMessage(new ServerEventStructure(KiviProtocolStructure.ServerEventType.P).setAvailableInputs(inputs));
+//    }
 
     @Override
     public void sendInitialMsg(AspectMessage aspectMessage, AspectAvailable available, InitialMessage msg) {

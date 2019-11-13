@@ -70,11 +70,6 @@ public class Recommendation implements LauncherBasedData {
     }
 
     @Override
-    public String getBaseIcon() {
-        return null;
-    }
-
-    @Override
     public Boolean isActive() {
         return false;
     }

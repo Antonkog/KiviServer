@@ -132,6 +132,7 @@ public class Utils {
         Log.e(tag, text);
         Timber.e(text);
         File logFile = getLogFile();
+//        Timber.e("log file location " + logFile.getAbsolutePath());
         try {
             if (!logFile.exists()) {
                 logFile.createNewFile();

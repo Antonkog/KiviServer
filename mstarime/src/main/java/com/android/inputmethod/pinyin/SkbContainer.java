@@ -326,7 +326,7 @@ public class SkbContainer extends RelativeLayout implements OnTouchListener {
     }
 
     public void updateInputMode() {
-        int skbLayout = mInputModeSwitcher.getSkbLayout();
+        int skbLayout = mInputModeSwitcher.getSkbLayout(this.getContext());
         if (mSkbLayout != skbLayout) {
             mSkbLayout = skbLayout;
             updateSkbLayout();
