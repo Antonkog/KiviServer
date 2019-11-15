@@ -11,7 +11,8 @@ import com.wezom.kiviremoteserver.receiver.WifiStateChangesReceiver;
 import com.wezom.kiviremoteserver.service.AidlPlayerService;
 import com.wezom.kiviremoteserver.service.CursorService;
 import com.wezom.kiviremoteserver.service.ExecutorServiceIME;
-import com.wezom.kiviremoteserver.service.KiviRemoteService;
+import com.wezom.kiviremoteserver.service.RemoteReceiverService;
+import com.wezom.kiviremoteserver.service.RemoteSenderService;
 
 import dagger.Component;
 
@@ -22,9 +23,10 @@ public interface ApplicationComponent {
 
     //Fragments
     void inject(HomeFragmentPresenter homeFragmentPresenter);
-
     //Service
-    void inject(KiviRemoteService kiviRemoteService);
+    void inject(RemoteSenderService remoteSenderService);
+
+    void inject(RemoteReceiverService remoteReceiverService);
 
     void inject(ExecutorServiceIME executorServiceIME);
 

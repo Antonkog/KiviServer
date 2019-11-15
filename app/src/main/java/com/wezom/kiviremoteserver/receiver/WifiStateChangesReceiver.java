@@ -9,7 +9,8 @@ import android.os.Bundle;
 import com.wezom.kiviremoteserver.App;
 import com.wezom.kiviremoteserver.bus.NetworkStateEvent;
 import com.wezom.kiviremoteserver.common.RxBus;
-import com.wezom.kiviremoteserver.service.KiviRemoteService;
+import com.wezom.kiviremoteserver.service.RemoteReceiverService;
+import com.wezom.kiviremoteserver.service.RemoteSenderService;
 
 import timber.log.Timber;
 
@@ -57,7 +58,8 @@ public class WifiStateChangesReceiver extends BroadcastReceiver {
             startServer(context);
         } else if (currState == ConnectionState.DISCONNECTED) {
             Timber.d("Disconnected from WIFI. Kill server");
-            KiviRemoteService.stop(context);
+            RemoteSenderService.stop(context);
+            RemoteReceiverService.stop(context);
         } else { /* fixme network state undefiined. Fix*/
         }
 
@@ -69,7 +71,8 @@ public class WifiStateChangesReceiver extends BroadcastReceiver {
 //        if (KiviRemoteService.isStarted) {
 //            KiviRemoteService.stop(context);
 //        }
-        KiviRemoteService.launch(context);
+        RemoteSenderService.launch(context);
+        RemoteReceiverService.launch(context);
     }
 
     private void debugIntent(Intent intent) {

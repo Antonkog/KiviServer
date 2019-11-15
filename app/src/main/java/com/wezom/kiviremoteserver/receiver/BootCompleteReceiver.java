@@ -3,12 +3,10 @@ package com.wezom.kiviremoteserver.receiver;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Handler;
 
 import com.wezom.kiviremoteserver.service.CursorService;
-import com.wezom.kiviremoteserver.service.KiviRemoteService;
-
-import timber.log.Timber;
+import com.wezom.kiviremoteserver.service.RemoteReceiverService;
+import com.wezom.kiviremoteserver.service.RemoteSenderService;
 
 /**
  * Created by andre on 06.06.2017.
@@ -20,7 +18,8 @@ public class BootCompleteReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         if (Intent.ACTION_BOOT_COMPLETED.equals(intent.getAction())) {
             context.startService(new Intent(context, CursorService.class));
-            context.startService(new Intent(context, KiviRemoteService.class));
+            context.startService(new Intent(context, RemoteSenderService.class));
+            context.startService(new Intent(context, RemoteReceiverService.class));
         }
     }
 }

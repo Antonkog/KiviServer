@@ -70,7 +70,8 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".service.KiviRemoteService" />
+        <service android:name=".service.RemoteSenderService" />
+        <service android:name=".service.RemoteReceiverService" />
         <service android:name=".service.CursorService" />
         <service
             android:name=".service.ExecutorServiceIME"

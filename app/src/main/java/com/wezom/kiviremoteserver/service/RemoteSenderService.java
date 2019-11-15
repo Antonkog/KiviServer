@@ -15,7 +15,6 @@ import android.os.Binder;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
-import android.os.Looper;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
@@ -90,7 +89,7 @@ import static com.wezom.kiviremoteserver.common.KiviProtocolStructure.ExecAction
  * Created by andre on 02.06.2017.
  */
 
-public class KiviRemoteService extends Service implements ServiceMvpView {
+public class RemoteSenderService extends Service implements ServiceMvpView {
 
     @Inject
     NsdUtil autoDiscoveryUtil;
@@ -133,7 +132,7 @@ public class KiviRemoteService extends Service implements ServiceMvpView {
     private final RxBus bus = RxBus.INSTANCE;
 
 
-    public KiviRemoteService() {
+    public RemoteSenderService() {
         App.getApplicationComponent().inject(this);
         binder = new ServiceBinder();
         gson = new Gson();
@@ -150,6 +149,7 @@ public class KiviRemoteService extends Service implements ServiceMvpView {
     public void onCreate() {
         super.onCreate();
 
+        Timber.e("RemoteSenderService onCreate");
         dispose();
         disposables = new CompositeDisposable();
         server = startServer();
@@ -192,11 +192,9 @@ public class KiviRemoteService extends Service implements ServiceMvpView {
 
     private void initObservers() {
         disposables.add(bus.listen(ExecutorPlayerEvent.class).subscribe((event) -> {
-            Timber.e("KiviRemoteService got RX ExecutorPlayerEvent:" + event.toString() + "  " + Looper.getMainLooper().getThread().toString());
             connectToRemoteMessenger();
             sendToRemoteMessenger(event);
         }));
-
 
         disposables.add(bus.listen(SendToSettingsEvent.class)
                 .subscribe(event -> openSettings(), Timber::e));
@@ -230,12 +228,11 @@ public class KiviRemoteService extends Service implements ServiceMvpView {
 
         disposables.add(bus.listen(SendInitialEvent.class).subscribe(
                 sendInitialEvent -> {
-                    if (sendInitialEvent.getInitialMessage() != null) { //initial 1 (old versions)
-                        server.sendInitialMsg(prepareAspect(), AspectAvailable.getInstance(), InitialMessage.getInstance());
-                    }
                     if (sendInitialEvent.getStructures() != null) { //initial 2 (2.0.+ version)
                         server.postMessage(new ServerEventStructure(KiviProtocolStructure.ServerEventType.INITIAL_II).
                                 addPreviewCommonStructures(sendInitialEvent.getStructures()));
+                    } else { //initial 1 (old versions)
+                        server.sendInitialMsg(prepareAspect(), AspectAvailable.getInstance(), InitialMessage.getInstance());
                     }
                 },
                 Timber::e));
@@ -264,8 +261,10 @@ public class KiviRemoteService extends Service implements ServiceMvpView {
 
                     if (handleLegacySettingsRequest(request)) return;
 
-                    if (ImeUtils.isCurrentImeOk(this))
+                    if (ImeUtils.isCurrentImeOk(this)){
                         RxBus.INSTANCE.publish(new NewDataEvent(request));
+                        Timber.e("posting new data event");
+                    }
                     else {
                         server.postMessage(
                                 new ServerEventStructure(
@@ -323,12 +322,13 @@ public class KiviRemoteService extends Service implements ServiceMvpView {
                 case RemoteMessengerService.PLAY:
                 case RemoteMessengerService.CLOSE:
                 case RemoteMessengerService.SEEK_TO:
+                case RemoteMessengerService.REQUEST_CONTENT:
+                case RemoteMessengerService.REQUEST_STATE:
                     Message msg = Message.obtain(null,
                             event.getNum());
                     remoteMessenger.send(msg);
                     break;
             }
-
         } catch (RemoteException e) {
             Timber.e("321 remoteMessenger disconnect");
         }
@@ -354,15 +354,13 @@ public class KiviRemoteService extends Service implements ServiceMvpView {
 
         @Override
         public void handleMessage(Message msg) {
-//            sendCurrentPlayer(msg);
             Bundle b = msg.getData();
             String playStr = b.getString(RemoteMessengerService.TV_PLAYER_EVENT_KEY);
             TvPlayerEvent playerEvent = gson.fromJson(playStr, TvPlayerEvent.class);
             if (playerEvent != null) {
-                Timber.e(" 123r got in RemoteMessengerService   " + msg.toString() + msg.getData() == null ? " data is null" : " data " + msg.getData().toString());
+                Timber.e(" 123r got in RemoteMessengerService   " + playerEvent.toString());
                 sendToRemote(playerEvent);
-            } else
-                Timber.e(" 123r no PARCEL in RemoteMessengerService   ");
+            }
         }
     }
 
@@ -546,12 +544,12 @@ public class KiviRemoteService extends Service implements ServiceMvpView {
     //endregion
 
     public static void launch(Context context) {
-        Intent launcher = new Intent(context, KiviRemoteService.class);
+        Intent launcher = new Intent(context, RemoteSenderService.class);
         context.startService(launcher);
     }
 
     public static void stop(Context context) {
-        Intent launcher = new Intent(context, KiviRemoteService.class);
+        Intent launcher = new Intent(context, RemoteSenderService.class);
         context.stopService(launcher);
     }
 

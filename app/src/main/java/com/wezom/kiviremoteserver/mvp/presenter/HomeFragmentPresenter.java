@@ -16,7 +16,8 @@ import com.wezom.kiviremoteserver.common.Constants;
 import com.wezom.kiviremoteserver.common.RxBus;
 import com.wezom.kiviremoteserver.di.qualifiers.ApplicationContext;
 import com.wezom.kiviremoteserver.mvp.view.HomeFragmentView;
-import com.wezom.kiviremoteserver.service.KiviRemoteService;
+import com.wezom.kiviremoteserver.service.RemoteReceiverService;
+import com.wezom.kiviremoteserver.service.RemoteSenderService;
 
 import javax.inject.Inject;
 
@@ -34,7 +35,7 @@ public class HomeFragmentPresenter extends BasePresenter<HomeFragmentView> {
     Context context;
 
     private CompositeDisposable compDisp = new CompositeDisposable();
-    private KiviRemoteService.ServiceBinder binder;
+    private RemoteSenderService.ServiceBinder binder;
     private Handler msgHandler = new Handler();
 
     private ServiceConnection connection;
@@ -46,7 +47,8 @@ public class HomeFragmentPresenter extends BasePresenter<HomeFragmentView> {
 
     public void killServerService() {
         getViewState().unbindService(connection);
-        KiviRemoteService.stop(context);
+        RemoteSenderService.stop(context);
+        RemoteReceiverService.stop(context);
         RxBus.INSTANCE.publish(new StopReceivingEvent());
 
         if (Constants.DEBUG)
@@ -54,10 +56,11 @@ public class HomeFragmentPresenter extends BasePresenter<HomeFragmentView> {
     }
 
     public void startServerService() {
-        if (KiviRemoteService.isStarted) {
+        if (RemoteSenderService.isStarted || RemoteReceiverService.isStarted ) {
             killServerService();
         }
-        KiviRemoteService.launch(context);
+        RemoteSenderService.launch(context);
+        RemoteReceiverService.launch(context);
         getViewState().bindService(connection);
     }
 
@@ -70,7 +73,7 @@ public class HomeFragmentPresenter extends BasePresenter<HomeFragmentView> {
             @Override
             public void onServiceConnected(ComponentName name, IBinder service) {
                 // We've bound to LocalService, cast the IBinder and get LocalService instance
-                binder = (KiviRemoteService.ServiceBinder) service;
+                binder = (RemoteSenderService.ServiceBinder) service;
             }
 
             @Override

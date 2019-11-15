@@ -9,7 +9,6 @@ import android.os.IBinder;
 import android.os.Messenger;
 import android.os.RemoteException;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.kivi.launcher_v2.IPlayerControl;
 import com.wezom.kiviremoteserver.App;
@@ -31,6 +30,7 @@ import timber.log.Timber;
 import static com.wezom.kiviremoteserver.service.RemoteMessengerService.CLOSE;
 import static com.wezom.kiviremoteserver.service.RemoteMessengerService.PAUSE;
 import static com.wezom.kiviremoteserver.service.RemoteMessengerService.PLAY;
+import static com.wezom.kiviremoteserver.service.RemoteMessengerService.REQUEST_CONTENT;
 import static com.wezom.kiviremoteserver.service.RemoteMessengerService.REQUEST_STATE;
 import static com.wezom.kiviremoteserver.service.RemoteMessengerService.SEEK_TO;
 
@@ -143,12 +143,12 @@ public class AidlPlayerService extends Service {
     public void handleRequest(RemotePlayerEvent playerEvent) {
         Timber.e("got  from phone " + playerEvent.toString());
         if (playerControl == null)
-            Toast.makeText(getApplicationContext(), " playerControl is null", Toast.LENGTH_LONG).show();
+            sendTvPlayerEvent(KiviProtocolStructure.ServerEventType.LAST_REQUEST_ERROR, 0, null);
         else
             try {
                 switch (playerEvent.getNum()) {
                     case PLAY:
-                        playerControl.close();
+                        playerControl.play();
                         break;
                     case CLOSE:
                         playerControl.close();
@@ -161,6 +161,9 @@ public class AidlPlayerService extends Service {
                         break;
                     case SEEK_TO:
                         playerControl.seekTo(playerEvent.getProgress());
+                        break;
+                    case REQUEST_CONTENT:
+                        playerControl.requeestConetentInfo();
                         break;
                 }
             } catch (RemoteException e) {

@@ -29,7 +29,8 @@ import com.wezom.kiviremoteserver.common.NetConnectionUtils;
 import com.wezom.kiviremoteserver.mvp.presenter.HomeFragmentPresenter;
 import com.wezom.kiviremoteserver.mvp.view.HomeFragmentView;
 import com.wezom.kiviremoteserver.service.CursorService;
-import com.wezom.kiviremoteserver.service.KiviRemoteService;
+import com.wezom.kiviremoteserver.service.RemoteReceiverService;
+import com.wezom.kiviremoteserver.service.RemoteSenderService;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -76,7 +77,7 @@ public class HomeFragment extends BaseFragment implements HomeFragmentView {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        if (!KiviRemoteService.isStarted) {
+        if (!RemoteSenderService.isStarted || !RemoteReceiverService.isStarted) {
             presenter.startServerService();
         }
         printCurrentIme();
@@ -154,7 +155,7 @@ public class HomeFragment extends BaseFragment implements HomeFragmentView {
     @Override
     public void bindService(ServiceConnection connection) {
         try {
-            getActivity().bindService(new Intent(getActivity(), KiviRemoteService.class),
+            getActivity().bindService(new Intent(getActivity(), RemoteSenderService.class),
                     connection, Context.BIND_AUTO_CREATE);
             presenter.setBound(true);
         } catch (Exception e) {

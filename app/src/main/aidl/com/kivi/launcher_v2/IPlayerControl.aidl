@@ -8,4 +8,5 @@ interface IPlayerControl {
      void seekTo(int progress);
      void close();
      void reloadState();//retunt through IPlayerListener.changeState
+     void requeestConetentInfo();//retunt through IPlayerListener.launchPlayer
  }

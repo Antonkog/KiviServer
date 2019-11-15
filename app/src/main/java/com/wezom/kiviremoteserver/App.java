@@ -31,7 +31,8 @@ import com.wezom.kiviremoteserver.di.modules.ApplicationModule;
 import com.wezom.kiviremoteserver.receiver.ScreenOnReceiver;
 import com.wezom.kiviremoteserver.service.AspectLayoutService;
 import com.wezom.kiviremoteserver.service.CursorService;
-import com.wezom.kiviremoteserver.service.KiviRemoteService;
+import com.wezom.kiviremoteserver.service.RemoteReceiverService;
+import com.wezom.kiviremoteserver.service.RemoteSenderService;
 import com.wezom.kiviremoteserver.service.communication.DelegatePlatformsService;
 import com.wezom.kiviremoteserver.service.inputs.InputSourceHelper;
 
@@ -39,7 +40,6 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.UUID;
 
-import io.fabric.sdk.android.Fabric;
 import timber.log.Timber;
 import wezom.kiviremoteserver.environment.bridge.BridgeGeneral;
 
@@ -93,7 +93,8 @@ public class App extends Application {
             Timber.plant(new Timber.DebugTree());
         }
 
-        startService(new Intent(this, KiviRemoteService.class));
+        startService(new Intent(this, RemoteSenderService.class));
+        startService(new Intent(this, RemoteReceiverService.class));
         startService(new Intent(this, CursorService.class));
         if (isTVRealtek()) {
             BroadcastReceiver mUsbReceiver = new BroadcastReceiver() {

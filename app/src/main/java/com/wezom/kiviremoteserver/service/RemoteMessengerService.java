@@ -33,6 +33,7 @@ public class RemoteMessengerService extends Service {
     public static final int SEEK_TO = 17;
     public static final int CLOSE = 18;
     public static final int REQUEST_STATE = 19;
+    public static final int REQUEST_CONTENT = 20;
 
     public static final String TV_PLAYER_EVENT_KEY = "TvPlayerEvent";
 
@@ -67,6 +68,8 @@ public class RemoteMessengerService extends Service {
                 case SEEK_TO:
                 case CLOSE:
                 case PAUSE:
+                case REQUEST_CONTENT:
+                case REQUEST_STATE:
                     remotePlayerEvent = new RemotePlayerEvent(msg.what);
                     if (remotePlayerEvent != null) {
                         RxBus.INSTANCE.publish(remotePlayerEvent);

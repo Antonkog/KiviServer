@@ -9,7 +9,7 @@ import timber.log.Timber;
 /**
  * Created by andre on 06.06.2017.
  */
-public class ExecutorPlayerEvent  {
+public class ExecutorPlayerEvent {
     private String playerAction;
     private int num;
     private List<Float> args;
@@ -33,17 +33,13 @@ public class ExecutorPlayerEvent  {
             case "REQUEST_STATE":
                 this.num = RemoteMessengerService.REQUEST_STATE;
                 break;
-                default:
-                    Timber.e("unlnown player action: " + playerAction);
-                    break;
+            case "REQUEST_CONTENT":
+                this.num = RemoteMessengerService.REQUEST_CONTENT;
+                break;
+            default:
+                Timber.e("unlnown player action: " + playerAction);
+                break;
         }
-    }
-
-
-    public ExecutorPlayerEvent(String playerAction, int num, List<Float> args) {
-        this.playerAction = playerAction;
-        this.num = num;
-        this.args = args;
     }
 
     public String getPlayerAction() {

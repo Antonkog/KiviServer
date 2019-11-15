@@ -1,11 +1,8 @@
 package com.wezom.kiviremoteserver.net.server.model;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
 import java.util.HashMap;
 
-public class PreviewCommonStructure implements Parcelable {
+public class PreviewCommonStructure {
     public String getType() {
         return type;
     }
@@ -65,38 +62,14 @@ public class PreviewCommonStructure implements Parcelable {
     }
 
     @Override
-    public int describeContents() {
-        return 0;
+    public String toString() {
+        return "PreviewCommonStructure{" +
+                "type='" + type + '\'' +
+                ", id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", imageUrl='" + imageUrl + '\'' +
+                ", is_active=" + is_active +
+                ", additionalData=" + additionalData +
+                '}';
     }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(this.type);
-        dest.writeString(this.id);
-        dest.writeString(this.name);
-        dest.writeString(this.imageUrl);
-        dest.writeValue(this.is_active);
-        dest.writeSerializable(this.additionalData);
-    }
-
-    protected PreviewCommonStructure(Parcel in) {
-        this.type = in.readString();
-        this.id = in.readString();
-        this.name = in.readString();
-        this.imageUrl = in.readString();
-        this.is_active = (Boolean) in.readValue(Boolean.class.getClassLoader());
-        this.additionalData = (HashMap<String, String>) in.readSerializable();
-    }
-
-    public static final Creator<PreviewCommonStructure> CREATOR = new Creator<PreviewCommonStructure>() {
-        @Override
-        public PreviewCommonStructure createFromParcel(Parcel source) {
-            return new PreviewCommonStructure(source);
-        }
-
-        @Override
-        public PreviewCommonStructure[] newArray(int size) {
-            return new PreviewCommonStructure[size];
-        }
-    };
 }
