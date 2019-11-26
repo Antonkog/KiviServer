@@ -212,6 +212,7 @@ public class AppsInfoLoader implements SyncValue {
         try {
             launcher2Context = context.createPackageContext(Constants.LAUNCHER_PACKAGE, Context.MODE_PRIVATE);
         } catch (PackageManager.NameNotFoundException e) {
+            Timber.e(" getting white list, no " + Constants.LAUNCHER_PACKAGE  + " context, trying to get list from old launcher " + e.getMessage());
             e.printStackTrace();
         }
         if (launcher2Context != null) {
@@ -239,6 +240,7 @@ public class AppsInfoLoader implements SyncValue {
                     Timber.e("getWhiteList empty");
                 }
             } catch (PackageManager.NameNotFoundException e) {
+                Timber.e(" getting white list, no com.kivi.launcher context "  + e.getMessage());
                 Timber.e(e, e.getMessage());
             }
         }

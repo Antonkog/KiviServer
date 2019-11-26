@@ -104,8 +104,6 @@ public class RemoteSenderService extends Service implements ServiceMvpView {
     private InputSourceHelper inputSourceHelper = null;
     private EnvironmentPictureSettings pictureSettings = null;
 
-
-    private static final int BUMP_MSG = 1;
     private final static int SERVER_ID = 123;
     public static boolean isStarted = false;
 
@@ -121,8 +119,7 @@ public class RemoteSenderService extends Service implements ServiceMvpView {
     private Messenger remoteMessenger = null;
     private Messenger internalMsgr = null;
 
-    boolean bound;
-
+    boolean remoteMsgrBound = false;
 
     private CompositeDisposable disposables;
     private AudioManager audioManager;
@@ -171,9 +168,17 @@ public class RemoteSenderService extends Service implements ServiceMvpView {
     }
 
     private void connectToRemoteMessenger() {
-        if (!bound)
-            bindService(new Intent(this, RemoteMessengerService.class), remoteServiceConnection,
-                    Context.BIND_AUTO_CREATE);
+        if (!remoteMsgrBound) {
+            if (bindService(new Intent(this, RemoteMessengerService.class), remoteServiceConnection,
+                    Context.BIND_AUTO_CREATE)) {
+                remoteMsgrBound = true;
+                Timber.e(" bind RemoteMessengerService  - success");
+            } else {
+                Timber.e("  can't bind RemoteMessengerService");
+            }
+        } else {
+            Timber.e("  RemoteMessengerService remoteMsgrBound");
+        }
     }
 
 
@@ -192,6 +197,7 @@ public class RemoteSenderService extends Service implements ServiceMvpView {
 
     private void initObservers() {
         disposables.add(bus.listen(ExecutorPlayerEvent.class).subscribe((event) -> {
+            Timber.e(" got ExecutorPlayerEvent, " + event.toString());
             connectToRemoteMessenger();
             sendToRemoteMessenger(event);
         }));
@@ -261,11 +267,10 @@ public class RemoteSenderService extends Service implements ServiceMvpView {
 
                     if (handleLegacySettingsRequest(request)) return;
 
-                    if (ImeUtils.isCurrentImeOk(this)){
+                    if (ImeUtils.isCurrentImeOk(this)) {
                         RxBus.INSTANCE.publish(new NewDataEvent(request));
                         Timber.e("posting new data event");
-                    }
-                    else {
+                    } else {
                         server.postMessage(
                                 new ServerEventStructure(
                                         KiviProtocolStructure.ServerEventType.KEYBOARD_NOT_SET));
@@ -312,8 +317,8 @@ public class RemoteSenderService extends Service implements ServiceMvpView {
     }
 
     public void sendToRemoteMessenger(ExecutorPlayerEvent event) {
-        if (!bound) {
-            Timber.e("123 not bound");
+        if (!remoteMsgrBound || remoteMessenger==null) {
+            Timber.e("123 not remoteMsgrBound or remoteMessenger==null");
             return;
         }
         try {
@@ -327,6 +332,7 @@ public class RemoteSenderService extends Service implements ServiceMvpView {
                     Message msg = Message.obtain(null,
                             event.getNum());
                     remoteMessenger.send(msg);
+                    Timber.e("   sendting to RemoteMessengerService : " + event.getNum());
                     break;
             }
         } catch (RemoteException e) {
@@ -338,12 +344,14 @@ public class RemoteSenderService extends Service implements ServiceMvpView {
         public void onServiceConnected(ComponentName className, IBinder service) {
             remoteMessenger = new Messenger(service);
             registerMsgListener();
-            bound = true;
+            remoteMsgrBound = true;
+            Timber.e(" service connected :  " + className.getClassName());
         }
 
         public void onServiceDisconnected(ComponentName className) {
             remoteMessenger = null;
-            bound = false;
+            remoteMsgrBound = false;
+            Timber.e(" service disconnected :  " + className.getClassName());
         }
     };
 

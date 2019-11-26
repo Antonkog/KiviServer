@@ -25,7 +25,8 @@ class SendingThread(private val threadedModel: WriteThreadedModel<String>) : Thr
                     writer.println(message + "\r\n")
                     if (writer.checkError()) {
                         writer.close()
-                        Timber.d("Error during writing")
+                        Timber.d("Error during writing to clientSocket")
+                        stopSelf()
                         return
                     }
                 }

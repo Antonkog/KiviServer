@@ -289,6 +289,7 @@ public class RemoteReceiverService extends Service {
                     startLauncherIntent(LauncherBasedData.TYPE.FAVOURITE, dataStructure.getArgs().get(0));
                     break;
                 case PLAYER_ACTION:
+                    Timber.e("action in RemoteReciever is  PLAYER_ACTION");
                     RxBus.INSTANCE.publish(new ExecutorPlayerEvent(dataStructure.getArgs().get(0), dataStructure.getMotion()));
                     break;
                 case CHANGE_INPUT:

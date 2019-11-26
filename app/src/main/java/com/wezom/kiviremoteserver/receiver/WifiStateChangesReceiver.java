@@ -67,10 +67,13 @@ public class WifiStateChangesReceiver extends BroadcastReceiver {
     }
 
     private void startServer(Context context) {
-//        Timber.d("Connected to WIFI. Start server ");
-//        if (KiviRemoteService.isStarted) {
-//            KiviRemoteService.stop(context);
-//        }
+        Timber.d("Connected to WIFI. Start server ");
+        if(RemoteSenderService.isStarted){
+            RemoteSenderService.stop(context);
+        }
+        if(RemoteReceiverService.isStarted){
+            RemoteReceiverService.stop(context);
+        }
         RemoteSenderService.launch(context);
         RemoteReceiverService.launch(context);
     }

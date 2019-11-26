@@ -142,33 +142,38 @@ public class AidlPlayerService extends Service {
 
     public void handleRequest(RemotePlayerEvent playerEvent) {
         Timber.e("got  from phone " + playerEvent.toString());
-        if (playerControl == null)
+        if (playerControl == null) {
+            Timber.e("playerControl, connecting " + playerEvent.toString());
+            connectToPlayerControl();
+        }
+        if (playerControl == null) {
+            Timber.e("playerControl == null sending error: " + playerEvent.toString());
             sendTvPlayerEvent(KiviProtocolStructure.ServerEventType.LAST_REQUEST_ERROR, 0, null);
-        else
-            try {
-                switch (playerEvent.getNum()) {
-                    case PLAY:
-                        playerControl.play();
-                        break;
-                    case CLOSE:
-                        playerControl.close();
-                        break;
-                    case PAUSE:
-                        playerControl.pause();
-                        break;
-                    case REQUEST_STATE:
-                        playerControl.reloadState();
-                        break;
-                    case SEEK_TO:
-                        playerControl.seekTo(playerEvent.getProgress());
-                        break;
-                    case REQUEST_CONTENT:
-                        playerControl.requeestConetentInfo();
-                        break;
-                }
-            } catch (RemoteException e) {
-                e.printStackTrace();
+        }
+        try {
+            switch (playerEvent.getNum()) {
+                case PLAY:
+                    playerControl.play();
+                    break;
+                case CLOSE:
+                    playerControl.close();
+                    break;
+                case PAUSE:
+                    playerControl.pause();
+                    break;
+                case REQUEST_STATE:
+                    playerControl.reloadState();
+                    break;
+                case SEEK_TO:
+                    playerControl.seekTo(playerEvent.getProgress());
+                    break;
+                case REQUEST_CONTENT:
+                    playerControl.requeestConetentInfo();
+                    break;
             }
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
     }
 
     private void dispose() {
