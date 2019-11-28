@@ -14,7 +14,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import wezom.kiviremoteserver.environment.bridge.BridgePicture;
-import wezom.kiviremoteserver.environment.bridge.driver_set.SoundValues;
 
 
 public class EnvironmentPictureSettings {
@@ -255,35 +254,4 @@ public class EnvironmentPictureSettings {
         return bridgePicture.getContrast();
     }
 
-    public int getSoundType() {
-        return bridgePicture.getSoundType();
-    }
-
-    public void setSoundType(int progress) {
-        bridgePicture.setSoundType(progress);
-    }
-
-    public void setBassLevel(Context context, int progress) {
-        if(isUserSoundMode())    PreferenceManager.getDefaultSharedPreferences(context).edit().putInt(Constants.LAST_BASS, progress).commit();
-        bridgePicture.setBassLevel(progress);
-    }
-
-    public int getBassLevel(Context context) {
-        if(isUserSoundMode()) return PreferenceManager.getDefaultSharedPreferences(context).getInt(Constants.LAST_BASS, Constants.FIFTY);
-        return bridgePicture.getBassLevel();
-    }
-
-    public void setTrebleLevel(Context context, int progress) {
-        if(isUserSoundMode())  PreferenceManager.getDefaultSharedPreferences(context).edit().putInt(Constants.LAST_TREBLE, progress).commit();
-        bridgePicture.setTrebleLevel(progress);
-    }
-
-    public int getTrebleLevel(Context context) {
-        if(isUserSoundMode())  return PreferenceManager.getDefaultSharedPreferences(context).getInt(Constants.LAST_TREBLE, Constants.FIFTY);
-        return bridgePicture.getTrebleLevel();
-    }
-
-    public boolean isUserSoundMode(){
-      return  SoundValues.getByID(getSoundType()).getID() == SoundValues.SOUND_TYPE_USER.getID();
-    }
 }

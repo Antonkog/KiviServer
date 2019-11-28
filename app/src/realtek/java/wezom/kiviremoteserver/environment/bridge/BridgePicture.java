@@ -13,12 +13,10 @@ import com.wezom.kiviremoteserver.service.aspect.HDRValues;
 
 public class BridgePicture {
     private PQ picturePreference;
-    private AQ audioPreference;
     private VSC widthMode;
 
     public BridgePicture() {
         widthMode = new VSC();
-        audioPreference = new AQ();
         picturePreference = new PQ();//picturePreference.getColorTempBias()
         // audioPreference.setlevel()
     }
@@ -151,34 +149,4 @@ public class BridgePicture {
         return true;
     }
 
-    public int getSoundType() {
-        return audioPreference.getAudioMode();
-    }
-
-    public void setSoundType(int progress) {
-        audioPreference.setAudioMode(progress);
-    }
-
-    //min max values for audioPreference
-    private int maxValue = 20;  // max value from lib
-    private int minValue = -20; // min value from lib
-    private int delta = maxValue - minValue;
-
-    public void setBassLevel(@IntRange(from = 0, to = 100) int progress) {
-        audioPreference.setBassLevel((progress * delta) / 100 + minValue);
-    }
-
-    @IntRange(from = 0, to = 100)
-    public int getBassLevel() {
-        return (audioPreference.getBassLevel() - minValue) * 100 / delta;
-    }
-
-    public void setTrebleLevel(@IntRange(from = 0, to = 100) int progress) {
-        audioPreference.setTrebleLevel((progress * delta) / 100 + minValue);
-    }
-
-    @IntRange(from = 0, to = 100)
-    public int getTrebleLevel() {
-        return (audioPreference.getTrebleLevel() - minValue) * 100 / delta;
-    }
 }

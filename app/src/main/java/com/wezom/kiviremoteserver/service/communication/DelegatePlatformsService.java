@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
+import com.android.inputmethod.pinyin.util.Country;
 import com.google.gson.Gson;
 import com.wezom.kiviremoteserver.App;
 import com.wezom.kiviremoteserver.common.Utils;
@@ -83,11 +84,13 @@ public class DelegatePlatformsService extends IntentService {
                 break;
             case KEY_TV:
                 Intent tvIntent = null;
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-                    tvIntent = getPackageManager().getLeanbackLaunchIntentForPackage(TV_APP);
-                }
-                if (tvIntent == null) {
-                    tvIntent = getPackageManager().getLaunchIntentForPackage(TV_APP);
+                if(Country.getCountry() == Country.UKRAINE){
+                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+                        tvIntent = getPackageManager().getLeanbackLaunchIntentForPackage(TV_APP);
+                    }
+                    if (tvIntent == null) {
+                        tvIntent = getPackageManager().getLaunchIntentForPackage(TV_APP);
+                    }
                 }
 
                 if (tvIntent == null && android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
