@@ -113,7 +113,8 @@
             android:name=".service.communication.DelegatePlatformsService"
             android:exported="true"/>
 
-        <service android:name=".service.RemoteMessengerService" android:process=":remote"/>
+        <service android:name=".service.RemoteMessengerService" android:process=":remote"
+            android:exported="true"/>
 
         <service android:name=".service.AidlPlayerService" android:process=":remote"
             android:enabled="true"

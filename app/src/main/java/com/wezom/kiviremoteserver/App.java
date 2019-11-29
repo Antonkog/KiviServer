@@ -31,6 +31,7 @@ import com.wezom.kiviremoteserver.di.modules.ApplicationModule;
 import com.wezom.kiviremoteserver.receiver.ScreenOnReceiver;
 import com.wezom.kiviremoteserver.service.AspectLayoutService;
 import com.wezom.kiviremoteserver.service.CursorService;
+import com.wezom.kiviremoteserver.service.RemoteMessengerService;
 import com.wezom.kiviremoteserver.service.RemoteReceiverService;
 import com.wezom.kiviremoteserver.service.RemoteSenderService;
 import com.wezom.kiviremoteserver.service.communication.DelegatePlatformsService;
@@ -95,6 +96,8 @@ public class App extends Application {
 
         startService(new Intent(this, RemoteSenderService.class));
         startService(new Intent(this, RemoteReceiverService.class));
+        startService(new Intent(this, RemoteMessengerService.class));
+
         startService(new Intent(this, CursorService.class));
         if (isTVRealtek()) {
             BroadcastReceiver mUsbReceiver = new BroadcastReceiver() {

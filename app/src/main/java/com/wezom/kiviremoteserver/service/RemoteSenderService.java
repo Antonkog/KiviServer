@@ -269,7 +269,7 @@ public class RemoteSenderService extends Service implements ServiceMvpView {
 
                     if (ImeUtils.isCurrentImeOk(this)) {
                         RxBus.INSTANCE.publish(new NewDataEvent(request));
-                        Timber.e("posting new data event");
+                        Timber.e("posting new data event, " + request.getAction().name());
                     } else {
                         server.postMessage(
                                 new ServerEventStructure(

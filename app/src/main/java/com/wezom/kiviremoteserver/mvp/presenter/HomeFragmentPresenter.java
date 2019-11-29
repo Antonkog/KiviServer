@@ -16,6 +16,7 @@ import com.wezom.kiviremoteserver.common.Constants;
 import com.wezom.kiviremoteserver.common.RxBus;
 import com.wezom.kiviremoteserver.di.qualifiers.ApplicationContext;
 import com.wezom.kiviremoteserver.mvp.view.HomeFragmentView;
+import com.wezom.kiviremoteserver.service.RemoteMessengerService;
 import com.wezom.kiviremoteserver.service.RemoteReceiverService;
 import com.wezom.kiviremoteserver.service.RemoteSenderService;
 
@@ -49,6 +50,7 @@ public class HomeFragmentPresenter extends BasePresenter<HomeFragmentView> {
         getViewState().unbindService(connection);
         RemoteSenderService.stop(context);
         RemoteReceiverService.stop(context);
+        RemoteMessengerService.stop(context);
         RxBus.INSTANCE.publish(new StopReceivingEvent());
 
         if (Constants.DEBUG)
@@ -59,6 +61,7 @@ public class HomeFragmentPresenter extends BasePresenter<HomeFragmentView> {
         if (RemoteSenderService.isStarted || RemoteReceiverService.isStarted ) {
             killServerService();
         }
+        RemoteMessengerService.launch(context);
         RemoteSenderService.launch(context);
         RemoteReceiverService.launch(context);
         getViewState().bindService(connection);

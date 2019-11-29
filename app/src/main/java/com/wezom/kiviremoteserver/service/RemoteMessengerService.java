@@ -1,6 +1,7 @@
 package com.wezom.kiviremoteserver.service;
 
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -9,6 +10,7 @@ import android.os.Looper;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
+import android.util.Log;
 
 import com.google.gson.Gson;
 import com.wezom.kiviremoteserver.bus.RemotePlayerEvent;
@@ -24,6 +26,11 @@ import timber.log.Timber;
  * see link: https://developer.android.com/guide/components/bound-services#Messenger
  */
 public class RemoteMessengerService extends Service {
+
+
+    public static boolean isStarted = false;
+
+
     static final int MSG_REGISTER_CLIENT = 1;
     static final int MSG_UNREGISTER_CLIENT = 2;
 
@@ -88,14 +95,34 @@ public class RemoteMessengerService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+//        App.getApplicationComponent().inject(this);
         dispose();
         disposables = new CompositeDisposable();
         initObservers();
+        isStarted = true;
+        Timber.d("create RemoteMessengerService for AIDL");
+    }
+
+    @Override
+    public void onDestroy() {
+        isStarted = false;
+        Log.d("Log_ STOP ", "RemoteMessengerService stopped!!!");
+        super.onDestroy();
     }
 
     private void dispose() {
         if (disposables != null && !disposables.isDisposed())
             disposables.dispose();
+    }
+
+    public static void launch(Context context) {
+        Intent launcher = new Intent(context, RemoteMessengerService.class);
+        context.startService(launcher);
+    }
+
+    public static void stop(Context context) {
+        Intent launcher = new Intent(context, RemoteMessengerService.class);
+        context.stopService(launcher);
     }
 
 
