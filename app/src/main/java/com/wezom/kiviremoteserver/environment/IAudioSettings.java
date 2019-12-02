@@ -1,16 +1,18 @@
 package com.wezom.kiviremoteserver.environment;
 
+import android.content.Context;
+
 public interface IAudioSettings {
 
     int getSoundType();
 
     void setSoundType(int progress);
 
-    void setTrebleLevel(int progress);
+    void setTrebleLevel(Context context, int progress);
 
-    void setBassLevel(int progress);
+    void setBassLevel(Context context, int progress);
 
-    int getBassLevel();
+    int getBassLevel(Context context);
 
-    int getTrebleLevel();
+    int getTrebleLevel(Context context);
 }

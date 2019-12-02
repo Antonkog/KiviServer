@@ -1,9 +1,14 @@
 package wezom.kiviremoteserver.environment.bridge;
 
+import android.content.Context;
+import android.preference.PreferenceManager;
 import android.support.annotation.IntRange;
 
 import com.realtek.tv.AQ;
+import com.wezom.kiviremoteserver.common.Constants;
 import com.wezom.kiviremoteserver.environment.IAudioSettings;
+
+import wezom.kiviremoteserver.environment.bridge.driver_set.SoundValues;
 
 public class BridgeAudio implements IAudioSettings {
 
@@ -27,21 +32,29 @@ public class BridgeAudio implements IAudioSettings {
     private int minValue = -20; // min value from lib
     private int delta = maxValue - minValue;
 
-    public void setBassLevel(@IntRange(from = 0, to = 100) int progress) {
+    public void setBassLevel(Context context, @IntRange(from = 0, to = 100) int progress) {
+        if (isUserSoundMode()) PreferenceManager.getDefaultSharedPreferences(context).edit().putInt(Constants.LAST_BASS, progress).commit();
         audioPreference.setBassLevel((progress * delta) / 100 + minValue);
     }
 
     @IntRange(from = 0, to = 100)
-    public int getBassLevel() {
+    public int getBassLevel(Context context) {
+        if (isUserSoundMode()) return PreferenceManager.getDefaultSharedPreferences(context).getInt(Constants.LAST_BASS, Constants.FIFTY);
         return (audioPreference.getBassLevel() - minValue) * 100 / delta;
     }
 
-    public void setTrebleLevel(@IntRange(from = 0, to = 100) int progress) {
+    public void setTrebleLevel(Context context, @IntRange(from = 0, to = 100) int progress) {
+        if (isUserSoundMode()) PreferenceManager.getDefaultSharedPreferences(context).edit().putInt(Constants.LAST_TREBLE, progress).commit();
         audioPreference.setTrebleLevel((progress * delta) / 100 + minValue);
     }
 
     @IntRange(from = 0, to = 100)
-    public int getTrebleLevel() {
+    public int getTrebleLevel(Context context) {
+        if (isUserSoundMode()) return PreferenceManager.getDefaultSharedPreferences(context).getInt(Constants.LAST_TREBLE, Constants.FIFTY);
         return (audioPreference.getTrebleLevel() - minValue) * 100 / delta;
+    }
+
+    public boolean isUserSoundMode() {
+        return SoundValues.getByID(getSoundType()).getID() == SoundValues.SOUND_TYPE_USER.getID();
     }
 }
