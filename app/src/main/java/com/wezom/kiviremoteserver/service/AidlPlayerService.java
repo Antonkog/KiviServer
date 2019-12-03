@@ -40,6 +40,8 @@ public class AidlPlayerService extends Service {
     private IPlayerControl playerControl;
     private boolean serviceConnectionBound = false;
 
+    private long lastDuration = 0;
+
     Messenger messenger = null;
     private ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
@@ -72,6 +74,7 @@ public class AidlPlayerService extends Service {
                 HashMap<String, String> stringStringHashMap = new HashMap<>();
                 stringStringHashMap.put("parentContentId", "" + parentContentId);
                 stringStringHashMap.put("duration", "" + duration);
+                lastDuration = duration;
                 PreviewCommonStructure ps = new PreviewCommonStructure(LauncherBasedData.TYPE.TV_PREVIEW.name(), "" + contentId, title, imageUrl, true, stringStringHashMap);
                 Timber.e("AidlPlayerService launchPlayer");
                 sendTvPlayerEvent(KiviProtocolStructure.ServerEventType.LAUNCH_PLAYER, contentId, ps);
@@ -116,6 +119,7 @@ public class AidlPlayerService extends Service {
         super.onCreate();
         App.getApplicationComponent().inject(this);
         dispose();
+        lastDuration = 0;
         disposables = new CompositeDisposable();
         messenger = new Messenger(new RemoteMessengerService.IncomingHandler());
         Timber.d("create IME_Service");
@@ -165,7 +169,9 @@ public class AidlPlayerService extends Service {
                     playerControl.reloadState();
                     break;
                 case SEEK_TO:
-                    playerControl.seekTo(playerEvent.getProgress());
+                    if(lastDuration != 0 )
+                        playerControl.seekTo( (int)(playerEvent.getProgress() * lastDuration )/100 );
+                    Timber.e("seek to in aidl progress = " +(int)(playerEvent.getProgress() * lastDuration )/100 );
                     break;
                 case REQUEST_CONTENT:
                     playerControl.requeestConetentInfo();

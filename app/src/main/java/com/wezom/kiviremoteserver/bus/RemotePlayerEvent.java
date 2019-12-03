@@ -5,18 +5,18 @@ package com.wezom.kiviremoteserver.bus;
  */
 public class RemotePlayerEvent {
     public int num;
-    public int progress;
+    public float progress;
 
     public RemotePlayerEvent(int num) {
         this.num = num;
     }
 
-    public RemotePlayerEvent(int num, int progress) {
-        this.num = num;
+    public RemotePlayerEvent addProgress(float progress) {
         this.progress = progress;
+        return this;
     }
 
-    public int getProgress() {
+    public float getProgress() {
         return progress;
     }
 

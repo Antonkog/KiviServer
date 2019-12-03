@@ -31,9 +31,7 @@ import com.wezom.kiviremoteserver.di.modules.ApplicationModule;
 import com.wezom.kiviremoteserver.receiver.ScreenOnReceiver;
 import com.wezom.kiviremoteserver.service.AspectLayoutService;
 import com.wezom.kiviremoteserver.service.CursorService;
-import com.wezom.kiviremoteserver.service.RemoteMessengerService;
-import com.wezom.kiviremoteserver.service.RemoteReceiverService;
-import com.wezom.kiviremoteserver.service.RemoteSenderService;
+import com.wezom.kiviremoteserver.service.RemoteConlrolService;
 import com.wezom.kiviremoteserver.service.communication.DelegatePlatformsService;
 import com.wezom.kiviremoteserver.service.inputs.InputSourceHelper;
 
@@ -81,6 +79,8 @@ public class App extends Application {
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         String uid = prefs.getString(APPLICATION_UID, null);
 
+        Timber.e("APP:  current app version: " + BuildConfig.VERSION_NAME + " debug? : "+ BuildConfig.DEBUG);
+
         if (uid == null) {
             prefs.edit().putString(APPLICATION_UID, UUID.randomUUID().toString().substring(3, 7)).apply();
         }
@@ -94,11 +94,9 @@ public class App extends Application {
             Timber.plant(new Timber.DebugTree());
         }
 
-        startService(new Intent(this, RemoteSenderService.class));
-        startService(new Intent(this, RemoteReceiverService.class));
-        startService(new Intent(this, RemoteMessengerService.class));
-
+        startService(new Intent(this, RemoteConlrolService.class));
         startService(new Intent(this, CursorService.class));
+
         if (isTVRealtek()) {
             BroadcastReceiver mUsbReceiver = new BroadcastReceiver() {
                 public void onReceive(Context context, Intent intent) {

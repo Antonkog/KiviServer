@@ -41,6 +41,7 @@ public class RemoteMessengerService extends Service {
     public static final int CLOSE = 18;
     public static final int REQUEST_STATE = 19;
     public static final int REQUEST_CONTENT = 20;
+    public static final String PROGRESS_KEY = "PROGRESS_KEY";
 
     public static final String TV_PLAYER_EVENT_KEY = "TvPlayerEvent";
 
@@ -59,9 +60,7 @@ public class RemoteMessengerService extends Service {
      * Handler of incoming messages from clients.
      */
     static class IncomingHandler extends Handler {
-        RemotePlayerEvent remotePlayerEvent;
-
-
+        RemotePlayerEvent remotePlayerEvent = null;
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
@@ -72,21 +71,34 @@ public class RemoteMessengerService extends Service {
                     mClients.remove(msg.replyTo);
                     break;
                 case PLAY:
-                case SEEK_TO:
                 case CLOSE:
                 case PAUSE:
                 case REQUEST_CONTENT:
                 case REQUEST_STATE:
                     remotePlayerEvent = new RemotePlayerEvent(msg.what);
-                    if (remotePlayerEvent != null) {
-                        RxBus.INSTANCE.publish(remotePlayerEvent);
-                    } else {
-                        Timber.e("321 RemotePlayerEvent is null");
+                    break;
+                case SEEK_TO:
+                    remotePlayerEvent = new RemotePlayerEvent(msg.what);
+                    Bundle b = msg.getData();
+                    if (b.get(PROGRESS_KEY) != null) {
+                        remotePlayerEvent.addProgress(b.getFloat(PROGRESS_KEY));
+                        Timber.e("posting SEEK_TO progress " + msg.toString());
+                    }else {
+                        Timber.e(" SEEK_TO msg no progress " + msg.toString());
+
                     }
                     break;
                 default:
                     Timber.e("321 got some msg " + msg.toString());
                     super.handleMessage(msg);
+                    break;
+
+            }
+
+            if (remotePlayerEvent != null) {
+                RxBus.INSTANCE.publish(remotePlayerEvent);
+            } else {
+                Timber.e("321 RemotePlayerEvent is null");
             }
         }
     }
