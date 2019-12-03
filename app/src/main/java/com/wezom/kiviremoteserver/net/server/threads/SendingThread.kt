@@ -15,7 +15,7 @@ class SendingThread(private val threadedModel: WriteThreadedModel<String>) : Thr
         var printWriter: PrintWriter? = null
         try {
             outputStream = clientSocket.getOutputStream();
-            PrintWriter(outputStream, true).let { writer ->
+           PrintWriter(outputStream, true).let { writer ->
                 while (!isStopped) {
                     val message = threadedModel.queue.take()
                     if (message.length > 150)

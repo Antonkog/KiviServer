@@ -50,12 +50,18 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
+            android:orientation="vertical">
             <EditText
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:maxLines="10"
+                android:inputType="text"
+                android:maxLines="1"
+                android:textSize="28sp" />
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:inputType="phone"
+                android:maxLines="1"
                 android:textSize="28sp" />
         </LinearLayout>
 
@@ -81,6 +87,8 @@
             android:layout_height="@dimen/small"
             android:layout_margin="@dimen/mid"
             android:background="@color/colorPrimary" />
+
+
 
         <ScrollView
             android:id="@+id/scrollView"
