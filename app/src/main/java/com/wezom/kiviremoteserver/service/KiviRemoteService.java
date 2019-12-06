@@ -431,13 +431,13 @@ public class KiviRemoteService extends Service implements ServiceMvpView {
     //endregion
 
     public static void launch(Context context) {
-        Intent launcher = new Intent(context, KiviRemoteService.class);
-        context.startService(launcher);
+        Intent kiviRemoteService = new Intent(context, KiviRemoteService.class);
+        context.startService(kiviRemoteService);
     }
 
     public static void stop(Context context) {
-        Intent launcher = new Intent(context, KiviRemoteService.class);
-        context.stopService(launcher);
+        Intent kiviRemoteService = new Intent(context, KiviRemoteService.class);
+        context.stopService(kiviRemoteService);
     }
 
 //    public void updateNotification() {

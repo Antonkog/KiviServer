@@ -26,7 +26,8 @@ class SendingThread(private val threadedModel: WriteThreadedModel<String>) : Thr
                     if (writer.checkError()) {
                         writer.close()
                         Timber.d("Error during writing")
-                        interrupt()
+                        stopSelf()
+                        return
                     }
                 }
             }
