@@ -33,7 +33,6 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.wezom.kiviremoteserver.App;
 import com.wezom.kiviremoteserver.R;
 import com.wezom.kiviremoteserver.environment.EnviorenmentAudioSettings;
 import com.wezom.kiviremoteserver.environment.EnvironmentFactory;
@@ -159,11 +158,6 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
     public void onCreate() {
         super.onCreate();
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (App.checkWizard(this)) {
-                return;
-            }
-        }
         mainColor = getResources().getColor(R.color.colorPrimary);
         Log.e("AspectLayoutService", "started");
 

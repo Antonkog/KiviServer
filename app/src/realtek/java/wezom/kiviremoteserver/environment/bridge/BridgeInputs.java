@@ -10,17 +10,13 @@ import android.net.Uri;
 import android.os.Build;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.widget.Toast;
 
-import com.google.gson.Gson;
 import com.realtek.tv.Tv;
 import com.wezom.kiviremoteserver.App;
 import com.wezom.kiviremoteserver.common.Constants;
 import com.wezom.kiviremoteserver.service.inputs.InputSourceHelper;
 
-import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Objects;
 
 import static com.wezom.kiviremoteserver.service.inputs.InputSourceHelper.INPUT_PORT.INPUT_SOURCE_NONE;
 
@@ -117,7 +113,7 @@ public class BridgeInputs {
             // Log.e("channelUri", channelUri.toString());
             Intent intent = new Intent(Intent.ACTION_VIEW, channelUri);
             ComponentName componentName = new ComponentName("com.android.tv", "com.android.tv.MainActivity");
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             intent.setComponent(componentName);
             context.startActivity(intent);
 
