@@ -2,6 +2,7 @@ package com.wezom.kiviremoteserver;
 
 import android.app.ActivityManager;
 import android.app.Application;
+import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -156,10 +157,16 @@ public class App extends Application {
         }
         generalView.findViewById(R.id.yes).setOnClickListener(v -> {
             if (type == TYPE_USB) {
-                Intent intent = new Intent();
-                intent.setComponent(new ComponentName("com.hikeen.mediabrowser",
-                        "com.hikeen.mediabrowser.activity.MediaBrowser"));
-                context.startActivity(intent);
+                try {
+                    Intent intent = new Intent();
+                    intent.setComponent(new ComponentName("com.hikeen.mediabrowser",
+                            "com.hikeen.mediabrowser.activity.MediaBrowser"));
+                    context.startActivity(intent);
+                }catch (ActivityNotFoundException e){
+                    Timber.e(new Throwable("com.hikeen.mediabrowser not found" + Build.MODEL + Build.BRAND));
+                }catch (Exception e){
+                    Timber.e(new Throwable("com.hikeen.mediabrowser starting trouble" + Build.MODEL + Build.BRAND));
+                }
                 // wmgr.removeView(generalView);
             } else if (type == TYPE_HDMI) {
                 int port = InputSourceHelper.INPUT_PORT.INPUT_SOURCE_HDMI.getId();
