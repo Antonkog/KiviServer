@@ -104,7 +104,7 @@ public class BridgePicture {
     public void setGreen(int green) {
     }
 
-    public void setBLue(int BLue) {
+    public void setBlue(int blue) {
     }
 
     public void setRed(int red) {

@@ -396,4 +396,14 @@ or through the website </string>
     <string name="zoom2">zoom2</string>
     <string name="panorama">panorama</string>
 
+
+    <!--test-->
+    <string name="t1">15 min</string>
+    <string name="t2">30 min</string>
+    <string name="t3">1 h</string>
+    <string name="t4">2 h</string>
+    <string name="t5">3 h</string>
+    <string name="keyboard_desk">Цифровой ввод</string>
+    <string name="settings_desk">Настройки системы</string>
+    <!--test-->
 </resources>

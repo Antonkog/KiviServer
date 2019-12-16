@@ -28,6 +28,7 @@ import com.wezom.kiviremoteserver.common.Constants;
 import com.wezom.kiviremoteserver.di.components.ApplicationComponent;
 import com.wezom.kiviremoteserver.di.components.DaggerApplicationComponent;
 import com.wezom.kiviremoteserver.di.modules.ApplicationModule;
+import com.wezom.kiviremoteserver.environment.EnvironmentPictureSettings;
 import com.wezom.kiviremoteserver.receiver.ScreenOnReceiver;
 import com.wezom.kiviremoteserver.service.AspectLayoutService;
 import com.wezom.kiviremoteserver.service.CursorService;
@@ -112,7 +113,7 @@ public class App extends Application {
 
         ScreenOnReceiver.setInitialBackL(getBaseContext());
         hdmiTimer.postDelayed(runnable, 5000);
-
+        new EnvironmentPictureSettings().updateValues();
     }
 
     private final static int TYPE_USB = 0;

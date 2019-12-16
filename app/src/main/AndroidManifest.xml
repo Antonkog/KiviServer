@@ -91,6 +91,13 @@
             android:exported="true"
             android:theme="@style/MyLeanback" />
 
+        <service
+            android:name=".service.aspect.AspectLayoutService_NEW"
+            android:enabled="true"
+            android:exported="true"
+            android:theme="@style/MyLeanback" />
+
+
         <receiver android:name=".receiver.BootCompleteReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />

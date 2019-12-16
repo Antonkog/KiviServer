@@ -24,4 +24,23 @@
     <dimen name="key_pressed_bottom_inset">8dp</dimen>
     <dimen name="key_pressed_right_inset">8dp</dimen>
     <dimen name="key_pressed_left_inset">8dp</dimen>
+
+
+    <!--FLM item -->
+    <dimen name="card_size">100dp</dimen>
+    <dimen name="card_margin">2dp</dimen>
+    <dimen name="card_radius">4dp</dimen>
+    <dimen name="card_elevation">0dp</dimen>
+    <dimen name="card_image_size">30dp</dimen>
+    <dimen name="card_image_size_margin_top">12dp</dimen>
+    <dimen name="card_main_text_margin">3dp</dimen>
+    <dimen name="card_main_text_size">12sp</dimen>
+    <dimen name="card_second_text_size">9sp</dimen>
+    <dimen name="card_second_text_margin" >3dp</dimen>
+    <dimen name="card_action_view_width">20dp</dimen>
+    <dimen name="card_action_view_height" >10dp</dimen>
+    <dimen name="card_action_view_margin">8dp</dimen>
+    <dimen name="flm_height">140dp</dimen>
+    <!--FLM item end-->
+
 </resources>

@@ -124,9 +124,9 @@ public class BridgePicture {
                 TvPictureManager.PICTURE_SHARPNESS, green);
     }
 
-    public void setBLue(int BLue) {
+    public void setBlue(int blue) {
         TvPictureManager.getInstance().setVideoItem(
-                TvPictureManager.PICTURE_SHARPNESS, BLue);
+                TvPictureManager.PICTURE_SHARPNESS, blue);
 
     }
 

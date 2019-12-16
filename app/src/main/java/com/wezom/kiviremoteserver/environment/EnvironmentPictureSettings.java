@@ -7,6 +7,7 @@ import android.os.RemoteException;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import com.wezom.kiviremoteserver.R;
 import com.wezom.kiviremoteserver.common.Constants;
 import com.wezom.kiviremoteserver.service.aspect.HDRValues;
 
@@ -25,10 +26,10 @@ public class EnvironmentPictureSettings {
     private int brightness = 50;
     private int saturation = 50;
     private int backlight;
-    private int temperature;
+    private int temperature = -1;
     private int HDR;
     private int green;
-    private int BLue;
+    private int blue;
     private int red;
     private int sharpness;
     private int contrast = 50;
@@ -83,6 +84,7 @@ public class EnvironmentPictureSettings {
     public int getSharpness() {
         return bridgePicture.getSharpness();
     }
+
     public int getSaturation() {
         return bridgePicture.getSaturation();
     }
@@ -99,6 +101,7 @@ public class EnvironmentPictureSettings {
     public void setTemperature(int temperature) {
         this.temperature = temperature;
         bridgePicture.setTemperature(temperature);
+        updateValues();
         //TvPictureManager.getInstance().setColorTempratureIdx(progress)
     }
 
@@ -122,9 +125,9 @@ public class EnvironmentPictureSettings {
         //                TvPictureManager.PICTURE_SHARPNESS, progress)
     }
 
-    public void setBLue(int BLue) {
-        this.BLue = BLue;
-        bridgePicture.setBLue(BLue);
+    public void setBlue(int blue) {
+        this.blue = blue;
+        bridgePicture.setBlue(blue);
     }
 
     public void setRed(int red) {
@@ -134,19 +137,61 @@ public class EnvironmentPictureSettings {
         //                TvPictureManager.PICTURE_SHARPNESS, progress)
     }
 
-    private void updateValues() {
-        if(true)
-            return;
-        Log.e("transform", "test 3");
-        float difContr = ((float) (contrast * 0.6 + 20) - 50f) / 100f;
-        float lBrightness = ((float) (brightness * 0.6 + 20) - 50f) / 100f;
-        float lSaturation = ((float) saturation) / 100f;
+    public void updateValues() {
+//        if(true)
+//            return;
+        if(temperature<1){
+            temperature = getTemperature();
+            contrast = getContrast();
+            brightness = getBrightness();
+            saturation = getSaturation();
+        }
+        float difContr = ((float) (contrast * 0.6 + 20) - 50f) / 50f;
+        float lBrightness = ((float) (brightness * 0.6 + 20) - 50f) / 50f;
+        float lSaturation = ((float) saturation) / 50f;
+        if (lSaturation > 1) {
+            lSaturation = (float) Math.sqrt(lSaturation);
+        }
+//        COLOR_TEMP_NATURE(1, R.string.nature),
+//                COLOR_TEMP_WARMER(2, R.string.warmer),
+//                COLOR_TEMP_WARM(3, R.string.warm),
+//                COLOR_TEMP_COOL(4, R.string.cool),
+//                COLOR_TEMP_COOLER(5, R.string.cooler);
+
+        float tempR = 0;
+        float tempG = 0;
+        float tempB = 0;
+        switch (temperature) {
+            case 2:
+                tempR = 2;
+                tempG = -1;
+                tempB = -1;
+                break;
+            case 3:
+                tempR = 4;
+                tempG = -1;
+                tempB = -2;
+                break;
+            case 4:
+                tempR = -1;
+                tempG = -1;
+                tempB = 2;
+                break;
+            case 5:
+                tempR = -2;
+                tempG = -1;
+                tempB = 4;
+                break;
+            default:
+                break;
+        }
+        tempR = tempR / 100f;
+        tempG = tempG / 100f;
+        tempB = tempB / 100f;
         float lContrast = 1 + difContr / (3 - 2 * lSaturation);
         float brightnessShift = -0.5f * (difContr);
 
         lBrightness += brightnessShift;
-        Log.e("transform", "br " + lBrightness +
-                " : sat " + lSaturation + " : contr " + lContrast);
         final float invSat = 1 - lSaturation;
         final float R = 0.213f * invSat;
         final float G = 0.715f * invSat;
@@ -156,7 +201,7 @@ public class EnvironmentPictureSettings {
                 (R + lSaturation) * lContrast, R * lContrast, R * lContrast, 0,
                 G * lContrast, (G + lSaturation) * lContrast, G * lContrast, 0,
                 B * lContrast, B * lContrast, (B + lSaturation) * lContrast, 0,
-                lBrightness, lBrightness, lBrightness, 1};
+                lBrightness + tempR, lBrightness + tempG, lBrightness + tempB, 1};
         setColorTransform(matrixVal);
     }
 
@@ -201,7 +246,6 @@ public class EnvironmentPictureSettings {
 //    float saturation = 50;
 //    float contrast = 50;
 //    float brightness = 50;
-
 
 
     public void setSharpness(int sharpness) {
@@ -264,26 +308,30 @@ public class EnvironmentPictureSettings {
     }
 
     public void setBassLevel(Context context, int progress) {
-        if(isUserSoundMode())    PreferenceManager.getDefaultSharedPreferences(context).edit().putInt(Constants.LAST_BASS, progress).commit();
+        if (isUserSoundMode())
+            PreferenceManager.getDefaultSharedPreferences(context).edit().putInt(Constants.LAST_BASS, progress).commit();
         bridgePicture.setBassLevel(progress);
     }
 
     public int getBassLevel(Context context) {
-        if(isUserSoundMode()) return PreferenceManager.getDefaultSharedPreferences(context).getInt(Constants.LAST_BASS, Constants.FIFTY);
+        if (isUserSoundMode())
+            return PreferenceManager.getDefaultSharedPreferences(context).getInt(Constants.LAST_BASS, Constants.FIFTY);
         return bridgePicture.getBassLevel();
     }
 
     public void setTrebleLevel(Context context, int progress) {
-        if(isUserSoundMode())  PreferenceManager.getDefaultSharedPreferences(context).edit().putInt(Constants.LAST_TREBLE, progress).commit();
+        if (isUserSoundMode())
+            PreferenceManager.getDefaultSharedPreferences(context).edit().putInt(Constants.LAST_TREBLE, progress).commit();
         bridgePicture.setTrebleLevel(progress);
     }
 
     public int getTrebleLevel(Context context) {
-        if(isUserSoundMode())  return PreferenceManager.getDefaultSharedPreferences(context).getInt(Constants.LAST_TREBLE, Constants.FIFTY);
+        if (isUserSoundMode())
+            return PreferenceManager.getDefaultSharedPreferences(context).getInt(Constants.LAST_TREBLE, Constants.FIFTY);
         return bridgePicture.getTrebleLevel();
     }
 
-    public boolean isUserSoundMode(){
-      return  SoundValues.getByID(getSoundType()).getID() == SoundValues.SOUND_TYPE_USER.getID();
+    public boolean isUserSoundMode() {
+        return SoundValues.getByID(getSoundType()).getID() == SoundValues.SOUND_TYPE_USER.getID();
     }
 }

@@ -38,6 +38,7 @@ import com.wezom.kiviremoteserver.environment.EnvironmentFactory;
 import com.wezom.kiviremoteserver.environment.EnvironmentInputsHelper;
 import com.wezom.kiviremoteserver.environment.EnvironmentPictureSettings;
 import com.wezom.kiviremoteserver.service.aspect.Alarm;
+import com.wezom.kiviremoteserver.service.aspect.AspectLayoutService_NEW;
 import com.wezom.kiviremoteserver.service.aspect.HDRValues;
 import com.wezom.kiviremoteserver.service.inputs.InputSourceHelper;
 import com.wezom.kiviremoteserver.ui.views.KeyListener;
@@ -132,23 +133,7 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
         }
     }
 
-//    Handler handler = new Handler();
-//    Runnable runnable = new Runnable() {
-//        @Override
-//        public void run() {
-//            View view = generalView.findFocus();
-//            optimization.clearFocus();
-//            if (view != null) {
-//                Log.e("view", "" + view);
-//             //   view.setBackgroundColor(Color.RED);
-//            }
-//            handler.postDelayed(runnable, 1000);
-//        }
-//    };
 
-    //    PictureMode[] modes = ;
-
-    //      PictureMode.PICTURE_MODE_ECONOMY);
     List<Ratio> ratios = Ratio.getInstance().getRatios();
 
     List<Integer> shutDownTimers = Arrays.asList(0, 15, 30, 60, 90, 120, 180);
@@ -157,10 +142,13 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
     private static int mainColor = Color.BLUE;
     int autoCloseTime = 10;
 
-    //android.widget.LinearLayout{e7580bb VFE...C.. .F...... 444,0-554,98 #7f090128 app:id/root}
     @Override
     public void onCreate() {
         super.onCreate();
+        if (false) {
+            startService(new Intent(this, AspectLayoutService_NEW.class));
+            return;
+        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (App.checkWizard(this)) {
                 return;
@@ -203,61 +191,30 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
 //    boolean isHaveChannel = false;
 
     public void createLayout(Context context) {
-        //Log.e("create", "create");
-
         layoutInflater = (LayoutInflater)
                 getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         wmgr = (WindowManager) context.getApplicationContext()
                 .getSystemService(Context.WINDOW_SERVICE);
         generalView = (RelativeLayout) View.inflate(context, R.layout.layout_aspect, null);
-        //generalView.setVisibility(View.VISIBLE);
         final WindowManager.LayoutParams param = new WindowManager.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 generalType,//TYPE_SYSTEM_ALERT
                 WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 PixelFormat.TRANSLUCENT);
-//        param.windowAnimations = android.R.style.Animation_Activity;
-        //param.rotationAnimation = WindowManager.LayoutParams.ROTATION_ANIMATION_SEAMLESS;
-        // generalView.setVisibility(View.GONE);
-        //      param.windowAnimations = android.R.style.Animation_Translucent;
         wmgr.addView(generalView, param);
-//        generalView.setVisibility(View.VISIBLE);
-//        generalView.clearAnimation();
-//        generalView.animate().setInterpolator(new AccelerateDecelerateInterpolator())
-//                .setDuration(500)
-//                .translationY(400).start();
-        // new Handler().postDelayed(()->generalView.setVisibility(View.VISIBLE),3000);
         headerContainer = generalView.findViewById(R.id.header_container);
         bodyContainer = generalView.findViewById(R.id.body_container);
         description = generalView.findViewById(R.id.description);
         generalView.setVisibility(View.VISIBLE);
         generalView.clearAnimation();
 
-
-//        bodyContainer.animate().setInterpolator(new AccelerateDecelerateInterpolator())
-//                .setDuration(500).translationYBy(0)
-//                .translationY(0).start();
-//        bodyContainer.animate()
-//                .yBy(400).y(0)
-//                .setStartDelay(100)
-//                .setDuration(500).start();
-
-
         final Animation anDesk = AnimationUtils.loadAnimation(this, R.anim.outside_bottom);
-        // anDesk.setInterpolator(new AccelerateDecelerateInterpolator());
         anDesk.setDuration(300);
         description.startAnimation(anDesk);
         bodyContainer.startAnimation(anDesk);
         headerContainer.startAnimation(anDesk);
-//        final Animation anHead = AnimationUtils.loadAnimation(this, R.anim.outside_bottom);
-//        anHead.setInterpolator(new AccelerateDecelerateInterpolator());
-//        anHead.setDuration(200);
-//        anHead.setStartTime(100);
-//        final Animation anBody = AnimationUtils.loadAnimation(this, R.anim.outside_bottom);
-//        anBody.setInterpolator(new AccelerateDecelerateInterpolator());
-//        anBody.setDuration(200);
-//        anHead.setStartTime(300);
+
 
         View view = new View(this);
         ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(1, 1);
@@ -289,25 +246,12 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
 
 
         int current = inputsHelper.getCurrentTvInputSource();
-        // Log.e("currentInput", "input = " + current);
         if (inputsHelper.isTV(current)) {
             addSeparator(headerContainer);
             addChannelSelector(headerContainer);
         }
 
         updateTextColors(generalView);
-//        handler.postDelayed(runnable, 1000);
-        // generalView.requestFocus();
-//        generalView.setOnKeyListener(new View.OnKeyListener() {
-//            @Override
-//            public boolean onKey(View v, int keyCode, KeyEvent event) {
-//                if (keyCode == 4) {
-//                    stopSelf();
-//                }
-//                return false;
-//            }
-//        });
-
         initCarousel(headerContainer);
     }
 
@@ -628,7 +572,7 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
         screenProgress.setProgress(color_b);
         screenProgress.setLable(R.string.color_b);
         screenProgress.setIcon(R.drawable.ic_color_lens_black_24dp);
-        screenProgress.setProgressListener(progress -> pictureSettings.setBLue(progress));
+        screenProgress.setProgressListener(progress -> pictureSettings.setBlue(progress));
         body.addView(screenProgress);
     }
 

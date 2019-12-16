@@ -6,13 +6,14 @@ import android.support.annotation.StringRes;
 
 import com.wezom.kiviremoteserver.R;
 import com.wezom.kiviremoteserver.interfaces.DriverValue;
+import com.wezom.kiviremoteserver.service.aspect.items.IFLMItems;
 
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
 
-public enum HDRValues implements TextTypedValues, AvailableValues {
+public enum HDRValues implements TextTypedValues, AvailableValues, IFLMItems {
     HDR_OPEN_LEVEL_OFF(0, R.string.off),
     HDR_OPEN_LEVEL_AUTO(1, R.string.auto),
     HDR_OPEN_LEVEL_LOW(2, R.string.low),
@@ -73,6 +74,16 @@ public enum HDRValues implements TextTypedValues, AvailableValues {
                     false));
         }
         return linkedList;
+    }
+
+    @Override
+    public int getStringRes() {
+        return stringRes;
+    }
+
+    @Override
+    public int getId() {
+        return id;
     }
 
     public HDRValues[] getHDRSet() {

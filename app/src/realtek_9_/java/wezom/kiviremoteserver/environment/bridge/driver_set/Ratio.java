@@ -94,7 +94,7 @@ public enum Ratio implements AvailableValues {
         return linkedList;
     }
 
-    public List<Ratio> getRatios() {
+    public static List<Ratio> getRatios() {
         final String s = App.getProperty(Constants.REALTEK_INPUT_SOURCE);
         InputSourceHelper.INPUT_PORT currentInput = InputSourceHelper.INPUT_PORT.getPortByRealtekID(s);
         List<Ratio> ratios =  new ArrayList<>();

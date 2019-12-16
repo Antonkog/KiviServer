@@ -12,7 +12,7 @@
         android:layout_alignLeft="@+id/header_container"
         android:layout_alignRight="@id/header_container"
         android:layout_marginBottom="15dp"
-        android:background="@color/aspectBody"
+        android:background="#482"
         android:elevation="1dp"
         android:orientation="vertical"
         android:translationZ="1dp" />
@@ -24,7 +24,7 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="75dp"
-        android:background="@color/aspectHeader"
+        android:background="#933"
         android:elevation="1dp"
         android:orientation="horizontal"
         android:translationZ="1dp" />

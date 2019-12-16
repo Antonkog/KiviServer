@@ -7,13 +7,14 @@ import android.support.annotation.StringRes;
 import com.wezom.kiviremoteserver.R;
 import com.wezom.kiviremoteserver.interfaces.DriverValue;
 import com.wezom.kiviremoteserver.service.aspect.AvailableValues;
+import com.wezom.kiviremoteserver.service.aspect.items.IFLMItems;
 import com.wezom.kiviremoteserver.service.aspect.TextTypedValues;
 
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-public enum TemperatureValues implements TextTypedValues , AvailableValues {
+public enum TemperatureValues implements TextTypedValues, AvailableValues, IFLMItems {
 
     COLOR_TEMP_NATURE(1, R.string.nature),
     COLOR_TEMP_WARMER(2, R.string.warmer),
@@ -42,7 +43,7 @@ public enum TemperatureValues implements TextTypedValues , AvailableValues {
 
     public static TemperatureValues[] getSet() {
         return new TemperatureValues[]{COLOR_TEMP_NATURE,
-                COLOR_TEMP_WARMER,COLOR_TEMP_WARM,
+                COLOR_TEMP_WARMER, COLOR_TEMP_WARM,
                 COLOR_TEMP_COOL, COLOR_TEMP_COOLER};
     }
 
@@ -59,15 +60,17 @@ public enum TemperatureValues implements TextTypedValues , AvailableValues {
     public static TemperatureValues getInstance() {
         return COLOR_TEMP_NATURE;
     }
+
     @Override
     public int[] getIds() {
         List<TemperatureValues> modes = Arrays.asList(getSet());
         int[] result = new int[modes.size()];
         for (int i = 0; i < modes.size(); i++) {
-            result[i]= modes.get(i).getID();
+            result[i] = modes.get(i).getID();
         }
         return result;
     }
+
     @Override
     public List<DriverValue> getAsDriverList(Context context) {
         List<TemperatureValues> modes = Arrays.asList(getSet());
@@ -76,11 +79,21 @@ public enum TemperatureValues implements TextTypedValues , AvailableValues {
             TemperatureValues temp = modes.get(i);
             linkedList.add(new DriverValue(TemperatureValues.class.getSimpleName(),
                     context.getResources().getString(temp.getStringResourceID()),
-                    temp.getID() +""
+                    temp.getID() + ""
                     , temp.getID(),
                     false));
         }
         return linkedList;
+    }
+
+    @Override
+    public int getStringRes() {
+        return stringRes;
+    }
+
+    @Override
+    public int getId() {
+        return id;
     }
 
 }

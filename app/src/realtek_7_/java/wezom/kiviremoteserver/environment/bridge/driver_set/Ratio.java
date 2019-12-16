@@ -6,13 +6,14 @@ import android.support.annotation.Nullable;
 import com.wezom.kiviremoteserver.R;
 import com.wezom.kiviremoteserver.interfaces.DriverValue;
 import com.wezom.kiviremoteserver.service.aspect.AvailableValues;
+import com.wezom.kiviremoteserver.service.aspect.items.IFLMItems;
 
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
 
-public enum Ratio implements AvailableValues {
+public enum Ratio implements AvailableValues, IFLMItems {
 
     VIDEO_ARC_DEFAULT(1, R.string.default_r),
     VIDEO_ARC_16x9(9, R.string.r_16x9),
@@ -78,8 +79,13 @@ public enum Ratio implements AvailableValues {
         return linkedList;
     }
 
+    @Override
+    public int getStringRes() {
+        return string;
+    }
 
-    public List<Ratio> getRatios() {
+
+    public static  List<Ratio> getRatios() {
         return Arrays.asList(
                 Ratio.VIDEO_ARC_DEFAULT,
                 Ratio.VIDEO_ARC_16x9,

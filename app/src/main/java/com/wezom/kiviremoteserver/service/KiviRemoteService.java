@@ -320,7 +320,7 @@ public class KiviRemoteService extends Service implements ServiceMvpView {
                                 pictureSettings.setRed(pair.getValue());
                                 break;
                             case BLUE:
-                                pictureSettings.setBLue(pair.getValue());
+                                pictureSettings.setBlue(pair.getValue());
                                 break;
                             case HDR:
                                 pictureSettings.setHDR(pair.getValue());

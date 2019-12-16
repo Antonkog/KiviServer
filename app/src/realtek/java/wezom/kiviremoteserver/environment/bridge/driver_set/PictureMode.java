@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import com.wezom.kiviremoteserver.R;
 import com.wezom.kiviremoteserver.interfaces.DriverValue;
 import com.wezom.kiviremoteserver.service.aspect.AvailableValues;
+import com.wezom.kiviremoteserver.service.aspect.items.IFLMItems;
 import com.wezom.kiviremoteserver.service.aspect.TextTypedValues;
 
 import java.util.Arrays;
@@ -14,7 +15,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 
-public enum PictureMode implements TextTypedValues, AvailableValues {
+public enum PictureMode implements TextTypedValues, AvailableValues, IFLMItems {
 
     PICTURE_MODE_NORMAL(2, R.string.normal),
     PICTURE_MODE_SOFT(10, R.string.soft),//standard
@@ -48,6 +49,11 @@ public enum PictureMode implements TextTypedValues, AvailableValues {
     @Override
     public int getID() {
         return id;
+    }
+
+    @Override
+    public int getStringRes() {
+        return string;
     }
 
     public int getId() {
@@ -110,6 +116,8 @@ public enum PictureMode implements TextTypedValues, AvailableValues {
         }
         return linkedList;
     }
+
+
 
 
 }
