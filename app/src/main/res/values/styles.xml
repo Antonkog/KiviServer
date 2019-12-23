@@ -37,5 +37,14 @@
         <item name="android:splitMotionEvents">false</item>
     </style>
 
+    <style name="AppTheme.Picker" parent="Theme.AppCompat.Light.NoActionBar" >
+        <item name="android:textColorPrimary">@android:color/white</item>
+        <item name="android:background">@android:color/transparent</item>
+
+        <item name="colorAccent">@android:color/white</item>
+        <item name="colorControlNormal">@android:color/transparent</item>
+
+        <item name="android:textSize">15sp</item>
+    </style>
 
 </resources>

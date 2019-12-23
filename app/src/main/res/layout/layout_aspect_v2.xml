@@ -1,27 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:background="@drawable/emotion_icon_03">
+    android:layout_height="match_parent">
 
     <View
+        android:id="@+id/back_view"
         android:layout_width="match_parent"
         android:layout_height="@dimen/flm_height"
         android:layout_alignParentBottom="true"
         android:background="#AA000000" />
 
-    <com.wezom.kiviremoteserver.service.aspect.view.CircleListView
+    <LinearLayout
         android:id="@+id/secondary_menu"
-        android:layout_width="650dp"
-        android:layout_height="120dp"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:orientation="horizontal"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="10dp"
-        android:padding="10dp"
-        android:translationY="150dp"
+        android:background="@android:color/transparent"
+        android:translationY="300dp"
         android:translationZ="1dp"
-        tools:translationY="-150dp" />
+        android:gravity="center"
+        tools:background="@android:color/holo_red_light"
+        tools:listitem="@layout/item_aspect_settings"
+        tools:translationY="-250dp">
+
+        <ImageView
+            android:id="@+id/iv_arrow_left"
+            android:layout_width="15dp"
+            android:layout_height="15dp"
+            android:src="@drawable/ic_arrow_left" />
+
+        <NumberPicker
+            android:id="@+id/text_picker"
+            android:layout_width="150dp"
+            android:layout_marginStart="5dp"
+            android:layout_marginEnd="10dp"
+            android:theme="@style/AppTheme.Picker"
+            android:layout_height="match_parent"
+            android:focusable="true" />
+
+        <ProgressBar
+            android:id="@+id/pb"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="193dp"
+            android:layout_height="3dp"
+            android:max="100"
+            android:progressDrawable="@drawable/gradient_progress"
+            tools:progress="60" />
+
+        <ImageView
+            android:id="@+id/iv_arrow_right"
+            android:layout_width="15dp"
+            android:layout_height="15dp"
+            android:layout_marginStart="10dp"
+            android:src="@drawable/ic_arrow_right" />
+
+        <TextView
+            android:id="@+id/tv_value"
+            android:layout_width="30dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:gravity="center_horizontal"
+            android:textColor="#ffffff"
+            android:textSize="13sp"
+            tools:text="100" />
+
+    </LinearLayout>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/main_menu"
@@ -29,11 +77,35 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
+        android:layout_marginBottom="5dp"
         android:clipChildren="false"
         android:clipToPadding="false"
         android:orientation="horizontal"
         android:padding="10dp"
+        android:translationY="300dp"
         tools:itemCount="5"
         tools:layoutManager="android.support.v7.widget.LinearLayoutManager"
-        tools:listitem="@layout/menu_item" />
+        tools:listitem="@layout/menu_item"
+        tools:translationY="0dp" />
 </RelativeLayout>
+
+
+    <!--        <View-->
+    <!--            android:background="@drawable/gradient_secondary_menu"-->
+    <!--            android:layout_centerVertical="true"-->
+    <!--            android:layout_width="match_parent"-->
+    <!--            android:layout_height="30dp"/>-->
+
+
+    <!--<android.support.v17.leanback.widget.VerticalGridView-->
+    <!--android:id="@+id/secondary_menu"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="100dp"-->
+    <!--android:layout_alignParentBottom="true"-->
+    <!--android:layout_centerHorizontal="true"-->
+    <!--android:layout_marginBottom="10dp"-->
+    <!--android:padding="10dp"-->
+    <!--tools:listitem="@layout/item_aspect_settings"-->
+    <!--android:translationY="300dp"-->
+    <!--android:translationZ="1dp"-->
+    <!--tools:translationY="-150dp" />-->

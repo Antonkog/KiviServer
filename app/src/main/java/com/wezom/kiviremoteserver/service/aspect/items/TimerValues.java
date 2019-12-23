@@ -11,7 +11,7 @@ public class TimerValues implements IFLMItems {
     @StringRes
     int string;
 
-    TimerValues(@StringRes int string) {
+    public TimerValues(@StringRes int string) {
         this.string = string;
     }
 

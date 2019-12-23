@@ -150,4 +150,5 @@ dependencies {
     implementation project(path: ':mstarime')
     implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
     implementation 'com.github.zhaokaiqiang.klog:library:1.6.0'
+    implementation 'com.azoft.carousellayoutmanager:carousel:1.2.4'
 }

@@ -145,7 +145,7 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
     @Override
     public void onCreate() {
         super.onCreate();
-        if (false) {
+        if (true) {
             startService(new Intent(this, AspectLayoutService_NEW.class));
             return;
         }
