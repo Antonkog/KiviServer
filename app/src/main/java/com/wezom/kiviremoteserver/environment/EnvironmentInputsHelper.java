@@ -5,6 +5,7 @@ import android.content.Context;
 import com.wezom.kiviremoteserver.service.inputs.InputSourceHelper;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import wezom.kiviremoteserver.environment.bridge.BridgeInputs;
 
@@ -39,10 +40,10 @@ public class EnvironmentInputsHelper {
 
     //    InputSourceHelper.DisplayPortInfo sDisplayPortInfo;
 //
-    public void getPortsList(ArrayList<InputSourceHelper.INPUT_PORT> result, Context context) {
+    public List<InputSourceHelper.INPUT_PORT> getPortsList(ArrayList<InputSourceHelper.INPUT_PORT> result, Context context) {
         BridgeInputs bridgeInputs = new BridgeInputs();
         bridgeInputs.getPortsList(result, context);
-
+        return result;
     }
 
     public void changeInput(InputSourceHelper.INPUT_PORT inputPort, Context context) {

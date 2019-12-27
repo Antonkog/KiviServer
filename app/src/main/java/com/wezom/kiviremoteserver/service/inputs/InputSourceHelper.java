@@ -1,25 +1,21 @@
 package com.wezom.kiviremoteserver.service.inputs;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.v4.content.res.ResourcesCompat;
-import android.support.v7.content.res.AppCompatResources;
 import android.util.Base64;
 
 import com.wezom.kiviremoteserver.App;
 import com.wezom.kiviremoteserver.R;
 import com.wezom.kiviremoteserver.common.Constants;
-import com.wezom.kiviremoteserver.common.DeviceUtils;
 import com.wezom.kiviremoteserver.common.extensions.ViewExtensionsKt;
 import com.wezom.kiviremoteserver.environment.EnvironmentInputsHelper;
 import com.wezom.kiviremoteserver.interfaces.DriverValue;
 import com.wezom.kiviremoteserver.net.server.model.Input;
 
-import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -63,7 +59,7 @@ public class InputSourceHelper {
     public enum INPUT_PORT {
         INPUT_SOURCE_VGA(0, "vga", R.string.vga, R.drawable.ic_kivi_input_icons_05, 10, Constants.SOURCE_VGA, Constants.SOURCE_VGA, Constants.SOURCE_REALTEK_9_VGA),//ic_settings_input_component_24dp
         INPUT_SOURCE_ATV(1, "atv", R.string.atv, R.drawable.ic_atv, 60, Constants.SOURCE_ATV, Constants.SOURCE_ATV, Constants.SOURCE_REALTEK_9_ATV),//ic_settings_input_antenna_24dp
-        INPUT_SOURCE_CVBS(2, "av", R.string.av, R.drawable.ic_kivi_input_icons_05, 70, Constants.SOURCE_AV, Constants.SOURCE_AV, Constants.SOURCE_REALTEK_9_AV),//ic_settings_input_component_24dp
+        INPUT_SOURCE_CVBS(2, "ic_unfocused_av", R.string.av, R.drawable.ic_kivi_input_icons_05, 70, Constants.SOURCE_AV, Constants.SOURCE_AV, Constants.SOURCE_REALTEK_9_AV),//ic_settings_input_component_24dp
         INPUT_SOURCE_CVBS2(3, "cvbs2", R.string.app_name, R.drawable.ic_av, 10),
         INPUT_SOURCE_CVBS3(4, "cvbs3", R.string.app_name, R.drawable.ic_av, 10),
         INPUT_SOURCE_CVBS4(5, "cvbs4", R.string.app_name, R.drawable.ic_av, 10),

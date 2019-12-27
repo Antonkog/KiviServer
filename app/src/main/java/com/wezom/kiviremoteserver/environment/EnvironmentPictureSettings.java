@@ -7,7 +7,6 @@ import android.os.RemoteException;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
-import com.wezom.kiviremoteserver.R;
 import com.wezom.kiviremoteserver.common.Constants;
 import com.wezom.kiviremoteserver.service.aspect.HDRValues;
 
@@ -334,4 +333,16 @@ public class EnvironmentPictureSettings {
     public boolean isUserSoundMode() {
         return SoundValues.getByID(getSoundType()).getID() == SoundValues.SOUND_TYPE_USER.getID();
     }
+
+    public int getBalanceLevel() {
+        return bridgePicture.getBalanceLevel();
+    }
+
+    public void setBalanceLevel(int progress) {
+        bridgePicture.setBalanceLevel(progress);
+    }
+
+    public int getDolbyLevel() { return bridgePicture.getDolbyLevel(); }
+    public void setDolbyLevel(int progress) { bridgePicture.setDolbyLevel(progress); }
+
 }

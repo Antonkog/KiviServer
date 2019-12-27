@@ -181,4 +181,19 @@ public class BridgePicture {
     public int getTrebleLevel() {
         return (audioPreference.getTrebleLevel() - minValue) * 100 / delta;
     }
+
+    public int getBalanceLevel() { return (audioPreference.getBalanceLevel() - minValue) * 100 / delta; }
+    public void setBalanceLevel(int progress) {
+        audioPreference.setBalanceLevel((progress * delta) / 100 + minValue);
+    }
+
+
+    public void setDolbyLevel(int progress) {
+        audioPreference.setDolbyAudioLevel(progress);
+    }
+
+    public int getDolbyLevel() {
+        return audioPreference.getDolbyAudioLevel();
+    }
+
 }

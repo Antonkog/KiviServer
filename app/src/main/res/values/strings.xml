@@ -392,12 +392,14 @@ or through the website </string>
     <string name="sound_type">Sound mode</string>
     <string name="sound_low">Bass</string>
     <string name="sound_height">Treble</string>
+    <string name="sound_balance">Balance</string>
+    <string name="sound_dolby">Dolby</string>
     <string name="zoom1">zoom1</string>
     <string name="zoom2">zoom2</string>
     <string name="panorama">panorama</string>
 
-
     <!--test-->
+    <string name="t0">Off</string>
     <string name="t1">15 min</string>
     <string name="t2">30 min</string>
     <string name="t3">1 h</string>
@@ -405,5 +407,6 @@ or through the website </string>
     <string name="t5">3 h</string>
     <string name="keyboard_desk">Цифровой ввод</string>
     <string name="settings_desk">Настройки системы</string>
+    <string name="empty_str" translatable="false"></string>
     <!--test-->
 </resources>

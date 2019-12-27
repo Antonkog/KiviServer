@@ -2,17 +2,14 @@ package com.wezom.kiviremoteserver.service.aspect.items;
 
 import android.support.annotation.StringRes;
 
-import com.wezom.kiviremoteserver.R;
-
-import java.util.Arrays;
-import java.util.List;
-
 public class TimerValues implements IFLMItems {
     @StringRes
     int string;
+    int minutes;
 
-    public TimerValues(@StringRes int string) {
+    public TimerValues(@StringRes int string, int minutes) {
         this.string = string;
+        this.minutes = minutes;
     }
 
 
@@ -20,6 +17,8 @@ public class TimerValues implements IFLMItems {
     public int getStringRes() {
         return string;
     }
+
+    public int getMinutes() { return minutes; }
 
     @Override
     public int getId() {
