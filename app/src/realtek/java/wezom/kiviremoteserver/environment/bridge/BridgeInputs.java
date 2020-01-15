@@ -113,7 +113,7 @@ public class BridgeInputs {
             // Log.e("channelUri", channelUri.toString());
             Intent intent = new Intent(Intent.ACTION_VIEW, channelUri);
             ComponentName componentName = new ComponentName("com.android.tv", "com.android.tv.MainActivity");
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             intent.setComponent(componentName);
             context.startActivity(intent);
 
