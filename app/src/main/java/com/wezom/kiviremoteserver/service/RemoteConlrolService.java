@@ -31,9 +31,9 @@ import android.view.MotionEvent;
 
 import com.google.gson.Gson;
 import com.wezom.kiviremoteserver.App;
+import com.wezom.kiviremoteserver.R;
 import com.wezom.kiviremoteserver.bus.HideKeyboardEvent;
 import com.wezom.kiviremoteserver.bus.Keyboard200;
-import com.wezom.kiviremoteserver.bus.KeyboardEvent;
 import com.wezom.kiviremoteserver.bus.NewMessageEvent;
 import com.wezom.kiviremoteserver.bus.PingEvent;
 import com.wezom.kiviremoteserver.bus.SendAppsListEvent;
@@ -48,6 +48,7 @@ import com.wezom.kiviremoteserver.bus.SocketAcceptedEvent;
 import com.wezom.kiviremoteserver.bus.StopReceivingEvent;
 import com.wezom.kiviremoteserver.bus.ToKeyboardExecutorEvent;
 import com.wezom.kiviremoteserver.bus.TvPlayerEvent;
+import com.wezom.kiviremoteserver.bus.VolumeEvent;
 import com.wezom.kiviremoteserver.common.AppsInfoLoader;
 import com.wezom.kiviremoteserver.common.Constants;
 import com.wezom.kiviremoteserver.common.DeviceUtils;
@@ -67,6 +68,7 @@ import com.wezom.kiviremoteserver.mvp.view.ServiceMvpView;
 import com.wezom.kiviremoteserver.net.nsd.NsdUtil;
 import com.wezom.kiviremoteserver.net.server.KiviServer;
 import com.wezom.kiviremoteserver.net.server.model.LauncherBasedData;
+import com.wezom.kiviremoteserver.net.server.model.LongTapAction;
 import com.wezom.kiviremoteserver.net.server.model.PreviewCommonStructure;
 import com.wezom.kiviremoteserver.receiver.AppsChangeReceiver;
 import com.wezom.kiviremoteserver.receiver.ScreenOnReceiver;
@@ -279,13 +281,54 @@ public class RemoteConlrolService extends Service implements ServiceMvpView {
 
 
         disposables.add(RxBus.INSTANCE
-                .listen(KeyboardEvent.class).subscribe(keyboardEvent -> {
-                    if (keyboardEvent.isMuteEvent()) muteWorkAround();
+                .listen(VolumeEvent.class).subscribe(volumeEvent -> {
+                    if (volumeEvent.isMuteEvent()) muteWorkAround();
                     else sendVolume();
                 }, Timber::e));
 
         disposables.add(bus.listen(SendToSettingsEvent.class)
                 .subscribe(event -> openSettings(), Timber::e));
+
+        disposables.add(bus.listen(LongTapAction.class)
+                .subscribe(event -> {
+//                    Timber.e("Long tap action 2 = " +event.getName());
+                    switch (event.getName()){
+                        case R.string.lt_back:
+                            executeCommand(ToKeyboardExecutorEvent.COMMAND_NORMAL, KeyEvent.KEYCODE_BACK, null);
+                            break;
+
+                        case R.string.lt_home: //homedown then homeup
+                            executeKeyDownInstrumentation(KeyEvent.KEYCODE_HOME);
+                            navigateHome();
+                            break;
+
+                        case R.string.lt_q_settings:
+                            RxBus.INSTANCE.publish(new ShowHideAspectEvent());
+                            break;
+
+                        case R.string.lt_settings:
+                            Intent intent = new Intent(android.provider.Settings.ACTION_SETTINGS);
+                            startActivity(intent);
+                            break;
+
+                        case R.string.lt_hdmi_settings:
+                            executeKeyDownInstrumentation(KeyEvent.KEYCODE_MENU);
+                            break;
+
+                        case R.string.lt_channels_list:
+                            executeCommand(ToKeyboardExecutorEvent.COMMAND_NORMAL, KeyEvent.KEYCODE_DPAD_CENTER, null);
+                            break;
+                        case R.string.lt_film_catalogue:
+                            sendBroadcast(new Intent("com.kivi.launcher_v2.ACTION_VIDEO_CATALOG"));
+                            break;
+                        case R.string.lt_widgets:
+                            Intent widgetIntent = new Intent();
+                            widgetIntent.setComponent(new ComponentName("com.kivi.widget2", "com.kivi.widget2.MainActivity"));
+                            startActivity(widgetIntent);
+                            break;
+                    }
+                }, Timber::e));
+
 
         disposables.add(bus
                 .listen(SocketAcceptedEvent.class)
@@ -372,12 +415,12 @@ public class RemoteConlrolService extends Service implements ServiceMvpView {
             switch (dataStructure.getAction()) {
                 case KEY_EVENT:
                 case keyevent:
-                    executeCommand(ToKeyboardExecutorEvent.CommandType.COMMAND_NORMAL, parseIntOrLogError(dataStructure.getArgs().get(0)), null);
+                    executeCommand(ToKeyboardExecutorEvent.COMMAND_NORMAL, parseIntOrLogError(dataStructure.getArgs().get(0)), null);
                     break;
 
                 case TEXT:
                 case text:
-                    executeCommand(ToKeyboardExecutorEvent.CommandType.TEXT, 0, dataStructure.getArgs().get(0));
+                    executeCommand(ToKeyboardExecutorEvent.TEXT, 0, dataStructure.getArgs().get(0));
                     break;
 
                 case MOTION:
@@ -390,13 +433,28 @@ public class RemoteConlrolService extends Service implements ServiceMvpView {
 
                 case LEFT_CLICK:
                 case leftClick:
-                    executeCommand(ToKeyboardExecutorEvent.CommandType.CLICK, 0, null);
+                    executeCommand(ToKeyboardExecutorEvent.CLICK, 0, null);
 
                     break;
 
                 case RIGHT_CLICK:
                 case rightClick:
-                    executeCommand(ToKeyboardExecutorEvent.CommandType.COMMAND_NORMAL, KeyEvent.KEYCODE_BACK, null);
+                    executeCommand(ToKeyboardExecutorEvent.COMMAND_NORMAL, KeyEvent.KEYCODE_BACK, null);
+                    break;
+
+                case LONG_TAP_DOWN:
+                    MotionRelay.INSTANCE
+                            .getRelay()
+                            .accept(new MotionRelay.CursorMotionEvent(MotionRelay.LONG_TAP_DOWN, dataStructure.getMotion().get(0),
+                                    dataStructure.getMotion().get(1)));
+                    break;
+
+                case LONG_TAP_UP:
+                    MotionRelay.INSTANCE
+                            .getRelay()
+                            .accept(new MotionRelay.CursorMotionEvent(MotionRelay.LONG_TAP_UP, dataStructure.getMotion().get(0),
+                                    dataStructure.getMotion().get(1)));
+
                     break;
 
                 case VOICE_SEARCH:
@@ -447,9 +505,9 @@ public class RemoteConlrolService extends Service implements ServiceMvpView {
                         if (System.currentTimeMillis() - scrollTime > Constants.SCROLL_VELOCITY_MS) {
                             scrollTime = System.currentTimeMillis();
                             if (dy > 0) {
-                                executeCommand(ToKeyboardExecutorEvent.CommandType.COMMAND_NORMAL, KeyEvent.KEYCODE_DPAD_DOWN, null);
+                                executeCommand(ToKeyboardExecutorEvent.COMMAND_NORMAL, KeyEvent.KEYCODE_DPAD_DOWN, null);
                             } else {
-                                executeCommand(ToKeyboardExecutorEvent.CommandType.COMMAND_NORMAL, KeyEvent.KEYCODE_DPAD_UP, null);
+                                executeCommand(ToKeyboardExecutorEvent.COMMAND_NORMAL, KeyEvent.KEYCODE_DPAD_UP, null);
                             }
                         }
                     }
@@ -532,7 +590,7 @@ public class RemoteConlrolService extends Service implements ServiceMvpView {
         }
     }
 
-    private void executeCommand(ToKeyboardExecutorEvent.CommandType type, int keyCode, String text) {
+    private void executeCommand(int type, int keyCode, String text) {
         RxBus.INSTANCE.publish(new ToKeyboardExecutorEvent(type, keyCode, text));
     }
 

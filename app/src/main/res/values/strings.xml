@@ -145,6 +145,15 @@
     <string name="sport">Sport</string>
     <string name="game">Game</string>
 
+    <string name="lt_settings" translatable="false" >Settings</string>
+    <string name="lt_hdmi_settings" translatable="false" >HDMI Settings</string>
+    <string name="lt_home" translatable="false" >Home</string>
+    <string name="lt_back" translatable="false" >Back</string>
+    <string name="lt_q_settings" translatable="false">Quick Settings</string>
+    <string name="lt_channels_list" translatable="false">Channel list</string>
+    <string name="lt_film_catalogue" translatable="false">Film catalogue</string>
+    <string name="lt_widgets" translatable="false">Widgets</string>
+
 
     <!-- <string-array name="pref_parent_control_entries">
          <item>1</item>

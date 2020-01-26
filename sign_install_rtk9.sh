@@ -18,7 +18,7 @@ path_sysapp="/system/priv-app/kiviserver_9/kiviserver_9.apk" # assuming the app 
 ./gradlew assembleRealtek_9_Debug || exit -1 # exit on failure
 $ADB disconnect
 
-$ADB connect 192.168.0.101:5555 || exit -1
+$ADB connect 192.168.0.156:5555 || exit -1
 
 java -jar ${autoSign} ${sign509} ${signPk8} ${apk_host}  ${apk_host2} || exit -1
 
@@ -26,7 +26,7 @@ java -jar ${autoSign} ${sign509} ${signPk8} ${apk_host}  ${apk_host2} || exit -1
 $ADB devices -l
 $ADB root 2> /dev/null
 
-$ADB connect 192.168.0.101:5555 || exit -1
+$ADB connect 192.168.0.156:5555 || exit -1
 
 #$ADB install -r /Users/antonkogan/Desktop/maxTest/launcher2.apk
 #$ADB install -r /Users/antonkogan/Desktop/maxTest/auth.apk

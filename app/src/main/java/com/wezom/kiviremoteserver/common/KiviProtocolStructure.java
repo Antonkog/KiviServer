@@ -17,6 +17,8 @@ public class KiviProtocolStructure {
         LEFT_CLICK,
         @Deprecated rightClick,
         RIGHT_CLICK,
+        LONG_TAP_DOWN,
+        LONG_TAP_UP,
         REQUEST_APPS,
         REQUEST_ASPECT,
         REQUEST_IMG_BY_IDS,

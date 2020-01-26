@@ -13,9 +13,13 @@ import android.view.Gravity
 import android.view.MotionEvent
 import android.view.WindowManager
 import android.view.WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
+import com.wezom.kiviremoteserver.App
 import com.wezom.kiviremoteserver.R
+import com.wezom.kiviremoteserver.common.LongTapMenuProvider
 import com.wezom.kiviremoteserver.common.MotionRelay
 import com.wezom.kiviremoteserver.common.MotionRelay.LEFT_CLICK
+import com.wezom.kiviremoteserver.common.MotionRelay.LONG_TAP_DOWN
+import com.wezom.kiviremoteserver.common.MotionRelay.LONG_TAP_UP
 import com.wezom.kiviremoteserver.common.MotionRelay.UPDATE_CURSOR_POSITION
 import com.wezom.kiviremoteserver.common.extensions.toPx
 import com.wezom.kiviremoteserver.ui.views.OverlayView
@@ -27,9 +31,14 @@ import io.reactivex.schedulers.Schedulers
 import org.jetbrains.anko.longToast
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 
 
 class CursorService : Service() {
+
+    @Inject
+    lateinit var longTapMenuProvider: LongTapMenuProvider
+
     private lateinit var overlayView: OverlayView
     private lateinit var windowManager: WindowManager
 
@@ -47,6 +56,7 @@ class CursorService : Service() {
             PixelFormat.TRANSLUCENT).apply { gravity = Gravity.START or Gravity.TOP }
 
     private var hideTimer: Disposable? = null
+    private var longHideTimer: Disposable? = null
     private val instrumentation = Instrumentation()
 
     private var isAdded: Boolean = false
@@ -63,6 +73,8 @@ class CursorService : Service() {
         when (it.type) {
             UPDATE_CURSOR_POSITION -> update(it.x, it.y)
             LEFT_CLICK -> leftButtonClick()
+            LONG_TAP_DOWN -> longButtonClick(false, it.x, it.y)
+            LONG_TAP_UP -> longButtonClick(true, it.x, it.y)
             else -> Timber.e("Unknown action")
         }
     }, {})
@@ -73,7 +85,8 @@ class CursorService : Service() {
 
     override fun onCreate() {
         super.onCreate()
-        overlayView = OverlayView(this)
+        App.getApplicationComponent().inject(this)
+        overlayView = OverlayView(this, longTapMenuProvider)
 
         val displayMetrics = DisplayMetrics()
         try {
@@ -101,6 +114,7 @@ class CursorService : Service() {
     }
 
     private fun update(x1: Float, y1: Float) {
+        Timber.e("update x y on move")
         showCursor()
         onMouseMove(x1.toInt(), y1.toInt())
     }
@@ -120,6 +134,28 @@ class CursorService : Service() {
         Single.fromCallable<Int>(::executeLeftClick)
                 .subscribeOn(Schedulers.computation())
                 .subscribe()
+    }
+
+    private fun longButtonClick(tapUp: Boolean, x: Float, y: Float) {
+        longHideTimer?.takeUnless { it.isDisposed }?.dispose()
+        longHideTimer = Observable.timer(5, TimeUnit.SECONDS)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({ _ ->
+                    overlayView.run {
+                        turnOffLongTap()
+                    }
+                }) { e -> Timber.e(e, e.message) }
+
+        overlayView.run {
+            longTap(tapUp, x, y)
+            postInvalidate()
+        }
+
+        try {
+            windowManager.updateViewLayout(overlayView, cursorLayout)
+        } catch (e: IllegalArgumentException) {
+            Timber.e(e, "Illegal argument exception: ${e.message}. Are you sure that you have SYSTEM_ALERT_WINDOW permission?")
+        }
     }
 
     private fun executeLeftClick(): Int {

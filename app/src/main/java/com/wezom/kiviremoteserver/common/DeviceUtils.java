@@ -103,6 +103,7 @@ public class DeviceUtils implements SyncValue {
         return appsInfoLoader.getImgByIds(ids);
     }
 
+
     public List<PreviewCommonStructure> getPreviewCommonStructure(Context context) {
         previewCommonStructures.clear();
 

@@ -8,6 +8,7 @@ import android.media.AudioManager;
 import com.wezom.kiviremoteserver.common.AppsInfoLoader;
 import com.wezom.kiviremoteserver.common.DeviceUtils;
 import com.wezom.kiviremoteserver.common.KiviCache;
+import com.wezom.kiviremoteserver.common.LongTapMenuProvider;
 import com.wezom.kiviremoteserver.di.qualifiers.ApplicationContext;
 import com.wezom.kiviremoteserver.di.scopes.ApplicationScope;
 import com.wezom.kiviremoteserver.net.nsd.NsdUtil;
@@ -72,6 +73,13 @@ public class ApplicationModule {
     @ApplicationContext
     static NsdUtil provideNSDUtil(Context context) {
         return new NsdUtil(context);
+    }
+
+    @Provides
+    @Singleton
+    @ApplicationContext
+    static LongTapMenuProvider provideLongTapMenu(Context context, KiviCache cache) {
+        return new LongTapMenuProvider(context, cache);
     }
 
     @Provides

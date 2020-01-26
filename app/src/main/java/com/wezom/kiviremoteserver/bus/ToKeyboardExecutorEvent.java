@@ -3,19 +3,17 @@ package com.wezom.kiviremoteserver.bus;
 public class ToKeyboardExecutorEvent {
 
 
-    public enum CommandType {
-        NOT_SPECIFIED,
-        CLICK,
-        TEXT,
-        COMMAND_NORMAL
-    }
-
     private int keyCode;
     private int type;
     private String text;
+    public final static int
+            NOT_SPECIFIED = 0,
+            CLICK = 1,
+            TEXT = 2,
+            COMMAND_NORMAL = 3;
 
-    public ToKeyboardExecutorEvent(CommandType commandType, int keyCode, String text) {
-        this.type = commandType.ordinal();
+    public ToKeyboardExecutorEvent(int commandType, int keyCode, String text) {
+        this.type = commandType;
         this.keyCode = keyCode;
         this.text = text;
     }
@@ -26,13 +24,6 @@ public class ToKeyboardExecutorEvent {
 
     public String getText() {
         return text;
-    }
-
-    public CommandType getType(int num) {
-        for(CommandType type : CommandType.values()){
-            if(type.ordinal() == num) return type;
-        }
-        return CommandType.NOT_SPECIFIED;
     }
 
     public int getKeyCode() {

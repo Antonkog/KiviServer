@@ -1,9 +1,9 @@
 package com.wezom.kiviremoteserver.bus;
 
-public class KeyboardEvent {
+public class VolumeEvent {
     private boolean isMuteEvent;
 
-    public KeyboardEvent(boolean isMuteEvent) {
+    public VolumeEvent(boolean isMuteEvent) {
         this.isMuteEvent = isMuteEvent;
     }
 

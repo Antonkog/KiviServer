@@ -8,12 +8,11 @@ import android.view.inputmethod.InputConnection;
 import com.android.inputmethod.pinyin.PinyinIME;
 import com.wezom.kiviremoteserver.App;
 import com.wezom.kiviremoteserver.bus.HideKeyboardEvent;
-import com.wezom.kiviremoteserver.bus.KeyboardEvent;
 import com.wezom.kiviremoteserver.bus.ShowKeyboardEvent;
 import com.wezom.kiviremoteserver.bus.ToKeyboardExecutorEvent;
+import com.wezom.kiviremoteserver.bus.VolumeEvent;
 import com.wezom.kiviremoteserver.common.MotionRelay;
 import com.wezom.kiviremoteserver.common.RxBus;
-import com.wezom.kiviremoteserver.interfaces.EventProtocolExecutor;
 
 import javax.inject.Inject;
 
@@ -26,7 +25,7 @@ import timber.log.Timber;
  * Created by andre on 06.06.2017.
  */
 
-public class ExecutorServiceIME extends PinyinIME implements EventProtocolExecutor {
+public class ExecutorServiceIME extends PinyinIME {
 
     @Inject
     Instrumentation instrumentation;
@@ -65,22 +64,6 @@ public class ExecutorServiceIME extends PinyinIME implements EventProtocolExecut
     }
 
 
-    @Override
-    public void executeTextCommand(String text) {
-        InputConnection conn = getCurrentInputConnection();
-
-        if (conn == null) {
-            Timber.e("Input connection is null!");
-            return;
-        }
-
-        if (text.isEmpty()) {
-            clearAllFocusedText(conn);
-        } else {
-            conn.setComposingText(text, text.length());
-        }
-    }
-
     private void clearAllFocusedText(InputConnection ic) {
         ic.performContextMenuAction(android.R.id.selectAll);
         ic.commitText("", 0);
@@ -101,37 +84,69 @@ public class ExecutorServiceIME extends PinyinIME implements EventProtocolExecut
     }
 
     private void handleRequest(ToKeyboardExecutorEvent toKeyboardExecutorEvent) {
-        executeCommand(toKeyboardExecutorEvent.getKeyCode());
+        switch (toKeyboardExecutorEvent.getType()) {
+            case ToKeyboardExecutorEvent.CLICK:
+                executeClickCommand();
+                break;
+
+            case ToKeyboardExecutorEvent.TEXT:
+                executeTextCommand(toKeyboardExecutorEvent.getText());
+                break;
+
+            case ToKeyboardExecutorEvent.COMMAND_NORMAL:
+                executeCommand(toKeyboardExecutorEvent.getKeyCode());
+                break;
+        }
     }
 
 
-    @Override
     public void executeCommand(int keyCode) {
         if (keyCode == KeyEvent.KEYCODE_ENTER) {
             getCurrentInputConnection().performEditorAction(EditorInfo.IME_ACTION_UNSPECIFIED);
             return;
         }
 
+        if (filterVolume(keyCode)) return;
+        executeOtherKeys(keyCode);
+    }
+
+    private boolean filterVolume(int keyCode) {
         if (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN) {
             keyDownUp(KeyEvent.KEYCODE_VOLUME_DOWN);
             sendVolume(false);
-            return;
+            return true;
         }
 
         if (keyCode == KeyEvent.KEYCODE_VOLUME_UP) {
             keyDownUp(KeyEvent.KEYCODE_VOLUME_UP);
             sendVolume(false);
-            return;
+            return true;
         }
 
         if (keyCode == KeyEvent.KEYCODE_VOLUME_MUTE) {
             sendVolume(true); //        keyDownUp(KeyEvent.KEYCODE_VOLUME_MUTE); not working on realtek
-            return;
+            return true;
         }
-        onVolumeChange(keyCode);
+        return false;
     }
 
-    private void onVolumeChange(int keyCode) {
+
+    public void executeTextCommand(String text) {
+        InputConnection conn = getCurrentInputConnection();
+
+        if (conn == null) {
+            Timber.e("Input connection is null!");
+            return;
+        }
+
+        if (text.isEmpty()) {
+            clearAllFocusedText(conn);
+        } else {
+            conn.setComposingText(text, text.length());
+        }
+    }
+
+    private void executeOtherKeys(int keyCode) {
         Completable
                 .fromCallable(() -> executeKeyDownUp(keyCode))
                 .subscribeOn(Schedulers.newThread())
@@ -149,10 +164,9 @@ public class ExecutorServiceIME extends PinyinIME implements EventProtocolExecut
     }
 
     private void sendVolume(boolean isMuteEvent) {
-        RxBus.INSTANCE.publish(new KeyboardEvent(isMuteEvent));
+        RxBus.INSTANCE.publish(new VolumeEvent(isMuteEvent));
     }
 
-    @Override
     public void executeClickCommand() {
         try {
             MotionRelay.INSTANCE

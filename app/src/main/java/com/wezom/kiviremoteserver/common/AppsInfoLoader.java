@@ -36,7 +36,7 @@ public class AppsInfoLoader implements SyncValue {
     private static final List<String> visibleApps = new ArrayList<>();
     private Context context;
     private ArrayList<ServerApplicationInfo> appList = new ArrayList();
-    private long syncFrequency = 20 * DateUtils.MINUTE_IN_MILLIS;
+    private long syncFrequency = 10 * DateUtils.MINUTE_IN_MILLIS;
     private static long appsCollectedTime = 0;
 
     private KiviCache cache;
@@ -123,6 +123,7 @@ public class AppsInfoLoader implements SyncValue {
                     Timber.e(e);
                 }
             }
+           if(!appList.isEmpty()) appsCollectedTime = System.currentTimeMillis();
             return appList;
         }
     }
@@ -210,7 +211,7 @@ public class AppsInfoLoader implements SyncValue {
     private static List<String> getWhiteList(Context context) {
         Context launcher2Context = null;
         try {
-            launcher2Context = context.createPackageContext(Constants.LAUNCHER_PACKAGE, Context.MODE_PRIVATE);
+            launcher2Context = context.createPackageContext(Constants.LAUNCHER_PACKAGE, Context.CONTEXT_IGNORE_SECURITY);
         } catch (PackageManager.NameNotFoundException e) {
             Timber.e(" getting white list, no " + Constants.LAUNCHER_PACKAGE  + " context, trying to get list from old launcher " + e.getMessage());
             e.printStackTrace();
@@ -228,7 +229,7 @@ public class AppsInfoLoader implements SyncValue {
             Set<String> apps;// that is for old devices with first launcher should be remobe
             try {
                 Context myContext = context.createPackageContext("com.kivi.launcher",
-                        Context.MODE_PRIVATE);
+                        Context.CONTEXT_IGNORE_SECURITY);
 
                 SharedPreferences testPrefs = myContext.getSharedPreferences
                         ("kivi.launcher", Context.MODE_PRIVATE);

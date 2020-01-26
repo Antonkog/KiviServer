@@ -32,8 +32,11 @@ import timber.log.Timber;
 
 public class Utils {
     private static Method isStreamMute;
-
     public static Bitmap getBitmapFromVectorDrawable(Context context, int drawableId) {
+        return getBitmapFromVectorDrawable(context, drawableId, 1f);
+
+    }
+    public static Bitmap getBitmapFromVectorDrawable(Context context, int drawableId, float scaleFactor) {
         Drawable drawable = VectorDrawableCompat.create(context.getResources(), drawableId, null);
         Bitmap bitmap = null;
 
@@ -42,8 +45,9 @@ public class Utils {
                 drawable = (DrawableCompat.wrap(drawable)).mutate();
             }
 
-            bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(),
-                    drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+            bitmap = Bitmap.createBitmap( (int)(drawable.getIntrinsicWidth() * scaleFactor ) ,
+                    (int)(drawable.getIntrinsicHeight()* scaleFactor), Bitmap.Config.ARGB_8888);
+
             Canvas canvas = new Canvas(bitmap);
             drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
             drawable.draw(canvas);
