@@ -1,6 +1,5 @@
 package com.wezom.kiviremoteserver.net.server.threads
 
-import com.crashlytics.android.Crashlytics
 import timber.log.Timber
 import java.io.OutputStream
 import java.io.PrintWriter
@@ -13,9 +12,10 @@ class SendingThread(private val threadedModel: WriteThreadedModel<String>) : Thr
 
     override fun run() {
         var outputStream: OutputStream? = null
-
+        var printWriter: PrintWriter? = null
         try {
-            PrintWriter(clientSocket.getOutputStream(), true).use { writer ->
+            outputStream = clientSocket.getOutputStream();
+           PrintWriter(outputStream, true).let { writer ->
                 while (!isStopped) {
                     val message = threadedModel.queue.take()
                     if (message.length > 150)
@@ -24,25 +24,29 @@ class SendingThread(private val threadedModel: WriteThreadedModel<String>) : Thr
                         Timber.d("Sending message: $message")
                     writer.println(message + "\r\n")
                     if (writer.checkError()) {
+                        writer.close()
                         Timber.d("Error during writing")
-                        interrupt()
+                        stopSelf()
+                        return
                     }
                 }
             }
+        } catch (e: InterruptedException){
+            isStopped = true
+            Timber.e("SendingThread got InterruptedException error: " + e)
         } catch (e: Exception) {
             isStopped = true
-            Timber.e(e, e.message)
-            Crashlytics.logException(e)
+            Timber.e("SendingThread got error: "+ e)
         } finally {
             isStopped = true
             outputStream?.close()
+            printWriter?.close()
         }
-
-
     }
 
     fun stopSelf() {
         isStopped = true
+        interrupt()
     }
 }
 //

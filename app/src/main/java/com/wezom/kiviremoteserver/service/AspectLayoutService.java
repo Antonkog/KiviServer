@@ -32,8 +32,8 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.wezom.kiviremoteserver.App;
 import com.wezom.kiviremoteserver.R;
+import com.wezom.kiviremoteserver.environment.EnviorenmentAudioSettings;
 import com.wezom.kiviremoteserver.environment.EnvironmentFactory;
 import com.wezom.kiviremoteserver.environment.EnvironmentInputsHelper;
 import com.wezom.kiviremoteserver.environment.EnvironmentPictureSettings;
@@ -52,6 +52,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
+import timber.log.Timber;
 import wezom.kiviremoteserver.environment.bridge.BridgeGeneral;
 import wezom.kiviremoteserver.environment.bridge.BridgePicture;
 import wezom.kiviremoteserver.environment.bridge.driver_set.PictureMode;
@@ -87,6 +88,7 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
     private NumberDialing bodyChannel;
     //private View channelHeader;
     private EnvironmentPictureSettings pictureSettings;
+    private EnviorenmentAudioSettings audioSettings;
     private EnvironmentInputsHelper inputsHelper;
     public static volatile long lastUpdate;
     private Handler timer = new Handler();
@@ -98,21 +100,16 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
             }
 
             timer.postDelayed(updateSleepTime, 1000);
-            if (autoCloseTime > 0)
-                if (System.currentTimeMillis() - autoCloseTime > lastUpdate) {
-                    //Log.e("AspectLayoutService", "stopSelf " + System.currentTimeMillis() + ":" + autoCloseTime + ":" + lastUpdate);
-                    stopSelf();
-                }
+            if (System.currentTimeMillis() - 10000 > lastUpdate) {
+                Log.e("AspectLayoutService", "stopSelf");
+                stopSelf();
+            }
         }
-
-
     };
 
     private void updateSleepText() {
         String timeStr = "";
-        long leftTime = (slipIn - SystemClock.elapsedRealtime()) / 1000;
-        // Log.e("AspectLayoutService", "leftTime " + leftTime);
-
+        long leftTime = (slipIn - System.currentTimeMillis()) / 1000;
         int timeToSleep = -1;
         if (leftTime > 0) {
             timeToSleep = (int) leftTime;
@@ -133,15 +130,31 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
         }
     }
 
+//    Handler handler = new Handler();
+//    Runnable runnable = new Runnable() {
+//        @Override
+//        public void run() {
+//            View view = generalView.findFocus();
+//            optimization.clearFocus();
+//            if (view != null) {
+//                Log.e("view", "" + view);
+//             //   view.setBackgroundColor(Color.RED);
+//            }
+//            handler.postDelayed(runnable, 1000);
+//        }
+//    };
 
+    //    PictureMode[] modes = ;
+
+    //      PictureMode.PICTURE_MODE_ECONOMY);
     List<Ratio> ratios = Ratio.getInstance().getRatios();
-
-    List<Integer> shutDownTimers = Arrays.asList(0, 15, 30, 60, 90, 120, 180);
+    List<Integer> shutDownTimers = Arrays.asList(-1, 10, 20, 30, 60, 120);
     private boolean sleepFocused;
     // boolean isUHD = false;
     private static int mainColor = Color.BLUE;
     int autoCloseTime = 10;
 
+    //android.widget.LinearLayout{e7580bb VFE...C.. .F...... 444,0-554,98 #7f090128 app:id/root}
     @Override
     public void onCreate() {
         super.onCreate();
@@ -156,10 +169,6 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
         }
         autoCloseTime = Settings.Global.getInt(getContentResolver(), OSD_TIME, 10);
 
-        if (autoCloseTime < 10 && autoCloseTime > 0) {
-            autoCloseTime = 10;
-        }
-        autoCloseTime *= 1000;
         mainColor = getResources().getColor(R.color.colorPrimary);
         Log.e("AspectLayoutService", "started");
 
@@ -172,12 +181,12 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
         // Log.e("MODEL", "name " + MODEL);
         // new Handler().postDelayed(() -> {
         lastUpdate = System.currentTimeMillis();
+        audioSettings = new EnviorenmentAudioSettings();
         pictureSettings = new EnvironmentPictureSettings();
         inputsHelper = new EnvironmentInputsHelper();
         createLayout(getBaseContext());
         //}, 5000);
-        //if (autoCloseTime > 0)
-        timer.postDelayed(updateSleepTime, autoCloseTime);
+        timer.post(updateSleepTime);
         //   }, 3000);
 
     }
@@ -191,30 +200,61 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
 //    boolean isHaveChannel = false;
 
     public void createLayout(Context context) {
+        //Log.e("create", "create");
+
         layoutInflater = (LayoutInflater)
                 getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         wmgr = (WindowManager) context.getApplicationContext()
                 .getSystemService(Context.WINDOW_SERVICE);
         generalView = (RelativeLayout) View.inflate(context, R.layout.layout_aspect, null);
+        //generalView.setVisibility(View.VISIBLE);
         final WindowManager.LayoutParams param = new WindowManager.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 generalType,//TYPE_SYSTEM_ALERT
                 WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 PixelFormat.TRANSLUCENT);
+//        param.windowAnimations = android.R.style.Animation_Activity;
+        //param.rotationAnimation = WindowManager.LayoutParams.ROTATION_ANIMATION_SEAMLESS;
+        // generalView.setVisibility(View.GONE);
+        //      param.windowAnimations = android.R.style.Animation_Translucent;
         wmgr.addView(generalView, param);
+//        generalView.setVisibility(View.VISIBLE);
+//        generalView.clearAnimation();
+//        generalView.animate().setInterpolator(new AccelerateDecelerateInterpolator())
+//                .setDuration(500)
+//                .translationY(400).start();
+        // new Handler().postDelayed(()->generalView.setVisibility(View.VISIBLE),3000);
         headerContainer = generalView.findViewById(R.id.header_container);
         bodyContainer = generalView.findViewById(R.id.body_container);
         description = generalView.findViewById(R.id.description);
         generalView.setVisibility(View.VISIBLE);
         generalView.clearAnimation();
 
+
+//        bodyContainer.animate().setInterpolator(new AccelerateDecelerateInterpolator())
+//                .setDuration(500).translationYBy(0)
+//                .translationY(0).start();
+//        bodyContainer.animate()
+//                .yBy(400).y(0)
+//                .setStartDelay(100)
+//                .setDuration(500).start();
+
+
         final Animation anDesk = AnimationUtils.loadAnimation(this, R.anim.outside_bottom);
+        // anDesk.setInterpolator(new AccelerateDecelerateInterpolator());
         anDesk.setDuration(300);
         description.startAnimation(anDesk);
         bodyContainer.startAnimation(anDesk);
         headerContainer.startAnimation(anDesk);
-
+//        final Animation anHead = AnimationUtils.loadAnimation(this, R.anim.outside_bottom);
+//        anHead.setInterpolator(new AccelerateDecelerateInterpolator());
+//        anHead.setDuration(200);
+//        anHead.setStartTime(100);
+//        final Animation anBody = AnimationUtils.loadAnimation(this, R.anim.outside_bottom);
+//        anBody.setInterpolator(new AccelerateDecelerateInterpolator());
+//        anBody.setDuration(200);
+//        anHead.setStartTime(300);
 
         View view = new View(this);
         ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(1, 1);
@@ -246,12 +286,25 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
 
 
         int current = inputsHelper.getCurrentTvInputSource();
+        // Log.e("currentInput", "input = " + current);
         if (inputsHelper.isTV(current)) {
             addSeparator(headerContainer);
             addChannelSelector(headerContainer);
         }
 
         updateTextColors(generalView);
+//        handler.postDelayed(runnable, 1000);
+        // generalView.requestFocus();
+//        generalView.setOnKeyListener(new View.OnKeyListener() {
+//            @Override
+//            public boolean onKey(View v, int keyCode, KeyEvent event) {
+//                if (keyCode == 4) {
+//                    stopSelf();
+//                }
+//                return false;
+//            }
+//        });
+
         initCarousel(headerContainer);
     }
 
@@ -294,12 +347,12 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
         soundBass.setEnabled(isUser);
         soundBass.setFocusable(isUser);
         soundBass.setAlpha(isUser ? 1 : 0.3f);
-        soundBass.setProgress(pictureSettings.getBassLevel(soundBass.getContext()));
+        soundBass.setProgress(audioSettings.getBassLevel(soundBass.getContext()));
 
         soundTreble.setEnabled(isUser);
         soundTreble.setFocusable(isUser);
         soundTreble.setAlpha(isUser ? 1 : 0.3f);
-        soundTreble.setProgress(pictureSettings.getTrebleLevel(soundTreble.getContext()));
+        soundTreble.setProgress(audioSettings.getTrebleLevel(soundTreble.getContext()));
     }
 
     private void soundDetailSettings(LinearLayout bodyPictureSettings) {
@@ -311,13 +364,13 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
     private ScreenProgress soundHeight(LinearLayout body) {
         ScreenProgress screenProgress = new ScreenProgress(this);
         screenProgress.setOnKeyListener(this);
-        screenProgress.setProgress(pictureSettings.getTrebleLevel(body.getContext()));
+        screenProgress.setProgress(audioSettings.getTrebleLevel(body.getContext()));
 
         screenProgress.setLable(R.string.sound_height);
         screenProgress.setIcon(R.drawable.ic_hight_sound);
         screenProgress.setProgressListener(progress ->
         {
-            pictureSettings.setTrebleLevel(body.getContext(), progress);
+            audioSettings.setTrebleLevel(body.getContext(), progress);
         });
         body.addView(screenProgress);
         screenProgress.setKey(KEY_SOUND_DEPRECATED);
@@ -327,12 +380,12 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
     private ScreenProgress soundLow(LinearLayout body) {
         ScreenProgress screenProgress = new ScreenProgress(this);
         screenProgress.setOnKeyListener(this);
-        screenProgress.setProgress(pictureSettings.getBassLevel(body.getContext()));
+        screenProgress.setProgress(audioSettings.getBassLevel(body.getContext()));
         screenProgress.setLable(R.string.sound_low);
         screenProgress.setIcon(R.drawable.ic_low_sound);
         screenProgress.setProgressListener(progress ->
         {
-            pictureSettings.setBassLevel(screenProgress.getContext(), progress);
+            audioSettings.setBassLevel(screenProgress.getContext(), progress);
         });
         body.addView(screenProgress);
         screenProgress.setKey(KEY_SOUND_DEPRECATED);
@@ -340,18 +393,18 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
     }
 
     private View soundType(LinearLayout body) {
-        SoundValues current = SoundValues.getByID(pictureSettings.getSoundType());
+        SoundValues current = SoundValues.getByID(audioSettings.getSoundType());
         LRTextSwitcher lrTextSwitcher = new LRTextSwitcher(this);
         lrTextSwitcher.setUpValues(SoundValues.getSet());
         lrTextSwitcher.setOnKeyListener(this);
         if (current != null) {
             lrTextSwitcher.setValue(current);
-            updateSoundValue(pictureSettings.isUserSoundMode());
+            updateSoundValue(audioSettings.isUserSoundMode());
         }
         lrTextSwitcher.setLable(R.string.sound_type);
         lrTextSwitcher.setIcon(R.drawable.ic_treble_24dp);
         lrTextSwitcher.setProgressListener(progress -> {
-            pictureSettings.setSoundType(progress);
+            audioSettings.setSoundType(progress);
             updateSoundValue(progress == SoundValues.SOUND_TYPE_USER.getID());
         });
         body.addView(lrTextSwitcher);
@@ -417,7 +470,7 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
         try {
             timer.removeCallbacks(updateSleepTime);
         } catch (Exception e) {
-
+            Timber.e(e);
         }
         if (wmgr != null)
             wmgr.removeView(generalView);
@@ -505,7 +558,6 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
     private void pictureDetailSettings(LinearLayout body) {
 
         pictureSettings.initSettings(this);
-
         brightness = pictureSettings.getBrightness();
         contrast = pictureSettings.getContrast();
         sharpness = pictureSettings.getSharpness();
@@ -809,9 +861,11 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
         //  slipIn = PreferenceManager.getDefaultSharedPreferences(this).getLong("shutDownTime", -1);
         slipIn = Settings.Global.getLong(getContentResolver(), SLEEP_TIMEOUT_REMAIN, SystemClock.elapsedRealtime());
 
+        slipIn = PreferenceManager.getDefaultSharedPreferences(this).getLong("shutDownTime", -1);
         String text = "";
-        if (slipIn > SystemClock.elapsedRealtime()) {
-            int timeToSleep = (int) (slipIn - SystemClock.elapsedRealtime()) / 1000;
+
+        if (slipIn > System.currentTimeMillis()) {
+            int timeToSleep = (int) (slipIn - System.currentTimeMillis()) / 1000;
             //  description.setText(getStringTime(sec) + " c");
             minutesLeft = timeToSleep / 60;
 
@@ -843,7 +897,7 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
                         // am.cancel(pi);
                         PreferenceManager.getDefaultSharedPreferences(this).edit().remove("shutDownTime").commit();
                         alarmPosition++;
-                        setAlarm(pi, textView);
+                        setAlarmAllApi(textView);
                     }
                 })
                 .addAction(KeyEvent.KEYCODE_DPAD_DOWN, (action) -> {
@@ -851,22 +905,36 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
                         //  am.cancel(pi);
                         PreferenceManager.getDefaultSharedPreferences(this).edit().remove("shutDownTime").commit();
                         alarmPosition--;
-                        setAlarm(pi, textView);
+                        setAlarmAllApi(textView);
                     }
 
                 })
         );
-//        view.setOnClickListener((v) -> {
-//
-//            AlarmManager am = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-//            Intent i = new Intent(AspectLayoutService.this, Alarm.class);
-//
-//            PendingIntent pi = PendingIntent.getService(AspectLayoutService.this, 0, i, 0);
-//            am.set(AlarmManager.RTC_WAKEUP, 10000, pi);
-//            Log.e("alarm", "click");
-//
-//        });
+
         view.setOnKeyListener(this);
+    }
+
+    private void setAlarmAllApi(TextView textView) {
+        int minutes = showMinutesLeft(textView);
+        if (minutes > 0)
+            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.O) {
+                try {
+                    sleepInRealtek9(minutes * 60 * 1000);
+                } catch (Exception e) {
+                    Timber.e(e);
+                    setOldApiAlarm();
+                }
+            } else {
+                setOldApiAlarm();
+            }
+    }
+
+    private void setOldApiAlarm() {
+        AlarmManager am = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(AspectLayoutService.this, Alarm.class);
+        PendingIntent pi = PendingIntent.getService(AspectLayoutService.this, 0, intent, 0);
+        am.cancel(pi);
+        am.set(AlarmManager.RTC_WAKEUP, +slipIn, pi);
     }
 
     private void addInputs(LinearLayout generalView) {
@@ -1122,7 +1190,7 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
         return false;
     }
 
-    public void setAlarm(/*AlarmManager alarm,*/ PendingIntent pi, TextView textView) {
+    public int showMinutesLeft(TextView textView) {
         if (alarmPosition < 0) {
             alarmPosition = shutDownTimers.size() - 1;
         }
@@ -1131,7 +1199,7 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
         }
         minutesLeft = shutDownTimers.get(alarmPosition);
         if (minutesLeft > 0) {
-            slipIn = SystemClock.elapsedRealtime() + minutesLeft * 60 * 1000;
+            slipIn = System.currentTimeMillis() + minutesLeft * 60 * 1000;
             PreferenceManager.getDefaultSharedPreferences(this).edit().putLong("shutDownTime", slipIn).commit();
 
             String text = "";
@@ -1141,13 +1209,12 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
                 text += minutesLeft + getString(R.string.minutes);
             }
             textView.setText(text);
-            sleepIn(slipIn, minutesLeft * 60 * 1000);
-            //alarm.set(AlarmManager.RTC_WAKEUP, +slipIn, pi);
+//            //alarm.set(AlarmManager.RTC_WAKEUP, +slipIn, pi);
         } else {
             slipIn = -1;
-            sleepIn(slipIn, 0);
             textView.setText(R.string.off);
         }
+        return minutesLeft;
     }
 
     private static final String SHUTDOWN_INTENT_EXTRA = "shutdown";
@@ -1155,7 +1222,7 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
     public static final String SLEEP_TIMEOUT_REMAIN = "sleep_timer_remain";
     public static final String AUTO_POWER_DOWN_TIMEOUT = "auto_power_down_timer";
 
-    private void sleepIn(long timeIn, int delay) {
+    private void sleepInRealtek9(int delay) {
         Settings.Global.putLong(getContentResolver(), SLEEP_TIMEOUT_REMAIN, SystemClock.elapsedRealtime() + delay);
         Settings.Global.putInt(getContentResolver(), SLEEP_TIMEOUT, delay / (60 * 1000));
         Intent intentForToast = new Intent();

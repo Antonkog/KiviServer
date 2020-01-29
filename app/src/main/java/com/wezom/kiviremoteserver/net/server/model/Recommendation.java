@@ -56,7 +56,7 @@ public class Recommendation implements LauncherBasedData {
 
     @Override
     public String getID() {
-        return this.contentID+"";
+        return this.contentID + "";
     }
 
     @Override
@@ -82,16 +82,16 @@ public class Recommendation implements LauncherBasedData {
     @Override
     public HashMap<String, String> getAdditionalData() {
         HashMap<String, String> additional = new HashMap<>();
-        additional.put("imdb" , "" +imdb);
-        additional.put("subTitle" , subTitle);
-        additional.put("description" ,  description);
-        additional.put("monetizationType" ,  monetizationType);
+        additional.put("imdb", "" + imdb);
+        additional.put("subTitle", subTitle);
+        additional.put("description", description);
+        additional.put("monetizationType", monetizationType);
         return additional;
     }
 
     @Override
     public TYPE getType() {
-                 return TYPE.RECOMMENDATION;
+        return TYPE.RECOMMENDATION;
     }
 
     @Override

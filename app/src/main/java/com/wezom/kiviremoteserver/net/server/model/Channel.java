@@ -98,10 +98,10 @@ public class Channel implements LauncherBasedData {
     @Override
     public HashMap<String, String> getAdditionalData() {
         HashMap<String, String> additional = new HashMap<>();
-        additional.put("sort" , "" +sort);
-        additional.put("edited_at" , "" +edited_at);
-        additional.put("has_timeshift" , "" +has_timeshift);
-        additional.put("adult_content" , "" +adult_content);
+        additional.put("sort", "" + sort);
+        additional.put("edited_at", "" + edited_at);
+        additional.put("has_timeshift", "" + has_timeshift);
+        additional.put("adult_content", "" + adult_content);
         return additional;
     }
 

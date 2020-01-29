@@ -22,11 +22,28 @@ private fun createBitmap(drawable: Drawable, width: Int, height: Int): Bitmap {
     return bitmap
 }
 
-fun getIconBytes(context: Context, w: Int, h: Int, banner: Drawable?): ByteArray? {
+fun getIconBytes(context: Context, outWidth: Int, outHeight: Int, banner: Drawable): ByteArray? {
     ByteArrayOutputStream().use { stream ->
         var iconBytes = byteArrayOf()
+        val w = if (banner.intrinsicWidth > 1) {
+            banner.intrinsicWidth
+        } else {
+            outWidth
+        }
+        val h = if (banner.intrinsicHeight > 1) {
+            banner.intrinsicHeight
+        } else {
+            outHeight
+        }
+
         if (banner != null) {
-            val bitmap = createBitmap(banner, dpToPx(context, w), dpToPx(context, h))
+            var bitmap = createBitmap(banner, w, h)
+            val scaleFactor = bitmap.width / outWidth
+
+            if (scaleFactor > 1) {
+                bitmap = Bitmap.createScaledBitmap(bitmap, bitmap.width / scaleFactor, bitmap.height / scaleFactor, false)
+            }
+
             bitmap.compress(Bitmap.CompressFormat.PNG, 60, stream)
             iconBytes = stream.toByteArray()
         }

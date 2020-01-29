@@ -2,6 +2,7 @@ package com.wezom.kiviremoteserver;
 
 import android.app.ActivityManager;
 import android.app.Application;
+import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -32,7 +33,6 @@ import com.wezom.kiviremoteserver.environment.EnvironmentPictureSettings;
 import com.wezom.kiviremoteserver.receiver.ScreenOnReceiver;
 import com.wezom.kiviremoteserver.service.AspectLayoutService;
 import com.wezom.kiviremoteserver.service.CursorService;
-import com.wezom.kiviremoteserver.service.KiviRemoteService;
 import com.wezom.kiviremoteserver.service.communication.DelegatePlatformsService;
 import com.wezom.kiviremoteserver.service.inputs.InputSourceHelper;
 
@@ -40,7 +40,6 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.UUID;
 
-import io.fabric.sdk.android.Fabric;
 import timber.log.Timber;
 import wezom.kiviremoteserver.environment.bridge.BridgeGeneral;
 
@@ -94,7 +93,6 @@ public class App extends Application {
             Timber.plant(new Timber.DebugTree());
         }
 
-        startService(new Intent(this, KiviRemoteService.class));
         startService(new Intent(this, CursorService.class));
         if (isTVRealtek()) {
             BroadcastReceiver mUsbReceiver = new BroadcastReceiver() {
@@ -155,10 +153,16 @@ public class App extends Application {
         }
         generalView.findViewById(R.id.yes).setOnClickListener(v -> {
             if (type == TYPE_USB) {
-                Intent intent = new Intent();
-                intent.setComponent(new ComponentName("com.hikeen.mediabrowser",
-                        "com.hikeen.mediabrowser.activity.MediaBrowser"));
-                context.startActivity(intent);
+                try {
+                    Intent intent = new Intent();
+                    intent.setComponent(new ComponentName("com.hikeen.mediabrowser",
+                            "com.hikeen.mediabrowser.activity.MediaBrowser"));
+                    context.startActivity(intent);
+                }catch (ActivityNotFoundException e){
+                    Timber.e(new Throwable("com.hikeen.mediabrowser not found" + Build.MODEL + Build.BRAND));
+                }catch (Exception e){
+                    Timber.e(new Throwable("com.hikeen.mediabrowser starting trouble" + Build.MODEL + Build.BRAND));
+                }
                 // wmgr.removeView(generalView);
             } else if (type == TYPE_HDMI) {
                 int port = InputSourceHelper.INPUT_PORT.INPUT_SOURCE_HDMI.getId();

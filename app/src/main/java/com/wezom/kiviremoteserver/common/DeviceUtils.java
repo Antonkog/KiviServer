@@ -10,6 +10,7 @@ import android.text.format.DateUtils;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.wezom.kiviremoteserver.net.server.model.AppVisibility;
 import com.wezom.kiviremoteserver.net.server.model.Channel;
 import com.wezom.kiviremoteserver.net.server.model.LauncherBasedData;
 import com.wezom.kiviremoteserver.net.server.model.PreviewCommonStructure;
@@ -75,14 +76,14 @@ public class DeviceUtils {
     public static List<PreviewCommonStructure> getPreviewCommonStructure(Context context) {
         previewCommonStructures.clear();
 
-        for (LauncherBasedData data : getRecommendations(recommendations, LauncherBasedData.TYPE.RECOMMENDATION, context)) {
+        for (LauncherBasedData data : getLauncherData(recommendations, LauncherBasedData.TYPE.RECOMMENDATION, context)) {
             previewCommonStructures.add(new PreviewCommonStructure(data.getType().name(),
                     data.getID(), data.getName(),
                     data.getBaseIcon(),
                     data.getImageUrl(),
                     data.isActive(), data.getAdditionalData()));
         }
-        for (LauncherBasedData data : getRecommendations(channels, LauncherBasedData.TYPE.CHANNEL, context)) {
+        for (LauncherBasedData data : getLauncherData(channels, LauncherBasedData.TYPE.CHANNEL, context)) {
             previewCommonStructures.add(new PreviewCommonStructure(data.getType().name(),
                     data.getID(), data.getName(),
                     data.getBaseIcon(),
@@ -109,7 +110,7 @@ public class DeviceUtils {
         return previewCommonStructures;
     }
 
-    public static  <T  extends  LauncherBasedData> List<T> getRecommendations(@Nullable List<T> recs, LauncherBasedData.TYPE type, Context context) {
+    public static <T extends LauncherBasedData> List<T> getLauncherData(@Nullable List<T> recs, LauncherBasedData.TYPE type, Context context) {
         if (recs == null) recs = new ArrayList<>();
         recs.clear();
         List<LauncherBasedData> recsList = getLauncherPreference(type, context);
@@ -140,7 +141,10 @@ public class DeviceUtils {
                     p = myContext.getSharedPreferences(Constants.PREFERENCE_CATEGORY + Constants.FAVORITES_MANAGER, Context.MODE_PRIVATE);
                     return new Gson().fromJson(p.getString(Constants.LAUNCHER_PREF_KEY, ""), new TypeToken<ArrayList<Recommendation>>() {
                     }.getType());
-
+                case APPLICATION:
+                    p = myContext.getSharedPreferences(Constants.PREFERENCE_CATEGORY + Constants.APP_MANAGER, Context.MODE_PRIVATE);
+                    return new Gson().fromJson(p.getString(Constants.LAUNCHER_PREF_KEY, ""), new TypeToken<ArrayList<AppVisibility>>() {
+                    }.getType());
             }
         } catch (PackageManager.NameNotFoundException e) {
             Timber.e(" launcher based data error, type: " + type.name() + " " + e);

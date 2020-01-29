@@ -256,11 +256,11 @@ public class KiviRemoteService extends Service implements ServiceMvpView {
 
         disposables.add(bus.listen(SendInputsEvent.class).subscribe(event -> server.sendInputs(InputSourceHelper.getAsInputs(getApplicationContext())), Timber::e));
 
-        disposables.add(bus.listen(SendRecommendationsEvent.class).subscribe(event -> server.sendRecommendations(DeviceUtils.getRecommendations(null, LauncherBasedData.TYPE.RECOMMENDATION, getApplicationContext())), Timber::e));
+        disposables.add(bus.listen(SendRecommendationsEvent.class).subscribe(event -> server.sendRecommendations(DeviceUtils.getLauncherData(null, LauncherBasedData.TYPE.RECOMMENDATION, getApplicationContext())), Timber::e));
 
-        disposables.add(bus.listen(SendChannelsEvent.class).subscribe(event -> server.sendChannels(DeviceUtils.getRecommendations(null, LauncherBasedData.TYPE.CHANNEL, getApplicationContext())), Timber::e));
+        disposables.add(bus.listen(SendChannelsEvent.class).subscribe(event -> server.sendChannels(DeviceUtils.getLauncherData(null, LauncherBasedData.TYPE.CHANNEL, getApplicationContext())), Timber::e));
 
-        disposables.add(bus.listen(SendFavouritesEvent.class).subscribe(event -> server.sendFavourites(DeviceUtils.getRecommendations(null, LauncherBasedData.TYPE.FAVOURITE, getApplicationContext())), Timber::e));
+        disposables.add(bus.listen(SendFavouritesEvent.class).subscribe(event -> server.sendFavourites(DeviceUtils.getLauncherData(null, LauncherBasedData.TYPE.FAVOURITE, getApplicationContext())), Timber::e));
 
 
         disposables.add(bus.listen(SendVolumeEvent.class).subscribe(event ->
@@ -320,7 +320,7 @@ public class KiviRemoteService extends Service implements ServiceMvpView {
                                 pictureSettings.setRed(pair.getValue());
                                 break;
                             case BLUE:
-                                pictureSettings.setBlue(pair.getValue());
+                                pictureSettings.setBLue(pair.getValue());
                                 break;
                             case HDR:
                                 pictureSettings.setHDR(pair.getValue());
@@ -431,13 +431,13 @@ public class KiviRemoteService extends Service implements ServiceMvpView {
     //endregion
 
     public static void launch(Context context) {
-        Intent launcher = new Intent(context, KiviRemoteService.class);
-        context.startService(launcher);
+        Intent kiviRemoteService = new Intent(context, KiviRemoteService.class);
+        context.startService(kiviRemoteService);
     }
 
     public static void stop(Context context) {
-        Intent launcher = new Intent(context, KiviRemoteService.class);
-        context.stopService(launcher);
+        Intent kiviRemoteService = new Intent(context, KiviRemoteService.class);
+        context.stopService(kiviRemoteService);
     }
 
 //    public void updateNotification() {

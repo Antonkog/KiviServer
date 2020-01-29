@@ -491,7 +491,7 @@ public class ExecutorServiceIME extends PinyinIME implements EventProtocolExecut
                     break;
             }
         } else {
-           Timber.e("server got message but dataStructure.getAction() == null");
+            Timber.e("server got message but dataStructure.getAction() == null");
         }
     }
 

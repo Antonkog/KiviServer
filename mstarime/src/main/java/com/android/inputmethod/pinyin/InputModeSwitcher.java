@@ -16,6 +16,8 @@
 
 package com.android.inputmethod.pinyin;
 
+import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.util.Pair;
 import android.view.inputmethod.EditorInfo;
@@ -32,6 +34,16 @@ import java.util.Map;
  * Switcher used to switching input mode between Chinese, English, symbol,etc.
  */
 public class InputModeSwitcher {
+
+
+    private final  static String APP_PREFIX = "com.wezom.kiviremoteserver.";
+
+    /**
+     * PREFERENCE for  for debug.
+     */
+    public static final String CURRENT_LOCALE = "current_locale";
+    public static final String CURRENT_MASK = "current_mask";
+
     /**
      * User defined key code, used by soft keyboard.
      */
@@ -403,6 +415,7 @@ public class InputModeSwitcher {
     }
 
     public InputModeSwitcher(PinyinIME imeService) {
+//        mInputMode =  PreferenceManager.getDefaultSharedPreferences(imeService.getApplicationContext()).getString(APP_STATE_LIST, "");
         mImeService = imeService;
         currentCountry = CountryLanguage.getCountryByCode(getCountryCode());
         Resources r = mImeService.getResources();
@@ -447,23 +460,30 @@ public class InputModeSwitcher {
         return mToggleStates;
     }
 
-    public int getSkbLayout() {
+    public int getSkbLayout(Context context) {
         int layout = (mInputMode & MASK_SKB_LAYOUT);
 
         switch (layout) {
             case MASK_SKB_LAYOUT_QWERTY:
+                sendCurrentLang(layout,"en",context);
                 return R.xml.skb_qwerty_en;
             case MASK_SKB_LAYOUT_SYMBOL1:
+                sendCurrentLang(layout,"sym1",context);
                 return R.xml.skb_sym1;
             case MASK_SKB_LAYOUT_SYMBOL2:
+                sendCurrentLang(layout,"sym2",context);
                 return R.xml.skb_sym2;
             case MASK_SKB_LAYOUT_SMILEY:
+                sendCurrentLang(layout,"smiley",context);
                 return R.xml.skb_smiley;
             case MASK_SKB_LAYOUT_PHONE:
+                sendCurrentLang(layout,"phone",context);
                 return R.xml.skb_phone;
             case MASK_SKB_LAYOUT_QWERTY_RU:
+                sendCurrentLang(layout,"ru",context);
                 return R.xml.skb_qwerty_ru;
             case MASK_SKB_LAYOUT_QWERTY_UA:
+                sendCurrentLang(layout,"uk",context);
                 return R.xml.skb_qwerty_ua;
         }
         return 0;
@@ -513,6 +533,15 @@ public class InputModeSwitcher {
         saveInputMode(newInputMode);
         prepareToggleStates(true);
         return mInputIcon;
+    }
+
+
+    public static void sendCurrentLang(int layout, String lang, Context context) {
+        Intent intent = new Intent();
+        intent.setAction(APP_PREFIX + CURRENT_LOCALE);
+        intent.putExtra(CURRENT_LOCALE, lang);
+        intent.putExtra(CURRENT_MASK, layout);
+        context.sendBroadcast(intent);
     }
 
     public void switchLanguage() {

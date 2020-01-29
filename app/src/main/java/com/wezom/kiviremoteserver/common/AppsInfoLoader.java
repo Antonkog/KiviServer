@@ -9,6 +9,8 @@ import android.graphics.drawable.Drawable;
 import android.util.Base64;
 
 import com.wezom.kiviremoteserver.common.extensions.ViewExtensionsKt;
+import com.wezom.kiviremoteserver.net.server.model.AppVisibility;
+import com.wezom.kiviremoteserver.net.server.model.LauncherBasedData;
 import com.wezom.kiviremoteserver.net.server.model.ServerApplicationInfo;
 
 import java.io.File;
@@ -26,7 +28,7 @@ import timber.log.Timber;
  */
 
 public class AppsInfoLoader {
-    private static final List<String> whiteListSystemApps = new ArrayList<>();
+    private static final List<String> visibleApps = new ArrayList<>();
 
     public static Single<List<ServerApplicationInfo>> getAppsList(Context context) {
         return Single.create(emitter ->
@@ -114,10 +116,8 @@ public class AppsInfoLoader {
                         if (drawable == null)
                             drawable = packageManager.getApplicationLogo(packageInfo.applicationInfo);
                         if (drawable != null) {
-                            int width = drawable.getIntrinsicWidth();
-                            int height = drawable.getIntrinsicHeight();
 
-                            byte[] icon = ViewExtensionsKt.getIconBytes(ctx, width == 0 ? Constants.APP_ICON_W : width, height == 0 ? Constants.APP_ICON_H : height, drawable);
+                            byte[] icon = ViewExtensionsKt.getIconBytes(ctx, ViewExtensionsKt.dpToPx(ctx, Constants.APP_ICON_W), ViewExtensionsKt.dpToPx(ctx, Constants.APP_ICON_H), drawable);
 
                             ServerApplicationInfo tempApp = new ServerApplicationInfo()
                                     .setApplicationName(packageManager.getApplicationLabel(packageInfo.applicationInfo).toString())
@@ -143,9 +143,6 @@ public class AppsInfoLoader {
         if (info.packageName.equals("com.wezom.kiviremoteserver"))
             return false;
 
-        if (info.packageName.equals("com.kivi.launcher_v2"))
-            return false;
-
         if (isSystemApp(info) && isInWhiteList(info.packageName))
             return true;
 
@@ -163,28 +160,45 @@ public class AppsInfoLoader {
     }
 
     private static boolean isInWhiteList(String packageName) {
-        return whiteListSystemApps.contains(packageName);
+        return visibleApps.contains(packageName);
     }
 
     private static List<String> getWhiteList(Context context) {
-        Set<String> apps;
+        Context launcher2Context = null;
         try {
-            Context myContext = context.createPackageContext("com.kivi.launcher",
-                    Context.MODE_PRIVATE);
-
-            SharedPreferences testPrefs = myContext.getSharedPreferences
-                    ("kivi.launcher", Context.MODE_PRIVATE);
-            apps = testPrefs.getStringSet("white_list", null);
-            if (apps != null) {
-                whiteListSystemApps.clear();
-                whiteListSystemApps.addAll(apps);
-            } else {
-                Timber.e("getWhiteList empty");
-            }
+            launcher2Context = context.createPackageContext(Constants.LAUNCHER_PACKAGE, Context.MODE_PRIVATE);
         } catch (PackageManager.NameNotFoundException e) {
-            Timber.e(e, e.getMessage());
+            e.printStackTrace();
         }
-        return whiteListSystemApps;
+        if (launcher2Context != null) {
+            List<AppVisibility> appVisibilities = DeviceUtils.getLauncherData(null, LauncherBasedData.TYPE.APPLICATION, launcher2Context);
+            if (appVisibilities != null && appVisibilities.size() > 0)
+                visibleApps.clear();
+                for (AppVisibility app : appVisibilities) {
+                    if (app.isActive()) {
+                        visibleApps.add(app.getPackageName());
+                    }
+                }
+        } else {
+            Set<String> apps;// that is for old devices with first launcher should be remobe
+            try {
+                Context myContext = context.createPackageContext("com.kivi.launcher",
+                        Context.MODE_PRIVATE);
+
+                SharedPreferences testPrefs = myContext.getSharedPreferences
+                        ("kivi.launcher", Context.MODE_PRIVATE);
+                apps = testPrefs.getStringSet("white_list", null);
+                if (apps != null) {
+                    visibleApps.clear();
+                    visibleApps.addAll(apps);
+                } else {
+                    Timber.e("getWhiteList empty");
+                }
+            } catch (PackageManager.NameNotFoundException e) {
+                Timber.e(e, e.getMessage());
+            }
+        }
+        return visibleApps;
     }
 
     public static boolean isUserApp(ApplicationInfo info) {
