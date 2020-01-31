@@ -1,5 +1,6 @@
 package com.wezom.kiviremoteserver.service.aspect
 
+import android.annotation.SuppressLint
 import android.app.Service
 import android.content.Context
 import android.content.Intent
@@ -17,42 +18,82 @@ import android.view.KeyEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
-import android.view.animation.Animation
-import android.view.animation.AnimationUtils
-import android.view.animation.DecelerateInterpolator
 import android.widget.*
 import com.wezom.kiviremoteserver.App
 import com.wezom.kiviremoteserver.R
+import com.wezom.kiviremoteserver.common.extensions.animateAnimation
+import com.wezom.kiviremoteserver.common.extensions.animateTranslationX
+import com.wezom.kiviremoteserver.common.extensions.animateTranslationY
 import com.wezom.kiviremoteserver.environment.EnvironmentInputsHelper
 import com.wezom.kiviremoteserver.environment.EnvironmentPictureSettings
-import com.wezom.kiviremoteserver.service.aspect.aspect_v2.CardsMainAdapter
-import com.wezom.kiviremoteserver.service.aspect.aspect_v2.InputsAdapter
-import com.wezom.kiviremoteserver.service.aspect.aspect_v2.data.CardData
-import com.wezom.kiviremoteserver.service.aspect.aspect_v2.data.Cards
+import com.wezom.kiviremoteserver.service.aspect.aspect_v2.AspectInputsAdapter
+import com.wezom.kiviremoteserver.service.aspect.aspect_v2.AspectMainMenuAdapter
+import com.wezom.kiviremoteserver.service.aspect.aspect_v2.data.*
+import com.wezom.kiviremoteserver.service.aspect.aspect_v2.data.AspectMenuItem.Companion.TYPE_INPUTS
+import com.wezom.kiviremoteserver.service.aspect.aspect_v2.data.AspectMenuItem.Companion.TYPE_KEYBOARD
+import com.wezom.kiviremoteserver.service.aspect.aspect_v2.data.AspectMenuItem.Companion.TYPE_PICTURE
+import com.wezom.kiviremoteserver.service.aspect.aspect_v2.data.AspectMenuItem.Companion.TYPE_SOUND
 import wezom.kiviremoteserver.environment.bridge.BridgePicture
+import kotlin.math.abs
+import kotlin.math.roundToInt
 
 class AspectLayoutService_NEW : Service() {
 
-    private lateinit var pbValue: TextView
-    private lateinit var pb: ProgressBar
-    private lateinit var textPicker: NumberPicker
-    private lateinit var windowManager: WindowManager
-
     private val pictureSettings: EnvironmentPictureSettings = EnvironmentPictureSettings()
     private val inputsHelper: EnvironmentInputsHelper = EnvironmentInputsHelper()
+    private val generalType = BridgePicture.LAYER_TYPE//WindowManager.LayoutParams.TYPE_TOAST;
 
+    private var isStartedClosing = false
     private var autoCloseTime = 10
     private val timer = Handler()
+    private var lastFocusedMainCardsIndex = 0
 
-    private val generalType = BridgePicture.LAYER_TYPE//WindowManager.LayoutParams.TYPE_TOAST;
-    private lateinit var generalView: RelativeLayout
-    private lateinit var mainMenu: RecyclerView
-    private lateinit var inputsList: RecyclerView
-    private lateinit var inputsListContainer: CardView
-    private lateinit var secondaryMenu: LinearLayout
-    private lateinit var backView: View
+    private val windowManager: WindowManager by lazy { baseContext.applicationContext.getSystemService(Context.WINDOW_SERVICE) as WindowManager }
+    private val generalView: RelativeLayout by lazy { View.inflate(baseContext, R.layout.layout_aspect_v2, null) as RelativeLayout }
+    private val mainMenu: RecyclerView by lazy { generalView.findViewById<RecyclerView>(R.id.main_menu) }
+    private val secondaryMenu: LinearLayout by lazy { generalView.findViewById<LinearLayout>(R.id.secondary_menu) }
+    private val backView: View by lazy { generalView.findViewById<View>(R.id.back_view) }
 
-    private val updateSleepTime = object : Runnable {
+    //Secondary menu with settings
+    private val npSubmenuSettingsItems: NumberPicker by lazy { generalView.findViewById<NumberPicker>(R.id.text_picker) }
+    private val tvSubmenuSettingValue: TextView by lazy { generalView.findViewById<TextView>(R.id.tv_value) }
+    private val pbSubmenuSettingProgress: ProgressBar by lazy { generalView.findViewById<ProgressBar>(R.id.pb) }
+    private val ivSubmenuSettingSoundBalanceBar: ImageView by lazy { generalView.findViewById<ImageView>(R.id.iv_progress_sound_balance) }
+    private val viewSubmenuSettingSoundBalanceSelector: View by lazy { generalView.findViewById<View>(R.id.view_sound_balance_selector) }
+    private val tvSoundBalanceTitleLeft: TextView by lazy { generalView.findViewById<TextView>(R.id.tv_sound_balance_title_left) }
+    private val tvSoundBalanceTitleRight: TextView by lazy { generalView.findViewById<TextView>(R.id.tv_sound_balance_title_right) }
+    private val soundBarSize: Float by lazy { resources.getDimension(R.dimen.progress_settings_width) }
+    private val ivSubmenuSettingPictureTemperatureBar: ImageView by lazy { generalView.findViewById<ImageView>(R.id.iv_progress_temperature) }
+    private val viewSubmenuSettingPictureTemperatureSelector: View by lazy { generalView.findViewById<View>(R.id.view_temperature_selector) }
+    private val pictureTemperatureBarSize: Float by lazy { resources.getDimension(R.dimen.progress_settings_width) }
+    private val pictureTemperatureBarBlockSize: Float by lazy { pictureTemperatureBarSize / 5 }
+
+    //Secondary menu with inputs
+    private val rvSubmenuInputs: RecyclerView by lazy { generalView.findViewById<RecyclerView>(R.id.rv_inputs) }
+    private val cvSubmenuInputsContainer: CardView by lazy { generalView.findViewById<CardView>(R.id.cv_inputs) }
+
+    //Keyboard
+    private val keyboardContainer: LinearLayout by lazy { generalView.findViewById<LinearLayout>(R.id.ll_keyboard) }
+    private val keyboardTvChannel: TextView by lazy { generalView.findViewById<TextView>(R.id.tv_channel) }
+    private val keyboardBtnErase: FrameLayout by lazy { generalView.findViewById<FrameLayout>(R.id.fl_keyboard_erase) }
+    private val keyboardBtnConfirm: FrameLayout by lazy { generalView.findViewById<FrameLayout>(R.id.fl_keyboard_confirm) }
+    private val keyboardNumericKeys: List<TextView> by lazy {
+        listOf<TextView>(
+                generalView.findViewById(R.id.tv_numeric_sym_0),
+                generalView.findViewById(R.id.tv_numeric_sym_1),
+                generalView.findViewById(R.id.tv_numeric_sym_2),
+                generalView.findViewById(R.id.tv_numeric_sym_3),
+                generalView.findViewById(R.id.tv_numeric_sym_4),
+                generalView.findViewById(R.id.tv_numeric_sym_5),
+                generalView.findViewById(R.id.tv_numeric_sym_6),
+                generalView.findViewById(R.id.tv_numeric_sym_7),
+                generalView.findViewById(R.id.tv_numeric_sym_8),
+                generalView.findViewById(R.id.tv_numeric_sym_9)
+        )
+    }
+
+
+    private val updateSleepTimeCallback = object : Runnable {
         override fun run() {
             timer.postDelayed(this, 1000)
             if (autoCloseTime > 0 && System.currentTimeMillis() - autoCloseTime > lastUpdate)  {
@@ -76,190 +117,177 @@ class AspectLayoutService_NEW : Service() {
         mainColor = resources.getColor(R.color.colorPrimary)
 
         lastUpdate = System.currentTimeMillis()
-        initLayout(baseContext)
+        initLayout()
 
-        timer.postDelayed(updateSleepTime, autoCloseTime.toLong())
+        timer.postDelayed(updateSleepTimeCallback, autoCloseTime.toLong())
     }
 
     override fun onBind(intent: Intent): IBinder? = null
 
-    private fun initLayout(context: Context) {
-        windowManager = context.applicationContext.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-        generalView = View.inflate(context, R.layout.layout_aspect_v2, null) as RelativeLayout
-        val param = WindowManager.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                generalType, //TYPE_SYSTEM_ALERT
-                WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                PixelFormat.TRANSLUCENT)
+    @SuppressLint("SetTextI18n")
+    private fun initLayout() {
+        val param = WindowManager.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, generalType, WindowManager.LayoutParams.FLAG_FULLSCREEN, PixelFormat.TRANSLUCENT)
         windowManager.addView(generalView, param)
         generalView.visibility = View.VISIBLE
         generalView.clearAnimation()
 
-        secondaryMenu = generalView.findViewById(R.id.secondary_menu)
-        textPicker = generalView.findViewById(R.id.text_picker)
-        pb = generalView.findViewById(R.id.pb)
-        pbValue = generalView.findViewById(R.id.tv_value)
-        backView = generalView.findViewById(R.id.back_view)
+        viewSubmenuSettingPictureTemperatureSelector.translationX = when(pictureSettings.temperature) {
+            PICTURE_TEMPERATURE_MODE_NORMAL -> 0f
+            PICTURE_TEMPERATURE_MODE_WARM -> pictureTemperatureBarBlockSize
+            PICTURE_TEMPERATURE_MODE_VERY_WARM -> pictureTemperatureBarBlockSize * 2
+            PICTURE_TEMPERATURE_MODE_COLD -> pictureTemperatureBarBlockSize * -1
+            PICTURE_TEMPERATURE_MODE_VERY_COLD -> pictureTemperatureBarBlockSize * -2
+            else -> 0f
+        }
 
-        initMainCards()
-        initInputs()
+        val balanceLevel = pictureSettings.getBalanceLevel(baseContext)
+        viewSubmenuSettingSoundBalanceSelector.translationX = when (balanceLevel) {
+            50 -> 0f
+            else -> soundBarSize / 2 * ((balanceLevel - 50).toFloat() / 50f)
+        }
 
-        mainMenu.animate()
-                .translationY(0f)
-                .setDuration(400)
-                .setInterpolator(DecelerateInterpolator())
-                .start()
-
-        val animFadeIn = AnimationUtils.loadAnimation(applicationContext, android.R.anim.fade_in)
-        animFadeIn.duration = 600
-        animFadeIn.interpolator = DecelerateInterpolator()
-        backView.startAnimation(animFadeIn)
-    }
-
-    private fun initMainCards() {
-        mainMenu = generalView.findViewById(R.id.main_menu)
+        val mainMenuCardsAdapter = AspectMainMenuAdapter(AspectMenuItems.allData.values.toList(), pictureSettings,
+                onDpadUpClick = { data -> setModeUp(true, data) },
+                onBackClick = { onMainCardsBackClick() },
+                onSettingsClick = { onSettingsClick() },
+                onKeyboardClick = { onKeyboardClick() })
         mainMenu.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
-        val adapter = CardsMainAdapter(Cards.allData, { data -> setModeUp(true, data) }, {
-            if (isStartedClosing) { return@CardsMainAdapter }
+        mainMenu.adapter = mainMenuCardsAdapter
 
-            isStartedClosing = true
-            mainMenu.animate()/*.alpha(isTop ? 0.9f : 1)*/
-                    .translationY(500f)
-                    .setDuration(400)
-                    .setInterpolator(DecelerateInterpolator())
-                    .start()
-
-            val animFadeOut = AnimationUtils.loadAnimation(applicationContext, android.R.anim.fade_out)
-            animFadeOut.duration = 600
-            animFadeOut.interpolator = DecelerateInterpolator()
-            animFadeOut.setAnimationListener(object : Animation.AnimationListener {
-                override fun onAnimationStart(animation: Animation) {}
-                override fun onAnimationRepeat(animation: Animation) {}
-                override fun onAnimationEnd(animation: Animation) { stopSelf() }
-            })
-
-            backView.startAnimation(animFadeOut)
-        }, pictureSettings)
-        mainMenu.adapter = adapter
-    }
-
-    private fun initInputs() {
-        inputsListContainer = generalView.findViewById(R.id.cv_inputs)
-        inputsList = generalView.findViewById(R.id.rv_inputs)
-        inputsList.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
-        val adapter = InputsAdapter(inputsHelper, {
-            //TODO show backView
+        val inputsAdapter = AspectInputsAdapter(cvSubmenuInputsContainer.context, inputsHelper, onBackClick = {
             setModeUp(false)
+            backView.animateAnimation(applicationContext, android.R.anim.fade_in, 600, onAnimationEnd = { backView.setVisibility(View.VISIBLE) })
+        })
+        rvSubmenuInputs.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        rvSubmenuInputs.adapter = inputsAdapter
 
-            val animFadeIn = AnimationUtils.loadAnimation(applicationContext, android.R.anim.fade_in)
-            animFadeIn.duration = 600
-            animFadeIn.interpolator = DecelerateInterpolator()
-            animFadeIn.setAnimationListener(object : Animation.AnimationListener {
-                override fun onAnimationStart(animation: Animation) {}
-                override fun onAnimationRepeat(animation: Animation) {}
-                override fun onAnimationEnd(animation: Animation) { backView.visibility = View.VISIBLE }
-            })
+        keyboardNumericKeys.forEach {
+            it.setOnClickListener {
+                timeoutHandler.removeCallbacks(channelTypingTimeout)
+                timeoutHandler.postDelayed(channelTypingTimeout, CHANNEL_TYPING_TIMEOUT)
 
-            backView.startAnimation(animFadeIn)
-        }, inputsListContainer.context)
-        inputsList.adapter = adapter
-    }
-
-    var lastFocusChildIndex = 0
-
-    private fun setModeUp(isTop: Boolean, data: CardData? = null) {
-        if (isTop) {
-            lastFocusChildIndex = mainMenu.indexOfChild(mainMenu.focusedChild)
-
-            when (data?.type) {
-                2 -> {
-                    presentPictureModeSettings()
-                    secondaryMenu.findViewById<NumberPicker>(R.id.text_picker).requestFocus()
-
-                    secondaryMenu.animate()
-                        .alpha(1.toFloat())
-                        .translationY((-50).toFloat())
-                        .setInterpolator(DecelerateInterpolator())
-                        .setDuration(400)
-                        .start()
-                }
-                5 -> {
-                    presentSoundModeSettings()
-                    secondaryMenu.findViewById<NumberPicker>(R.id.text_picker).requestFocus()
-
-                    secondaryMenu.animate()
-                            .alpha(1.toFloat())
-                            .translationY((-50).toFloat())
-                            .setInterpolator(DecelerateInterpolator())
-                            .setDuration(400)
-                            .start()
-                }
-                0 -> {
-                    inputsListContainer.getChildAt(0).requestFocus()
-                    inputsListContainer.animate()
-                            .alpha(1.toFloat())
-                            .translationY((-50).toFloat())
-                            .setInterpolator(DecelerateInterpolator())
-                            .setDuration(400)
-                            .start()
-
-                    val animFadeOut = AnimationUtils.loadAnimation(applicationContext, android.R.anim.fade_out)
-                    animFadeOut.duration = 600
-                    animFadeOut.interpolator = DecelerateInterpolator()
-                    animFadeOut.setAnimationListener(object : Animation.AnimationListener {
-                        override fun onAnimationStart(animation: Animation) {}
-                        override fun onAnimationRepeat(animation: Animation) {}
-                        override fun onAnimationEnd(animation: Animation) { backView.visibility = View.INVISIBLE }
-                    })
-
-                    backView.startAnimation(animFadeOut)
+                if (keyboardTvChannel.text.length < 3) {
+                    keyboardTvChannel.text = "${keyboardTvChannel.text}${(it as TextView).text}"
+                } else {
+                    keyboardTvChannel.text = (it as TextView).text.toString()
                 }
             }
 
-//            secondaryMenu.findViewById<NumberPicker>(R.id.text_picker).requestFocus()
-        } else {
-            mainMenu.getChildAt(lastFocusChildIndex).requestFocus()
+            it.setOnKeyListener { _, keyCode, event ->
+                if (event.action == KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_BACK) {
+                    timeoutHandler.removeCallbacks(channelTypingTimeout)
+                    keyboardContainer.animateTranslationY(640f, 400)
+                    keyboardContainer.animateAnimation(applicationContext, android.R.anim.fade_out, 400, onAnimationEnd = {
+                        keyboardContainer.visibility = View.GONE
+                        backView.visibility = View.GONE
+                        stopSelf()
+                    })
 
-            inputsListContainer.animate()
-                    .alpha(0.toFloat())
-                    .translationY(300.toFloat())
-                    .setInterpolator(DecelerateInterpolator())
-                    .setDuration(400)
-                    .start()
+                    return@setOnKeyListener true
+                }
 
-            secondaryMenu.animate()
-                .alpha(0.toFloat())
-                .translationY(300.toFloat())
-                .setInterpolator(DecelerateInterpolator())
-                .setDuration(400)
-                .start()
+                else if (event.action == KeyEvent.ACTION_DOWN && keyCode in arrayOf(KeyEvent.KEYCODE_DPAD_RIGHT, KeyEvent.KEYCODE_DPAD_LEFT, KeyEvent.KEYCODE_DPAD_UP, KeyEvent.KEYCODE_DPAD_DOWN)) {
+                    timeoutHandler.removeCallbacks(channelTypingTimeout)
+                    timeoutHandler.postDelayed(channelTypingTimeout, CHANNEL_TYPING_TIMEOUT)
+                    return@setOnKeyListener false
+                }
+
+                return@setOnKeyListener false
+            }
         }
 
-//        inputsListContainer.animate()
-//                .alpha((if (isTop) 1 else 0).toFloat())
-//                .translationY((if (isTop) -50 else 300).toFloat())
-//                .setInterpolator(DecelerateInterpolator())
-//                .setDuration(400)
-//                .start()
+        keyboardBtnErase.setOnClickListener {
+            if (keyboardTvChannel.text.isNotEmpty()) {
+                timeoutHandler.removeCallbacks(channelTypingTimeout)
+                timeoutHandler.postDelayed(channelTypingTimeout, CHANNEL_TYPING_TIMEOUT)
+                keyboardTvChannel.text = keyboardTvChannel.text.subSequence(0, keyboardTvChannel.text.length - 1)
+            }
+        }
 
-//        secondaryMenu.animate()
-//                .alpha((if (isTop) 1 else 0).toFloat())
-//                .translationY((if (isTop) -50 else 300).toFloat())
-//                .setInterpolator(DecelerateInterpolator())
-//                .setDuration(400)
-//                .start()
+        keyboardBtnConfirm.setOnClickListener {
+            timeoutHandler.removeCallbacks(channelTypingTimeout)
+            changeTvProgram()
+        }
 
-        mainMenu.animate()
-                .translationY((if (!isTop) 0 else 220).toFloat())
-                .setInterpolator(DecelerateInterpolator())
-                .setDuration(400)
-                .start()
+        mainMenu.animateTranslationY(0f, 400)
+        backView.animateAnimation(applicationContext, android.R.anim.fade_in, 600)
     }
 
+    private val CHANNEL_TYPING_TIMEOUT = 2000L
+    private val timeoutHandler = Handler()
+    private val channelTypingTimeout = Runnable { changeTvProgram() }
+    private fun changeTvProgram() {
+        if (keyboardTvChannel.text.isEmpty()) { return }
+        EnvironmentInputsHelper().changeProgram(keyboardTvChannel.text.toString().toInt(), this)
+        stopSelf()
+    }
+
+    private fun onMainCardsBackClick() {
+        if (isStartedClosing) { return }
+        isStartedClosing = true
+        mainMenu.animateTranslationY(500f, 400)
+        backView.animateAnimation(applicationContext, android.R.anim.fade_out, 600, onAnimationEnd = {
+            backView.visibility = View.GONE
+            stopSelf()
+        })
+    }
+
+    private fun onSettingsClick() {
+        if (isStartedClosing) { return }
+        isStartedClosing = true
+        mainMenu.animateTranslationY(500f, 400)
+        backView.animateAnimation(applicationContext, android.R.anim.fade_out, 600,
+                onAnimationStart = { startActivity(Intent(Settings.ACTION_SETTINGS)) },
+                onAnimationEnd = {
+                    backView.visibility = View.GONE
+                    stopSelf()
+                }
+        )
+    }
+
+    private fun onKeyboardClick() {
+        setModeUp(true, AspectMenuItems.allData[TYPE_KEYBOARD])
+    }
+
+    private fun setModeUp(isTop: Boolean, data: AspectMenuItem? = null) {
+        if (isTop) {
+            lastFocusedMainCardsIndex = mainMenu.indexOfChild(mainMenu.focusedChild)
+
+            when (data?.type) {
+                TYPE_PICTURE -> {
+                    presentPictureModeSettings()
+                    npSubmenuSettingsItems.requestFocus()
+                    secondaryMenu.animateTranslationY(-50f, 400, alpha = 1f)
+                }
+                TYPE_SOUND -> {
+                    presentSoundModeSettings()
+                    npSubmenuSettingsItems.requestFocus()
+                    secondaryMenu.animateTranslationY(-50f, 400, alpha = 1f)
+                }
+                TYPE_INPUTS -> {
+                    cvSubmenuInputsContainer.getChildAt(0).requestFocus()
+                    cvSubmenuInputsContainer.animateTranslationY(-50f, 400, alpha = 1f)
+                    backView.animateAnimation(applicationContext, android.R.anim.fade_out, 600, onAnimationEnd = { backView.setVisibility(View.INVISIBLE) })
+                }
+                TYPE_KEYBOARD -> {
+                    backView.animateAnimation(applicationContext, android.R.anim.fade_out, 400, onAnimationEnd = { backView.setVisibility(View.INVISIBLE) })
+                    keyboardNumericKeys[5].requestFocus()
+                    keyboardContainer.animateTranslationY(0f, 400)
+                    mainMenu.animateTranslationY(500f, 400)
+                    return
+                }
+            }
+        } else {
+            mainMenu.getChildAt(lastFocusedMainCardsIndex).requestFocus()
+            cvSubmenuInputsContainer.animateTranslationY(300f, 400, alpha = 0f)
+            secondaryMenu.animateTranslationY(300f, 400, alpha = 0f)
+        }
+
+        mainMenu.animateTranslationY(if (!isTop) 0f else 220f, 400)
+    }
 
     private fun presentPictureModeSettings() {
-        val values = arrayOf(
+        val settingsValues = arrayOf(
                 Pair(R.string.brightness, pictureSettings.brightness),
                 Pair(R.string.contrast, pictureSettings.contrast),
                 Pair(R.string.saturation, pictureSettings.saturation),
@@ -268,178 +296,269 @@ class AspectLayoutService_NEW : Service() {
         )
 
         var indexOfSelectedPickerItem = 0
-        pb.progress = values[indexOfSelectedPickerItem].second
-        pbValue.text = values[indexOfSelectedPickerItem].second.toString()
+        pbSubmenuSettingProgress.progress = settingsValues[indexOfSelectedPickerItem].second
+        tvSubmenuSettingValue.text = settingsValues[indexOfSelectedPickerItem].second.toString()
+        npSubmenuSettingsItems.apply {
+            maxValue = 0
+            displayedValues = settingsValues.map { getString(it.first) }.toTypedArray()
+            maxValue = settingsValues.size - 1
+            minValue = 0
+        }
 
-        textPicker.maxValue = 0
-        textPicker.displayedValues = values.map { getString(it.first) }.toTypedArray()
-        textPicker.maxValue = values.size - 1
-        textPicker.minValue = 0
-
-        textPicker.setOnValueChangedListener { _, _, newValue ->
-            if (newValue == 3) {
-                pb.max = 5
-                pb.progressDrawable = ContextCompat.getDrawable(this, R.drawable.gradient_progress_temperature)
-            } else {
-                pb.max = 100
-                pb.progressDrawable = ContextCompat.getDrawable(this, R.drawable.gradient_progress)
-            }
-
-            pb.progress = values[newValue].second
-            pbValue.text = values[newValue].second.toString()
+        npSubmenuSettingsItems.setOnValueChangedListener { _, _, newValue ->
+            changeSubmenuSettingsPictureItem(newValue, settingsValues)
             indexOfSelectedPickerItem = newValue
         }
 
-        textPicker.setOnKeyListener { _, keyCode, event ->
+        npSubmenuSettingsItems.setOnKeyListener { _, keyCode, event ->
             if (event.action == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
-                pb.progress = pb.progress + 1
-                pbValue.text = pb.progress.toString()
-                values[indexOfSelectedPickerItem] = values[indexOfSelectedPickerItem].copy(second = pb.progress)
-
-                when(indexOfSelectedPickerItem) {
-                    0 -> pictureSettings.brightness = pb.progress
-                    1 -> pictureSettings.contrast = pb.progress
-                    2 -> pictureSettings.saturation = pb.progress
-                    3 -> pictureSettings.temperature = pb.progress
-                    4 -> pictureSettings.setBacklight(pb.progress, this)
-                }
-
+                changeSubmenuSettingsPictureItemValue(indexOfSelectedPickerItem, settingsValues, true)
                 return@setOnKeyListener true
             }
+
             if (event.action == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
-                if (indexOfSelectedPickerItem != 3 || pb.progress != 1) {
-                    pb.progress = pb.progress - 1
-                }
-                pbValue.text = pb.progress.toString()
-                values[indexOfSelectedPickerItem] = values[indexOfSelectedPickerItem].copy(second = pb.progress)
-
-                when(indexOfSelectedPickerItem) {
-                    0 -> pictureSettings.brightness = pb.progress
-                    1 -> pictureSettings.contrast = pb.progress
-                    2 -> pictureSettings.saturation = pb.progress
-                    3 -> pictureSettings.temperature = pb.progress
-                    4 -> pictureSettings.setBacklight(pb.progress, this)
-                }
-
+                changeSubmenuSettingsPictureItemValue(indexOfSelectedPickerItem, settingsValues, false)
                 return@setOnKeyListener true
             }
+
             if (event.action == KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_BACK) {
-                setModeUp(false)
+                submenuSettingsPictureBackClick()
                 return@setOnKeyListener true
             }
 
-            false
+            return@setOnKeyListener false
         }
     }
 
     private fun presentSoundModeSettings() {
-        val values = arrayOf(
+        val settingsValues = arrayOf(
                 Pair(R.string.sound_height, pictureSettings.getTrebleLevel(this)),
                 Pair(R.string.sound_low, pictureSettings.getBassLevel(this)),
-                Pair(R.string.sound_balance, pictureSettings.balanceLevel),
+                Pair(R.string.sound_balance, pictureSettings.getBalanceLevel(this)),
                 Pair(R.string.sound_height, pictureSettings.getTrebleLevel(this)),
                 Pair(R.string.sound_low, pictureSettings.getBassLevel(this)),
-                Pair(R.string.sound_balance, pictureSettings.balanceLevel)
+                Pair(R.string.sound_balance, pictureSettings.getBalanceLevel(this))
         )
 
         var indexOfSelectedPickerItem = 0
-        pb.progress = values[indexOfSelectedPickerItem].second
-        pbValue.text = values[indexOfSelectedPickerItem].second.toString()
+        pbSubmenuSettingProgress.progress = settingsValues[indexOfSelectedPickerItem].second
+        tvSubmenuSettingValue.text = settingsValues[indexOfSelectedPickerItem].second.toString()
+        npSubmenuSettingsItems.apply {
+            maxValue = 0
+            displayedValues = settingsValues.map { getString(it.first) }.toTypedArray()
+            maxValue = settingsValues.size - 1
+            minValue = 0
+        }
 
-        textPicker.maxValue = 0
-        textPicker.displayedValues = values.map { getString(it.first) }.toTypedArray()
-        textPicker.maxValue = values.size - 1
-        textPicker.minValue = 0
-
-        textPicker.setOnValueChangedListener { _, _, newValue ->
-            pb.max = 100
-            pb.progressDrawable = ContextCompat.getDrawable(this, R.drawable.gradient_progress)
-            pb.progress = values[newValue].second
-            pbValue.text = values[newValue].second.toString()
+        npSubmenuSettingsItems.setOnValueChangedListener { _, _, newValue ->
+            changeSubmenuSettingsSoundItem(settingsValues, newValue)
             indexOfSelectedPickerItem = newValue
         }
 
-        textPicker.setOnKeyListener { _, keyCode, event ->
+        npSubmenuSettingsItems.setOnKeyListener { _, keyCode, event ->
             if (event.action == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
-                pb.progress = pb.progress + 1
-                pbValue.text = pb.progress.toString()
-                values[indexOfSelectedPickerItem] = values[indexOfSelectedPickerItem].copy(second = pb.progress)
-
-                when(indexOfSelectedPickerItem) {
-                    0, 3 -> pictureSettings.setTrebleLevel(this, pb.progress)
-                    1, 4 -> pictureSettings.setBassLevel(this, pb.progress)
-                    2, 5 -> pictureSettings.balanceLevel = pb.progress
-                }
-
+                changeSubmenuSettingsSoundItemValue(indexOfSelectedPickerItem, settingsValues, true)
                 return@setOnKeyListener true
             }
+
             if (event.action == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
-                pb.progress = pb.progress - 1
-                pbValue.text = pb.progress.toString()
-                values[indexOfSelectedPickerItem] = values[indexOfSelectedPickerItem].copy(second = pb.progress)
-
-                when(indexOfSelectedPickerItem) {
-                    0, 3 -> pictureSettings.setTrebleLevel(this, pb.progress)
-                    1, 4 -> pictureSettings.setBassLevel(this, pb.progress)
-                    2, 5 -> pictureSettings.balanceLevel = pb.progress
-                }
-
+                changeSubmenuSettingsSoundItemValue(indexOfSelectedPickerItem, settingsValues, false)
                 return@setOnKeyListener true
             }
+
             if (event.action == KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_BACK) {
-                setModeUp(false)
+                submenuSettingsSoundBackClick()
                 return@setOnKeyListener true
             }
 
-            false
+            return@setOnKeyListener false
         }
     }
 
+    private fun changeSubmenuSettingsPictureItem(newItemValue: Int, settingsValues: Array<Pair<Int, Int>>) {
+        if (newItemValue == PICKER_INDEX_PICTURE_TEMPERATURE) {
+            pbSubmenuSettingProgress.visibility = View.GONE
+            ivSubmenuSettingPictureTemperatureBar.visibility = View.VISIBLE
+            viewSubmenuSettingPictureTemperatureSelector.visibility = View.VISIBLE
 
-    var isStartedClosing = false
+            val newTempBarText = when(pictureSettings.temperature) {
+                PICTURE_TEMPERATURE_MODE_NORMAL -> "Намана"
+                PICTURE_TEMPERATURE_MODE_WARM -> "Тепленькая"
+                PICTURE_TEMPERATURE_MODE_VERY_WARM -> "Пекло"
+                PICTURE_TEMPERATURE_MODE_COLD -> "Прохолодно"
+                PICTURE_TEMPERATURE_MODE_VERY_COLD -> "Вери колд"
+                else -> "Намана"
+            }
 
-//    override fun onKey(p0: View?, p1: Int, event: KeyEvent): Boolean {
-//        return when {
-//            event.action == KeyEvent.ACTION_UP && event.keyCode == KeyEvent.KEYCODE_DPAD_UP -> {
-//                setModeUp(true)
-//                true
-//            }
-//
-//            event.action == KeyEvent.ACTION_UP && event.keyCode == KeyEvent.KEYCODE_BACK -> {
-//                if (isStartedClosing) {
-//                    return true
-//                }
-//
-//                isStartedClosing = true
-//                mainMenu.animate()/*.alpha(isTop ? 0.9f : 1)*/
-//                        .translationY(500f)
-//                        .setDuration(400)
-//                        .setInterpolator(DecelerateInterpolator())
-//                        .start()
-//
-//                val animFadeOut = AnimationUtils.loadAnimation(applicationContext, android.R.anim.fade_out)
-//                animFadeOut.duration = 600
-//                animFadeOut.interpolator = DecelerateInterpolator()
-//                animFadeOut.setAnimationListener(object : Animation.AnimationListener {
-//                    override fun onAnimationStart(animation: Animation) {}
-//
-//                    override fun onAnimationRepeat(animation: Animation) {}
-//
-//                    override fun onAnimationEnd(animation: Animation) {
-//                        stopSelf()
-//                    }
-//                })
-//
-//                backView.startAnimation(animFadeOut)
-//                true
-//            }
-//
-//            else -> event.keyCode == KeyEvent.KEYCODE_DPAD_UP || event.keyCode == KeyEvent.KEYCODE_BACK
-//        }
-//    }
+            tvSubmenuSettingValue.text = newTempBarText
+            return
+        }
+
+        ivSubmenuSettingPictureTemperatureBar.visibility = View.GONE
+        viewSubmenuSettingPictureTemperatureSelector.visibility = View.GONE
+        tvSubmenuSettingValue.text = settingsValues[newItemValue].second.toString()
+        pbSubmenuSettingProgress.apply {
+            visibility = View.VISIBLE
+            max = 100
+            progressDrawable = ContextCompat.getDrawable(this.context, R.drawable.gradient_progress)
+            progress = settingsValues[newItemValue].second
+        }
+    }
+
+    private fun changeSubmenuSettingsPictureItemValue(indexOfSelectedPickerItem: Int, settingsValues: Array<Pair<Int, Int>>, isIncrementOperation: Boolean) {
+        if (indexOfSelectedPickerItem == PICKER_INDEX_PICTURE_TEMPERATURE) {
+            pictureSettings.temperature = when(pictureSettings.temperature) {
+                PICTURE_TEMPERATURE_MODE_NORMAL -> if (isIncrementOperation) PICTURE_TEMPERATURE_MODE_WARM else PICTURE_TEMPERATURE_MODE_COLD
+                PICTURE_TEMPERATURE_MODE_WARM -> if (isIncrementOperation) PICTURE_TEMPERATURE_MODE_VERY_WARM else PICTURE_TEMPERATURE_MODE_NORMAL
+                PICTURE_TEMPERATURE_MODE_VERY_WARM -> if (isIncrementOperation) return else PICTURE_TEMPERATURE_MODE_WARM
+                PICTURE_TEMPERATURE_MODE_COLD -> if (isIncrementOperation) PICTURE_TEMPERATURE_MODE_NORMAL else PICTURE_TEMPERATURE_MODE_VERY_COLD
+                PICTURE_TEMPERATURE_MODE_VERY_COLD -> if (isIncrementOperation) PICTURE_TEMPERATURE_MODE_COLD else return
+                else -> PICTURE_TEMPERATURE_MODE_NORMAL
+            }
+
+            val newTempBarTransX = when(pictureSettings.temperature) {
+                PICTURE_TEMPERATURE_MODE_NORMAL -> 0f
+                PICTURE_TEMPERATURE_MODE_WARM -> pictureTemperatureBarBlockSize
+                PICTURE_TEMPERATURE_MODE_VERY_WARM -> pictureTemperatureBarBlockSize * 2
+                PICTURE_TEMPERATURE_MODE_COLD -> pictureTemperatureBarBlockSize * -1
+                PICTURE_TEMPERATURE_MODE_VERY_COLD -> pictureTemperatureBarBlockSize * -2
+                else -> 0f
+            }
+
+            val newTempBarText = when(pictureSettings.temperature) {
+                PICTURE_TEMPERATURE_MODE_NORMAL -> "Намана"
+                PICTURE_TEMPERATURE_MODE_WARM -> "Тепленькая"
+                PICTURE_TEMPERATURE_MODE_VERY_WARM -> "Пекло"
+                PICTURE_TEMPERATURE_MODE_COLD -> "Прохолодно"
+                PICTURE_TEMPERATURE_MODE_VERY_COLD -> "Вери колд"
+                else -> "Намана"
+            }
+
+            viewSubmenuSettingPictureTemperatureSelector.animateTranslationX(newTempBarTransX, 150)
+            tvSubmenuSettingValue.text = newTempBarText
+            return
+        }
+
+        if (isIncrementOperation) {
+            pbSubmenuSettingProgress.progress++
+        } else {
+            pbSubmenuSettingProgress.progress--
+        }
+
+        tvSubmenuSettingValue.text = pbSubmenuSettingProgress.progress.toString()
+        settingsValues[indexOfSelectedPickerItem] = settingsValues[indexOfSelectedPickerItem].copy(second = pbSubmenuSettingProgress.progress)
+
+        when(indexOfSelectedPickerItem) {
+            PICKER_INDEX_PICTURE_BRIGHTNESS -> pictureSettings.brightness = pbSubmenuSettingProgress.progress
+            PICKER_INDEX_PICTURE_CONTRAST -> pictureSettings.contrast = pbSubmenuSettingProgress.progress
+            PICKER_INDEX_PICTURE_SATURATION -> pictureSettings.saturation = pbSubmenuSettingProgress.progress
+            PICKER_INDEX_PICTURE_BACKLIGHT -> pictureSettings.setBacklight(pbSubmenuSettingProgress.progress, this)
+        }
+
+        return
+    }
+
+    private fun submenuSettingsPictureBackClick() {
+        setModeUp(false)
+        pbSubmenuSettingProgress.visibility = View.VISIBLE
+        ivSubmenuSettingPictureTemperatureBar.visibility = View.GONE
+        viewSubmenuSettingPictureTemperatureSelector.visibility = View.GONE
+    }
+
+    private fun changeSubmenuSettingsSoundItem(settingsValues: Array<Pair<Int, Int>>, newValue: Int) {
+        if (newValue == PICKER_INDEX_SOUND_BALANCE_1 || newValue == PICKER_INDEX_SOUND_BALANCE_2) {
+            pbSubmenuSettingProgress.visibility = View.GONE
+            ivSubmenuSettingSoundBalanceBar.visibility = View.VISIBLE
+            viewSubmenuSettingSoundBalanceSelector.visibility = View.VISIBLE
+            tvSoundBalanceTitleLeft.visibility = View.VISIBLE
+            tvSoundBalanceTitleRight.visibility = View.VISIBLE
+
+            val balanceLevel = pictureSettings.getBalanceLevel(baseContext)
+            val balancePercentValue = abs(balanceLevel - 50) / 50f * 100
+            tvSubmenuSettingValue.text = when {
+                balanceLevel > 50 -> "П ${balancePercentValue.roundToInt()}%"
+                balanceLevel < 50 -> "Л ${balancePercentValue.roundToInt()}%"
+                else -> ""
+            }
+
+            return
+        }
+
+        ivSubmenuSettingSoundBalanceBar.visibility = View.GONE
+        viewSubmenuSettingSoundBalanceSelector.visibility = View.GONE
+        tvSoundBalanceTitleLeft.visibility = View.GONE
+        tvSoundBalanceTitleRight.visibility = View.GONE
+
+        tvSubmenuSettingValue.text = settingsValues[newValue].second.toString()
+        pbSubmenuSettingProgress.apply {
+            visibility = View.VISIBLE
+            max = 100
+            progressDrawable = ContextCompat.getDrawable(this.context, R.drawable.gradient_progress)
+            progress = settingsValues[newValue].second
+        }
+    }
+
+    private fun changeSubmenuSettingsSoundItemValue(indexOfSelectedPickerItem: Int, settingsValues: Array<Pair<Int, Int>>, isIncrementOperation: Boolean) {
+        if (indexOfSelectedPickerItem == PICKER_INDEX_SOUND_BALANCE_1 || indexOfSelectedPickerItem == PICKER_INDEX_SOUND_BALANCE_2) {
+            var balanceLevel = pictureSettings.getBalanceLevel(baseContext)
+            if (isIncrementOperation) {
+                if (balanceLevel == 100) { return }
+                balanceLevel++
+                pictureSettings.setBalanceLevel(baseContext, balanceLevel)
+            } else {
+                if (balanceLevel == 0) { return }
+                balanceLevel--
+                pictureSettings.setBalanceLevel(baseContext, balanceLevel)
+            }
+
+            val balancePercentValue = abs(balanceLevel - 50) / 50f * 100
+            tvSubmenuSettingValue.text = when {
+                balanceLevel > 50 -> "П ${balancePercentValue.roundToInt()}%"
+                balanceLevel < 50 -> "Л ${balancePercentValue.roundToInt()}%"
+                else -> ""
+            }
+
+            viewSubmenuSettingSoundBalanceSelector.translationX = when (balanceLevel) {
+                50 -> 0f
+                else -> soundBarSize / 2 * ((balanceLevel - 50).toFloat() / 50f)
+            }
+
+            return
+        }
+
+        if (isIncrementOperation) {
+            pbSubmenuSettingProgress.progress++
+        } else {
+            pbSubmenuSettingProgress.progress--
+        }
+
+        tvSubmenuSettingValue.text = pbSubmenuSettingProgress.progress.toString()
+
+        when(indexOfSelectedPickerItem) {
+            PICKER_INDEX_SOUND_TREBLE_1, PICKER_INDEX_SOUND_TREBLE_2 -> {
+                pictureSettings.setTrebleLevel(this, pbSubmenuSettingProgress.progress)
+                settingsValues[PICKER_INDEX_SOUND_TREBLE_1] = settingsValues[PICKER_INDEX_SOUND_TREBLE_1].copy(second = pbSubmenuSettingProgress.progress)
+                settingsValues[PICKER_INDEX_SOUND_TREBLE_2] = settingsValues[PICKER_INDEX_SOUND_TREBLE_2].copy(second = pbSubmenuSettingProgress.progress)
+            }
+            PICKER_INDEX_SOUND_BASS_1, PICKER_INDEX_SOUND_BASS_2 -> {
+                pictureSettings.setBassLevel(this, pbSubmenuSettingProgress.progress)
+                settingsValues[PICKER_INDEX_SOUND_BASS_1] = settingsValues[PICKER_INDEX_SOUND_BASS_1].copy(second = pbSubmenuSettingProgress.progress)
+                settingsValues[PICKER_INDEX_SOUND_BASS_2] = settingsValues[PICKER_INDEX_SOUND_BASS_2].copy(second = pbSubmenuSettingProgress.progress)
+            }
+        }
+    }
+
+    private fun submenuSettingsSoundBackClick() {
+        setModeUp(false)
+        pbSubmenuSettingProgress.visibility = View.VISIBLE
+        ivSubmenuSettingSoundBalanceBar.visibility = View.GONE
+        viewSubmenuSettingSoundBalanceSelector.visibility = View.GONE
+        tvSoundBalanceTitleLeft.visibility = View.GONE
+        tvSoundBalanceTitleRight.visibility = View.GONE
+    }
 
     override fun onDestroy() {
-        timer.removeCallbacks(updateSleepTime)
+        timer.removeCallbacks(updateSleepTimeCallback)
         windowManager.removeView(generalView)
         super.onDestroy()
     }
@@ -449,5 +568,19 @@ class AspectLayoutService_NEW : Service() {
         var lastUpdate: Long = 0
         private var mainColor = Color.BLUE
         private val OSD_TIME = "OSD_TIME"
+
+        private const val PICKER_INDEX_PICTURE_BRIGHTNESS = 0
+        private const val PICKER_INDEX_PICTURE_CONTRAST = 1
+        private const val PICKER_INDEX_PICTURE_SATURATION = 2
+        private const val PICKER_INDEX_PICTURE_TEMPERATURE = 3
+        private const val PICKER_INDEX_PICTURE_BACKLIGHT = 4
+
+        private const val PICKER_INDEX_SOUND_TREBLE_1 = 0
+        private const val PICKER_INDEX_SOUND_TREBLE_2 = 3
+        private const val PICKER_INDEX_SOUND_BASS_1 = 1
+        private const val PICKER_INDEX_SOUND_BASS_2 = 4
+        private const val PICKER_INDEX_SOUND_BALANCE_1 = 2
+        private const val PICKER_INDEX_SOUND_BALANCE_2 = 5
     }
+
 }

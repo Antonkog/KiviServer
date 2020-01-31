@@ -25,5 +25,8 @@
     <color name="key_background_normal">#4C4C4C</color>
     <color name="key_background_bottom_row">#404040</color>
     <color name="keyboard_background">#333333</color>
+    <color name="cv_inputs_background">#e6000000</color>
+    <color name="back_view_background">#AA000000</color>
+    <color name="boulder">#767676</color>
 
 </resources>

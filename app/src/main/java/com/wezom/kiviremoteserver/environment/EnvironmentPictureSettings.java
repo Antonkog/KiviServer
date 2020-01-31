@@ -14,6 +14,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import wezom.kiviremoteserver.environment.bridge.BridgePicture;
+import wezom.kiviremoteserver.environment.bridge.driver_set.SoundValues;
 
 
 public class EnvironmentPictureSettings {
@@ -272,7 +273,7 @@ public class EnvironmentPictureSettings {
     public void setBacklight(int backlight, Context context) {
         this.backlight = backlight;
         bridgePicture.setBacklight(backlight);
-        PreferenceManager.getDefaultSharedPreferences(context).edit().putInt(Constants.LAST_BACKLIGHT, backlight).commit();
+        PreferenceManager.getDefaultSharedPreferences(context).edit().putInt(Constants.LAST_BACKLIGHT, backlight).apply();
     }
 
     public int getVideoArcType() {
@@ -307,7 +308,7 @@ public class EnvironmentPictureSettings {
 
     public void setBassLevel(Context context, int progress) {
         if (isUserSoundMode())
-            PreferenceManager.getDefaultSharedPreferences(context).edit().putInt(Constants.LAST_BASS, progress).commit();
+            PreferenceManager.getDefaultSharedPreferences(context).edit().putInt(Constants.LAST_BASS, progress).apply();
         bridgePicture.setBassLevel(progress);
     }
 
@@ -319,7 +320,7 @@ public class EnvironmentPictureSettings {
 
     public void setTrebleLevel(Context context, int progress) {
         if (isUserSoundMode())
-            PreferenceManager.getDefaultSharedPreferences(context).edit().putInt(Constants.LAST_TREBLE, progress).commit();
+            PreferenceManager.getDefaultSharedPreferences(context).edit().putInt(Constants.LAST_TREBLE, progress).apply();
         bridgePicture.setTrebleLevel(progress);
     }
 
@@ -333,15 +334,19 @@ public class EnvironmentPictureSettings {
         return SoundValues.getByID(getSoundType()).getID() == SoundValues.SOUND_TYPE_USER.getID();
     }
 
-    public int getBalanceLevel() {
-        return bridgePicture.getBalanceLevel();
-    }
-
-    public void setBalanceLevel(int progress) {
+    public void setBalanceLevel(Context context, int progress) {
+        if (isUserSoundMode())
+            PreferenceManager.getDefaultSharedPreferences(context).edit().putInt(Constants.LAST_BALANCE, progress).apply();
         bridgePicture.setBalanceLevel(progress);
     }
 
-    public int getDolbyLevel() { return bridgePicture.getDolbyLevel(); }
-    public void setDolbyLevel(int progress) { bridgePicture.setDolbyLevel(progress); }
+    public int getBalanceLevel(Context context) {
+        if (isUserSoundMode())
+            return PreferenceManager.getDefaultSharedPreferences(context).getInt(Constants.LAST_BALANCE, Constants.FIFTY);
+        return bridgePicture.getBalanceLevel();
+    }
+
+//    public int getDolbyLevel() { return bridgePicture.getDolbyLevel(); }
+//    public void setDolbyLevel(int progress) { bridgePicture.setDolbyLevel(progress); }
 
 }

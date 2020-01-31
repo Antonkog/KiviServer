@@ -5,12 +5,12 @@
 //import android.view.KeyEvent;
 //import android.view.View;
 //
-//import com.wezom.kiviremoteserver.service.aspect.aspect_v2.CardsMainAdapter;
+//import com.wezom.kiviremoteserver.service.aspect.aspect_v2.AspectMainMenuAdapter;
 //
 //import java.util.List;
 //
 //public abstract class IFLMCard {
-//    public CardsMainAdapter.CardMainViewHolder holder;
+//    public AspectMainMenuAdapter.CardMainViewHolder holder;
 //
 //    @DrawableRes
 //    public int image;
@@ -26,7 +26,7 @@
 //
 //    int i = 0;
 //
-////    public void setViewHolder(CardsMainAdapter.CardMainViewHolder holder) {
+////    public void setViewHolder(AspectMainMenuAdapter.CardMainViewHolder holder) {
 ////        this.holder = holder;
 ////        holder.getTitle().setText("Hello1");
 ////

@@ -8,6 +8,7 @@ import com.wezom.kiviremoteserver.R;
 import com.wezom.kiviremoteserver.common.Constants;
 import com.wezom.kiviremoteserver.interfaces.DriverValue;
 import com.wezom.kiviremoteserver.service.aspect.AvailableValues;
+import com.wezom.kiviremoteserver.service.aspect.items.IFLMItems;
 import com.wezom.kiviremoteserver.service.inputs.InputSourceHelper;
 
 import java.util.ArrayList;
@@ -16,7 +17,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 
-public enum Ratio implements AvailableValues {
+public enum Ratio implements AvailableValues, IFLMItems {
 //    public static final int ASPECT_RATIO_Wide = 0;
 //    public static final int ASPECT_RATIO_NORMAL = 1;
 //    public static final int ASPECT_RATIO_FULL = 2;
@@ -45,6 +46,11 @@ public enum Ratio implements AvailableValues {
     Ratio(int id, int string) {
         this.id = id;
         this.string = string;
+    }
+
+    @Override
+    public int getStringRes() {
+        return string;
     }
 
     public int getId() {

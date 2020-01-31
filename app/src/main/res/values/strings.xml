@@ -398,7 +398,7 @@ or through the website </string>
     <string name="zoom2">zoom2</string>
     <string name="panorama">panorama</string>
 
-    <!--test-->
+    <!--aspect-->
     <string name="t0">Off</string>
     <string name="t1">15 min</string>
     <string name="t2">30 min</string>
@@ -408,5 +408,7 @@ or through the website </string>
     <string name="keyboard_desk">Цифровой ввод</string>
     <string name="settings_desk">Настройки системы</string>
     <string name="empty_str" translatable="false"></string>
-    <!--test-->
+    <string name="sound_balance_title_left">Л</string>
+    <string name="sound_balance_title_right">П</string>
+    <!--aspect-->
 </resources>

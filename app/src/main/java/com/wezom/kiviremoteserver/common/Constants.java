@@ -23,6 +23,7 @@ public class Constants {
     public static final String LAST_BACKLIGHT = "last_backlight";
     public static final String LAST_TREBLE = "treble_level";
     public static final String LAST_BASS = "bass_level";
+    public static final String LAST_BALANCE = "balance_level";
 
 
     public final static String LOG_FILE_PREFIX = "KiviLogs";

@@ -23,14 +23,22 @@ import android.widget.TextView
 import com.wezom.kiviremoteserver.R
 import com.wezom.kiviremoteserver.environment.EnvironmentPictureSettings
 import com.wezom.kiviremoteserver.service.aspect.Alarm
-import com.wezom.kiviremoteserver.service.aspect.aspect_v2.data.CardData
-import com.wezom.kiviremoteserver.service.aspect.aspect_v2.data.Cards
+import com.wezom.kiviremoteserver.service.aspect.aspect_v2.data.AspectMenuItem
+import com.wezom.kiviremoteserver.service.aspect.aspect_v2.data.AspectMenuItem.Companion.TYPE_KEYBOARD
+import com.wezom.kiviremoteserver.service.aspect.aspect_v2.data.AspectMenuItem.Companion.TYPE_PICTURE
+import com.wezom.kiviremoteserver.service.aspect.aspect_v2.data.AspectMenuItem.Companion.TYPE_RATIO
+import com.wezom.kiviremoteserver.service.aspect.aspect_v2.data.AspectMenuItem.Companion.TYPE_SETTINGS
+import com.wezom.kiviremoteserver.service.aspect.aspect_v2.data.AspectMenuItem.Companion.TYPE_SOUND
+import com.wezom.kiviremoteserver.service.aspect.aspect_v2.data.AspectMenuItem.Companion.TYPE_TIMER
+import com.wezom.kiviremoteserver.service.aspect.aspect_v2.data.AspectMenuItems
 import com.wezom.kiviremoteserver.service.aspect.items.TimerValues
 import com.wezom.kiviremoteserver.ui.views.pageindicatorview.PageIndicatorView
 
-//val onChangeModeListener: (Int, IFLMItems) -> Unit
-
-class CardsMainAdapter(var items: List<CardData>, val action1: (data: CardData) -> Unit, val action2: () -> Unit, val pictureSettings: EnvironmentPictureSettings) : RecyclerView.Adapter<CardsMainAdapter.CardMainViewHolder>() {
+class AspectMainMenuAdapter(var items: List<AspectMenuItem>, val pictureSettings: EnvironmentPictureSettings,
+                            val onDpadUpClick: (data: AspectMenuItem) -> Unit,
+                            val onBackClick: () -> Unit,
+                            val onSettingsClick: () -> Unit,
+                            val onKeyboardClick: () -> Unit) : RecyclerView.Adapter<AspectMainMenuAdapter.CardMainViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CardMainViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.menu_item, parent, false)
@@ -42,7 +50,13 @@ class CardsMainAdapter(var items: List<CardData>, val action1: (data: CardData) 
     override fun onBindViewHolder(holder: CardMainViewHolder, position: Int) {
         if (position == 0) {
             holder.card.requestFocus()
+            holder.card.nextFocusLeftId = holder.card.id
         }
+
+        if (position == items.size - 1) {
+            holder.card.nextFocusRightId = holder.card.id
+        }
+
         holder.bindData(items[position])
     }
 
@@ -58,21 +72,18 @@ class CardsMainAdapter(var items: List<CardData>, val action1: (data: CardData) 
         private var indicatorCurrentIndex = 0
         private var showActionsView = false
 
-        fun bindData(data: CardData) {
+        fun bindData(data: AspectMenuItem) {
             mainText.setText(data.title)
             imageView.setImageResource(data.image)
-//            showActionsView = data.values.isNotEmpty()
-//            if (showActionsView) {
             showActionsView = data.showActionsView
 
             card.setOnKeyListener { _, _, event ->
                 return@setOnKeyListener when {
                     event.action == KeyEvent.ACTION_UP && event.keyCode == KeyEvent.KEYCODE_DPAD_UP -> {
                         if (showActionsView) {
-
                             val indexOfUserMode = data.values.indexOfFirst { it.stringRes == R.string.user || it.stringRes == R.string.sound_user }
                             if (indexOfUserMode < 0 || indexOfUserMode == indicatorCurrentIndex) {
-                                action1(data)
+                                onDpadUpClick(data)
                                 return@setOnKeyListener true
                             }
 
@@ -81,45 +92,46 @@ class CardsMainAdapter(var items: List<CardData>, val action1: (data: CardData) 
                             secondText.setText(data.values[indexOfUserMode % data.values.size].stringRes)
 
                             when (data.type) {
-                                2 -> {
+                                TYPE_PICTURE -> {
                                     pictureSettings.pictureMode = data.values[indexOfUserMode % data.values.size].id
                                     pictureSettings.initSettings(itemView.context)
                                 }
-                                5 -> {
+
+                                TYPE_SOUND -> {
                                     pictureSettings.soundType = data.values[indexOfUserMode % data.values.size].id
                                 }
                             }
 
-                            action1(data)
+                            onDpadUpClick(data)
                         }
 
                         true
                     }
+
                     event.action == KeyEvent.ACTION_UP && event.keyCode == KeyEvent.KEYCODE_BACK -> {
-                        action2()
+                        onBackClick()
                         true
                     }
+
                     else -> event.keyCode == KeyEvent.KEYCODE_DPAD_UP || event.keyCode == KeyEvent.KEYCODE_BACK
                 }
             }
-//            }
 
             actionsView.visibility = if (card.isFocused && showActionsView) View.VISIBLE else View.INVISIBLE
 
             if (data.values.isNotEmpty()) {
-
                 indicatorCurrentIndex = when (data.type) {
-                    2 -> data.values.indexOfFirst { it.id == pictureSettings.pictureMode }
-                    5 -> data.values.indexOfFirst { it.id == pictureSettings.soundType }
-                    6 -> {
+                    TYPE_PICTURE -> data.values.indexOfFirst { it.id == pictureSettings.pictureMode }
+                    TYPE_SOUND -> data.values.indexOfFirst { it.id == pictureSettings.soundType }
+                    TYPE_RATIO -> data.values.indexOfFirst { it.id == pictureSettings.videoArcType }
+                    TYPE_TIMER -> {
                         val slipIn = Settings.Global.getLong(itemView.context.contentResolver, "sleep_timer_remain", SystemClock.elapsedRealtime())
                         if (slipIn <= SystemClock.elapsedRealtime()) { 0 }
                         val timeToSleep = (slipIn - SystemClock.elapsedRealtime()).toInt() / 1000
                         val minutesLeft = timeToSleep / 60
 
-                        Cards.allData[4].values.indexOfFirst { (it as TimerValues).minutes >= minutesLeft }
+                        AspectMenuItems.allData[TYPE_TIMER]?.values?.indexOfFirst { (it as TimerValues).minutes >= minutesLeft } ?: 0
                     }
-                    3 -> data.values.indexOfFirst { it.id == pictureSettings.videoArcType }
                     else -> 0
                 }
 
@@ -138,26 +150,33 @@ class CardsMainAdapter(var items: List<CardData>, val action1: (data: CardData) 
                     secondText.setText(data.values[indicatorCurrentIndex % data.values.size].stringRes)
 
                     when (data.type) {
-                        2 -> {
+                        TYPE_PICTURE -> {
                             pictureSettings.pictureMode = data.values[indicatorCurrentIndex % data.values.size].id
                             pictureSettings.initSettings(itemView.context)
                         }
-                        5 -> {
+                        TYPE_SOUND -> {
                             pictureSettings.soundType = data.values[indicatorCurrentIndex % data.values.size].id
                         }
-                        6 -> {
-                            PreferenceManager.getDefaultSharedPreferences(itemView.context).edit().remove("shutDownTime").commit()
+                        TYPE_TIMER -> {
+                            PreferenceManager.getDefaultSharedPreferences(itemView.context).edit().remove("shutDownTime").apply()
                             val index = indicatorCurrentIndex % data.values.size
                             setAlarm(index, itemView.context)
                         }
-                        3 -> {
+                        TYPE_RATIO -> {
                             pictureSettings.videoArcType = data.values[indicatorCurrentIndex % data.values.size].id
                         }
                     }
                 }
             } else {
                 secondText.setText(data.subTitle)
-                card.setOnClickListener(null)
+                if (data.type == TYPE_SETTINGS) {
+                    card.setOnClickListener { onSettingsClick() }
+                } else if (data.type == TYPE_KEYBOARD) {
+                    card.setOnClickListener { onKeyboardClick() }
+                } else {
+                    card.setOnClickListener(null)
+                }
+
                 progressIndicator.visibility = View.GONE
             }
         }
@@ -178,7 +197,7 @@ class CardsMainAdapter(var items: List<CardData>, val action1: (data: CardData) 
     }
 
     fun setAlarm(alarmPosition: Int, context: Context) {
-        val minutesLeft = (Cards.allData[4].values[alarmPosition] as TimerValues).minutes
+        val minutesLeft = (AspectMenuItems.allData[TYPE_TIMER]?.values?.get(alarmPosition) as TimerValues).minutes
 
         val intent = Intent(context, Alarm::class.java)
         val pi = PendingIntent.getService(context, 0, intent, 0)
@@ -191,7 +210,7 @@ class CardsMainAdapter(var items: List<CardData>, val action1: (data: CardData) 
 
         if (minutesLeft > 0) {
             val slipIn = SystemClock.elapsedRealtime() + minutesLeft * 60 * 1000
-            PreferenceManager.getDefaultSharedPreferences(context).edit().putLong("shutDownTime", slipIn).commit()
+            PreferenceManager.getDefaultSharedPreferences(context).edit().putLong("shutDownTime", slipIn).apply()
             sleepIn(minutesLeft * 60 * 1000, context)
         } else {
             sleepIn(0, context)

@@ -1,6 +1,7 @@
 package com.wezom.kiviremoteserver.service;
 
 
+import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.ComponentName;
@@ -32,6 +33,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.wezom.kiviremoteserver.App;
 import com.wezom.kiviremoteserver.R;
 import com.wezom.kiviremoteserver.environment.EnviorenmentAudioSettings;
 import com.wezom.kiviremoteserver.environment.EnvironmentFactory;

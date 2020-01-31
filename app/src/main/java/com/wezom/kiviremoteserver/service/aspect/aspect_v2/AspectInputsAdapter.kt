@@ -15,9 +15,9 @@ import com.wezom.kiviremoteserver.R
 import com.wezom.kiviremoteserver.environment.EnvironmentInputsHelper
 import com.wezom.kiviremoteserver.service.inputs.InputSourceHelper
 
-class InputsAdapter(val inputsHelper: EnvironmentInputsHelper, val action2: () -> Unit, context: Context) : RecyclerView.Adapter<InputsAdapter.InputsViewHolder>() {
+class AspectInputsAdapter(context: Context, val inputsHelper: EnvironmentInputsHelper, val onBackClick: () -> Unit) : RecyclerView.Adapter<AspectInputsAdapter.InputsViewHolder>() {
 
-    val items: List<InputSourceHelper.INPUT_PORT> = inputsHelper.getPortsList(arrayListOf<InputSourceHelper.INPUT_PORT>(), context)
+    private val items: List<InputSourceHelper.INPUT_PORT> = inputsHelper.getPortsList(arrayListOf<InputSourceHelper.INPUT_PORT>(), context)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): InputsViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_aspect_input, parent, false)
@@ -83,7 +83,6 @@ class InputsAdapter(val inputsHelper: EnvironmentInputsHelper, val action2: () -
                     focusedDrawable = R.drawable.ic_focused_cable
                     unfocusedDrawable = R.drawable.ic_unfocused_cable
                     tvTitle.text = "Кабельное"
-
                 }
                 else -> {
                     focusedDrawable = R.drawable.ic_focused_hdmi
@@ -103,10 +102,10 @@ class InputsAdapter(val inputsHelper: EnvironmentInputsHelper, val action2: () -
             container.setOnKeyListener { _, _, event ->
                 return@setOnKeyListener when {
                     event.action == KeyEvent.ACTION_UP && event.keyCode == KeyEvent.KEYCODE_BACK -> {
-                        action2()
+                        onBackClick()
                         true
                     }
-                    else -> event.keyCode == KeyEvent.KEYCODE_DPAD_UP || event.keyCode == KeyEvent.KEYCODE_BACK
+                    else -> (event.keyCode == KeyEvent.KEYCODE_DPAD_UP || event.keyCode == KeyEvent.KEYCODE_BACK)
                 }
             }
 
