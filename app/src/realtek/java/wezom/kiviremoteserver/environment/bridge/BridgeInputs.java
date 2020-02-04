@@ -14,9 +14,11 @@ import android.view.KeyEvent;
 import com.realtek.tv.Tv;
 import com.wezom.kiviremoteserver.App;
 import com.wezom.kiviremoteserver.common.Constants;
+import com.wezom.kiviremoteserver.common.ParentControlModel;
 import com.wezom.kiviremoteserver.service.inputs.InputSourceHelper;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import static com.wezom.kiviremoteserver.service.inputs.InputSourceHelper.INPUT_PORT.INPUT_SOURCE_NONE;
 
@@ -88,7 +90,16 @@ public class BridgeInputs {
 //            e.printStackTrace();
 //        }
 
-
+        ParentControlModel pc = ParentControlModel.load(context);
+        if (pc != null && pc.isPcEnabled() && !pc.excludeInputs.isEmpty()) {
+            Iterator<InputSourceHelper.INPUT_PORT> iterator = result.iterator();
+            while (iterator.hasNext()) {
+                InputSourceHelper.INPUT_PORT input = iterator.next();
+                if (pc.excludeInputs.contains(String.valueOf(input.getId()))) {
+                    iterator.remove();
+                }
+            }
+        }
     }
 
     public void changeInput(InputSourceHelper.INPUT_PORT inputPort, Context context) {
