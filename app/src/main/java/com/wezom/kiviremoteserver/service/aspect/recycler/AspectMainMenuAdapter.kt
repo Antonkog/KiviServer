@@ -1,4 +1,4 @@
-package com.wezom.kiviremoteserver.service.aspect.aspect_v2
+package com.wezom.kiviremoteserver.service.aspect.recycler
 
 import android.app.AlarmManager
 import android.app.PendingIntent
@@ -23,15 +23,15 @@ import android.widget.TextView
 import com.wezom.kiviremoteserver.R
 import com.wezom.kiviremoteserver.environment.EnvironmentPictureSettings
 import com.wezom.kiviremoteserver.service.aspect.Alarm
-import com.wezom.kiviremoteserver.service.aspect.aspect_v2.data.AspectMenuItem
-import com.wezom.kiviremoteserver.service.aspect.aspect_v2.data.AspectMenuItem.Companion.TYPE_KEYBOARD
-import com.wezom.kiviremoteserver.service.aspect.aspect_v2.data.AspectMenuItem.Companion.TYPE_PICTURE
-import com.wezom.kiviremoteserver.service.aspect.aspect_v2.data.AspectMenuItem.Companion.TYPE_RATIO
-import com.wezom.kiviremoteserver.service.aspect.aspect_v2.data.AspectMenuItem.Companion.TYPE_SETTINGS
-import com.wezom.kiviremoteserver.service.aspect.aspect_v2.data.AspectMenuItem.Companion.TYPE_SOUND
-import com.wezom.kiviremoteserver.service.aspect.aspect_v2.data.AspectMenuItem.Companion.TYPE_TIMER
-import com.wezom.kiviremoteserver.service.aspect.aspect_v2.data.AspectMenuItems
-import com.wezom.kiviremoteserver.service.aspect.items.TimerValues
+import com.wezom.kiviremoteserver.service.aspect.data.AspectMenuItem
+import com.wezom.kiviremoteserver.service.aspect.data.AspectMenuItem.Companion.TYPE_KEYBOARD
+import com.wezom.kiviremoteserver.service.aspect.data.AspectMenuItem.Companion.TYPE_PICTURE
+import com.wezom.kiviremoteserver.service.aspect.data.AspectMenuItem.Companion.TYPE_RATIO
+import com.wezom.kiviremoteserver.service.aspect.data.AspectMenuItem.Companion.TYPE_SETTINGS
+import com.wezom.kiviremoteserver.service.aspect.data.AspectMenuItem.Companion.TYPE_SOUND
+import com.wezom.kiviremoteserver.service.aspect.data.AspectMenuItem.Companion.TYPE_TIMER
+import com.wezom.kiviremoteserver.service.aspect.data.AspectMenuItems
+import com.wezom.kiviremoteserver.service.aspect.values.TimerValues
 import com.wezom.kiviremoteserver.ui.views.pageindicatorview.PageIndicatorView
 
 class AspectMainMenuAdapter(var items: List<AspectMenuItem>, val pictureSettings: EnvironmentPictureSettings,

@@ -1,4 +1,4 @@
-package com.wezom.kiviremoteserver.service.aspect.aspect_v2
+package com.wezom.kiviremoteserver.service.aspect.recycler
 
 import android.content.Context
 import android.graphics.Color
@@ -49,40 +49,38 @@ class AspectInputsAdapter(context: Context, val inputsHelper: EnvironmentInputsH
         private var unfocusedDrawable = R.drawable.ic_unfocused_hdmi
 
         fun bindData(data: InputSourceHelper.INPUT_PORT) {
-            //TODO set data
-            //ivIcon.setImageResource(R.drawable.ic_unfocused_t2)
             when (data.id) {
                 1 -> {
                     //ATV
                     focusedDrawable = R.drawable.ic_focused_analog
                     unfocusedDrawable = R.drawable.ic_unfocused_analog
-                    tvTitle.text = "Аналоговый"
+                    tvTitle.setText(R.string.inputs_type_atv)
                 }
                 2 -> {
                     //AV
                     focusedDrawable = R.drawable.ic_focused_av
                     unfocusedDrawable = R.drawable.ic_unfocused_av
-                    tvTitle.text = "AV-выход"
+                    tvTitle.setText(R.string.inputs_type_av)
                 }
                 28 -> {
                     //TV
                     focusedDrawable = R.drawable.ic_focused_t2
                     unfocusedDrawable = R.drawable.ic_unfocused_t2
-                    tvTitle.text = "Т2"
+                    tvTitle.setText(R.string.inputs_type_tv)
 
                 }
                 46 -> {
                     //DVB-S2
                     focusedDrawable = R.drawable.ic_focused_satellite
                     unfocusedDrawable = R.drawable.ic_unfocused_satellite
-                    tvTitle.text = "Спутник"
+                    tvTitle.setText(R.string.inputs_type_dvb_s2)
 
                 }
                 47 -> {
                     //DVB-C
                     focusedDrawable = R.drawable.ic_focused_cable
                     unfocusedDrawable = R.drawable.ic_unfocused_cable
-                    tvTitle.text = "Кабельное"
+                    tvTitle.setText(R.string.inputs_type_dvb_c)
                 }
                 else -> {
                     focusedDrawable = R.drawable.ic_focused_hdmi

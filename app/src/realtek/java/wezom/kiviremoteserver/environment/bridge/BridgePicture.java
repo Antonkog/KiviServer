@@ -9,7 +9,7 @@ import com.realtek.tv.AQ;
 import com.realtek.tv.ColorTempInfo;
 import com.realtek.tv.PQ;
 import com.realtek.tv.VSC;
-import com.wezom.kiviremoteserver.service.aspect.HDRValues;
+import com.wezom.kiviremoteserver.service.aspect.values.HDRValues;
 
 public class BridgePicture {
     private PQ picturePreference;

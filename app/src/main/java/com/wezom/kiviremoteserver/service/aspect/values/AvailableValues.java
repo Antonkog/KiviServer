@@ -1,7 +1,6 @@
-package com.wezom.kiviremoteserver.service.aspect;
+package com.wezom.kiviremoteserver.service.aspect.values;
 
 import android.content.Context;
-import android.support.annotation.StringRes;
 
 import com.wezom.kiviremoteserver.interfaces.DriverValue;
 

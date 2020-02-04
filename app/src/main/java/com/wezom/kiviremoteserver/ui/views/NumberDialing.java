@@ -59,7 +59,8 @@ public class NumberDialing extends FrameLayout implements View.OnKeyListener {
         });
         findViewById(R.id.delete).setOnClickListener(v -> {
             try {
-                AspectLayoutService.lastUpdate = System.currentTimeMillis();
+//                AspectLayoutService.lastUpdate = System.currentTimeMillis();
+                AspectLayoutService.Companion.setLastUpdate(System.currentTimeMillis());
                 CharSequence text = channelText.getText();
                 if (text.length() > 0) {
                     channelText.setText(text.subSequence(0, text.length() - 1));
@@ -107,7 +108,8 @@ public class NumberDialing extends FrameLayout implements View.OnKeyListener {
 
     @Override
     public boolean onKey(View v, int keyCode, KeyEvent event) {
-        AspectLayoutService.lastUpdate = System.currentTimeMillis();
+//        AspectLayoutService.lastUpdate = System.currentTimeMillis();
+        AspectLayoutService.Companion.setLastUpdate(System.currentTimeMillis());
         int i = list.indexOf(v);
         if (i < 0) {
             i = -10;

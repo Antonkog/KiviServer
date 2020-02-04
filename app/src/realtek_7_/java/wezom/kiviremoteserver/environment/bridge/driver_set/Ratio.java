@@ -5,8 +5,8 @@ import android.support.annotation.Nullable;
 
 import com.wezom.kiviremoteserver.R;
 import com.wezom.kiviremoteserver.interfaces.DriverValue;
-import com.wezom.kiviremoteserver.service.aspect.AvailableValues;
-import com.wezom.kiviremoteserver.service.aspect.items.IFLMItems;
+import com.wezom.kiviremoteserver.service.aspect.values.AvailableValues;
+import com.wezom.kiviremoteserver.service.aspect.values.IFLMItems;
 
 import java.util.Arrays;
 import java.util.LinkedList;

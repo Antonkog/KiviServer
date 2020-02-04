@@ -398,7 +398,8 @@ or through the website </string>
     <string name="zoom2">zoom2</string>
     <string name="panorama">panorama</string>
 
-    <!--aspect-->
+<!--aspect-->
+
     <string name="t0">Off</string>
     <string name="t1">15 min</string>
     <string name="t2">30 min</string>
@@ -410,5 +411,29 @@ or through the website </string>
     <string name="empty_str" translatable="false"></string>
     <string name="sound_balance_title_left">Л</string>
     <string name="sound_balance_title_right">П</string>
-    <!--aspect-->
+
+    <!--picture settings-->
+    <string name="temperature_mode_normal">Нормальная</string>
+    <string name="temperature_mode_warm">Теплая</string>
+    <string name="temperature_mode_very_warm">Очень теплая</string>
+    <string name="temperature_mode_cold">Холодная</string>
+    <string name="temperature_mode_very_cold">Очень холодная</string>
+
+    <!--sound settings-->
+    <string name="sound_balance_right_value">П%d%%</string>
+    <string name="sound_balance_left_value">Л%d%%</string>
+
+    <!--inputs-->
+    <string name="inputs_type_atv">Аналоговый</string>
+    <string name="inputs_type_av">AV-выход</string>
+    <string name="inputs_type_tv">Т2</string>
+    <string name="inputs_type_dvb_s2">Спутник</string>
+    <string name="inputs_type_dvb_c">Кабельное</string>
+
+
+
+
+<!--aspect-->
+
+
 </resources>

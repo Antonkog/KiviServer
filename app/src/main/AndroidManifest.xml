@@ -85,14 +85,15 @@
                 android:resource="@xml/method" />
         </service>
         <service android:name=".service.aspect.Alarm" />
-        <service
-            android:name=".service.AspectLayoutService"
-            android:enabled="true"
-            android:exported="true"
-            android:theme="@style/MyLeanback" />
+
+        <!--        <service-->
+<!--            android:name=".service.AspectLayoutService"-->
+<!--            android:enabled="true"-->
+<!--            android:exported="true"-->
+<!--            android:theme="@style/MyLeanback" />-->
 
         <service
-            android:name=".service.aspect.AspectLayoutService_NEW"
+            android:name=".service.AspectLayoutService"
             android:enabled="true"
             android:exported="true"
             android:theme="@style/MyLeanback" />

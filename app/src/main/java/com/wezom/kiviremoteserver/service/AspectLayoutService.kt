@@ -1,4 +1,4 @@
-package com.wezom.kiviremoteserver.service.aspect
+package com.wezom.kiviremoteserver.service
 
 import android.annotation.SuppressLint
 import android.app.Service
@@ -11,6 +11,7 @@ import android.os.Handler
 import android.os.IBinder
 import android.provider.Settings
 import android.support.v4.content.ContextCompat
+import android.support.v4.content.res.ResourcesCompat
 import android.support.v7.widget.CardView
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -26,18 +27,18 @@ import com.wezom.kiviremoteserver.common.extensions.animateTranslationX
 import com.wezom.kiviremoteserver.common.extensions.animateTranslationY
 import com.wezom.kiviremoteserver.environment.EnvironmentInputsHelper
 import com.wezom.kiviremoteserver.environment.EnvironmentPictureSettings
-import com.wezom.kiviremoteserver.service.aspect.aspect_v2.AspectInputsAdapter
-import com.wezom.kiviremoteserver.service.aspect.aspect_v2.AspectMainMenuAdapter
-import com.wezom.kiviremoteserver.service.aspect.aspect_v2.data.*
-import com.wezom.kiviremoteserver.service.aspect.aspect_v2.data.AspectMenuItem.Companion.TYPE_INPUTS
-import com.wezom.kiviremoteserver.service.aspect.aspect_v2.data.AspectMenuItem.Companion.TYPE_KEYBOARD
-import com.wezom.kiviremoteserver.service.aspect.aspect_v2.data.AspectMenuItem.Companion.TYPE_PICTURE
-import com.wezom.kiviremoteserver.service.aspect.aspect_v2.data.AspectMenuItem.Companion.TYPE_SOUND
+import com.wezom.kiviremoteserver.service.aspect.data.*
+import com.wezom.kiviremoteserver.service.aspect.data.AspectMenuItem.Companion.TYPE_INPUTS
+import com.wezom.kiviremoteserver.service.aspect.data.AspectMenuItem.Companion.TYPE_KEYBOARD
+import com.wezom.kiviremoteserver.service.aspect.data.AspectMenuItem.Companion.TYPE_PICTURE
+import com.wezom.kiviremoteserver.service.aspect.data.AspectMenuItem.Companion.TYPE_SOUND
+import com.wezom.kiviremoteserver.service.aspect.recycler.AspectInputsAdapter
+import com.wezom.kiviremoteserver.service.aspect.recycler.AspectMainMenuAdapter
 import wezom.kiviremoteserver.environment.bridge.BridgePicture
 import kotlin.math.abs
 import kotlin.math.roundToInt
 
-class AspectLayoutService_NEW : Service() {
+class AspectLayoutService : Service() {
 
     private val pictureSettings: EnvironmentPictureSettings = EnvironmentPictureSettings()
     private val inputsHelper: EnvironmentInputsHelper = EnvironmentInputsHelper()
@@ -114,7 +115,7 @@ class AspectLayoutService_NEW : Service() {
         //TODO remove autoCloseTime *= 10;
         autoCloseTime *= 1000000
         autoCloseTime *= 1000
-        mainColor = resources.getColor(R.color.colorPrimary)
+        mainColor = ResourcesCompat.getColor(resources, R.color.colorPrimary, null)
 
         lastUpdate = System.currentTimeMillis()
         initLayout()
@@ -124,6 +125,7 @@ class AspectLayoutService_NEW : Service() {
 
     override fun onBind(intent: Intent): IBinder? = null
 
+    @Suppress("UsePropertyAccessSyntax")
     @SuppressLint("SetTextI18n")
     private fun initLayout() {
         val param = WindowManager.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, generalType, WindowManager.LayoutParams.FLAG_FULLSCREEN, PixelFormat.TRANSLUCENT)
@@ -213,7 +215,6 @@ class AspectLayoutService_NEW : Service() {
         backView.animateAnimation(applicationContext, android.R.anim.fade_in, 600)
     }
 
-    private val CHANNEL_TYPING_TIMEOUT = 2000L
     private val timeoutHandler = Handler()
     private val channelTypingTimeout = Runnable { changeTvProgram() }
     private fun changeTvProgram() {
@@ -249,6 +250,7 @@ class AspectLayoutService_NEW : Service() {
         setModeUp(true, AspectMenuItems.allData[TYPE_KEYBOARD])
     }
 
+    @Suppress("UsePropertyAccessSyntax")
     private fun setModeUp(isTop: Boolean, data: AspectMenuItem? = null) {
         if (isTop) {
             lastFocusedMainCardsIndex = mainMenu.indexOfChild(mainMenu.focusedChild)
@@ -382,15 +384,15 @@ class AspectLayoutService_NEW : Service() {
             viewSubmenuSettingPictureTemperatureSelector.visibility = View.VISIBLE
 
             val newTempBarText = when(pictureSettings.temperature) {
-                PICTURE_TEMPERATURE_MODE_NORMAL -> "Намана"
-                PICTURE_TEMPERATURE_MODE_WARM -> "Тепленькая"
-                PICTURE_TEMPERATURE_MODE_VERY_WARM -> "Пекло"
-                PICTURE_TEMPERATURE_MODE_COLD -> "Прохолодно"
-                PICTURE_TEMPERATURE_MODE_VERY_COLD -> "Вери колд"
-                else -> "Намана"
+                PICTURE_TEMPERATURE_MODE_NORMAL -> R.string.temperature_mode_normal
+                PICTURE_TEMPERATURE_MODE_WARM -> R.string.temperature_mode_warm
+                PICTURE_TEMPERATURE_MODE_VERY_WARM -> R.string.temperature_mode_very_warm
+                PICTURE_TEMPERATURE_MODE_COLD -> R.string.temperature_mode_cold
+                PICTURE_TEMPERATURE_MODE_VERY_COLD -> R.string.temperature_mode_very_cold
+                else -> R.string.temperature_mode_normal
             }
 
-            tvSubmenuSettingValue.text = newTempBarText
+            tvSubmenuSettingValue.setText(newTempBarText)
             return
         }
 
@@ -426,16 +428,16 @@ class AspectLayoutService_NEW : Service() {
             }
 
             val newTempBarText = when(pictureSettings.temperature) {
-                PICTURE_TEMPERATURE_MODE_NORMAL -> "Намана"
-                PICTURE_TEMPERATURE_MODE_WARM -> "Тепленькая"
-                PICTURE_TEMPERATURE_MODE_VERY_WARM -> "Пекло"
-                PICTURE_TEMPERATURE_MODE_COLD -> "Прохолодно"
-                PICTURE_TEMPERATURE_MODE_VERY_COLD -> "Вери колд"
-                else -> "Намана"
+                PICTURE_TEMPERATURE_MODE_NORMAL -> R.string.temperature_mode_normal
+                PICTURE_TEMPERATURE_MODE_WARM -> R.string.temperature_mode_warm
+                PICTURE_TEMPERATURE_MODE_VERY_WARM -> R.string.temperature_mode_very_warm
+                PICTURE_TEMPERATURE_MODE_COLD -> R.string.temperature_mode_cold
+                PICTURE_TEMPERATURE_MODE_VERY_COLD -> R.string.temperature_mode_very_cold
+                else -> R.string.temperature_mode_normal
             }
 
             viewSubmenuSettingPictureTemperatureSelector.animateTranslationX(newTempBarTransX, 150)
-            tvSubmenuSettingValue.text = newTempBarText
+            tvSubmenuSettingValue.setText(newTempBarText)
             return
         }
 
@@ -476,8 +478,8 @@ class AspectLayoutService_NEW : Service() {
             val balanceLevel = pictureSettings.getBalanceLevel(baseContext)
             val balancePercentValue = abs(balanceLevel - 50) / 50f * 100
             tvSubmenuSettingValue.text = when {
-                balanceLevel > 50 -> "П ${balancePercentValue.roundToInt()}%"
-                balanceLevel < 50 -> "Л ${balancePercentValue.roundToInt()}%"
+                balanceLevel > 50 -> getString(R.string.sound_balance_right_value, balancePercentValue.roundToInt())
+                balanceLevel < 50 -> getString(R.string.sound_balance_left_value, balancePercentValue.roundToInt())
                 else -> ""
             }
 
@@ -513,8 +515,8 @@ class AspectLayoutService_NEW : Service() {
 
             val balancePercentValue = abs(balanceLevel - 50) / 50f * 100
             tvSubmenuSettingValue.text = when {
-                balanceLevel > 50 -> "П ${balancePercentValue.roundToInt()}%"
-                balanceLevel < 50 -> "Л ${balancePercentValue.roundToInt()}%"
+                balanceLevel > 50 -> getString(R.string.sound_balance_right_value, balancePercentValue.roundToInt())
+                balanceLevel < 50 -> getString(R.string.sound_balance_left_value, balancePercentValue.roundToInt())
                 else -> ""
             }
 
@@ -567,7 +569,8 @@ class AspectLayoutService_NEW : Service() {
         @Volatile
         var lastUpdate: Long = 0
         private var mainColor = Color.BLUE
-        private val OSD_TIME = "OSD_TIME"
+        private const val OSD_TIME = "OSD_TIME"
+        private const val CHANNEL_TYPING_TIMEOUT = 2000L
 
         private const val PICKER_INDEX_PICTURE_BRIGHTNESS = 0
         private const val PICKER_INDEX_PICTURE_CONTRAST = 1

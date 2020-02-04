@@ -8,7 +8,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.wezom.kiviremoteserver.common.Constants;
-import com.wezom.kiviremoteserver.service.aspect.HDRValues;
+import com.wezom.kiviremoteserver.service.aspect.values.HDRValues;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

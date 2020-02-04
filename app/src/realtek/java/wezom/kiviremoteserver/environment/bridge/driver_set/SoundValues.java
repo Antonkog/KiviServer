@@ -6,9 +6,9 @@ import android.support.annotation.StringRes;
 
 import com.wezom.kiviremoteserver.R;
 import com.wezom.kiviremoteserver.interfaces.DriverValue;
-import com.wezom.kiviremoteserver.service.aspect.AvailableValues;
-import com.wezom.kiviremoteserver.service.aspect.items.IFLMItems;
-import com.wezom.kiviremoteserver.service.aspect.TextTypedValues;
+import com.wezom.kiviremoteserver.service.aspect.values.AvailableValues;
+import com.wezom.kiviremoteserver.service.aspect.values.IFLMItems;
+import com.wezom.kiviremoteserver.service.aspect.values.TextTypedValues;
 
 import java.util.Arrays;
 import java.util.LinkedList;

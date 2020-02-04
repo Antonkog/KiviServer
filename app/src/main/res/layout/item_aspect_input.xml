@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/ll_root"
-    android:layout_width="105dp"
+    android:layout_width="@dimen/inputs_item_container_width"
     android:layout_height="match_parent"
     android:background="@android:color/transparent"
     android:clickable="true"
@@ -15,8 +15,8 @@
 
     <ImageView
         android:id="@+id/iv_icon"
-        android:layout_width="36dp"
-        android:layout_height="36dp"
+        android:layout_width="@dimen/inputs_item_icon_size"
+        android:layout_height="@dimen/inputs_item_icon_size"
         tools:src="@drawable/ic_unfocused_t2" />
 
     <LinearLayout
@@ -29,16 +29,16 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="#737474"
-            android:textSize="10sp"
+            android:textSize="@dimen/inputs_item_title_text_size"
             tools:text="Аналоговое" />
 
         <ImageView
             android:id="@+id/iv_indicator"
-            android:layout_width="5dp"
-            android:layout_height="5dp"
-            android:layout_marginStart="3dp"
+            android:layout_width="@dimen/inputs_item_indicator_size"
+            android:layout_height="@dimen/inputs_item_indicator_size"
+            android:layout_marginStart="@dimen/inputs_item_indicator_margin_start"
             android:layout_gravity="center_vertical"
-            android:layout_marginTop="1dp"
+            android:layout_marginTop="@dimen/inputs_item_indicator_margin_top"
             android:src="@drawable/ic_oval"
             android:visibility="gone"
             tools:visibility="visible" />

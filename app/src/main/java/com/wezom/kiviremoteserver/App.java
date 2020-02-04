@@ -31,7 +31,6 @@ import com.wezom.kiviremoteserver.di.components.DaggerApplicationComponent;
 import com.wezom.kiviremoteserver.di.modules.ApplicationModule;
 import com.wezom.kiviremoteserver.environment.EnvironmentPictureSettings;
 import com.wezom.kiviremoteserver.receiver.ScreenOnReceiver;
-import com.wezom.kiviremoteserver.service.AspectLayoutService;
 import com.wezom.kiviremoteserver.service.CursorService;
 import com.wezom.kiviremoteserver.service.communication.DelegatePlatformsService;
 import com.wezom.kiviremoteserver.service.inputs.InputSourceHelper;
@@ -119,7 +118,7 @@ public class App extends Application {
 
     public static void hdmiStatusChanged(int id) {
         //  context.sendBroadcast();
-        AspectLayoutService.updateIfNeeded(hdmiStatus1, hdmiStatus2, hdmiStatus3);
+//        AspectLayoutService.updateIfNeeded(hdmiStatus1, hdmiStatus2, hdmiStatus3);
         DelegatePlatformsService.sendInputsList(context);
         if (id > 0) {
             startDialog(TYPE_HDMI, id, context);

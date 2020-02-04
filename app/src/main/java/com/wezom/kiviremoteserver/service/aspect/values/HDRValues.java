@@ -1,4 +1,4 @@
-package com.wezom.kiviremoteserver.service.aspect;
+package com.wezom.kiviremoteserver.service.aspect.values;
 
 import android.content.Context;
 import android.support.annotation.Nullable;
@@ -6,7 +6,6 @@ import android.support.annotation.StringRes;
 
 import com.wezom.kiviremoteserver.R;
 import com.wezom.kiviremoteserver.interfaces.DriverValue;
-import com.wezom.kiviremoteserver.service.aspect.items.IFLMItems;
 
 import java.util.Arrays;
 import java.util.LinkedList;

@@ -28,7 +28,8 @@ public class ScreenProgress extends FrameLayout {
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
 
-        AspectLayoutService.lastUpdate = System.currentTimeMillis();
+//        AspectLayoutService.lastUpdate = System.currentTimeMillis();
+        AspectLayoutService.Companion.setLastUpdate(System.currentTimeMillis());
 
         switch (keyCode) {
             case KeyEvent.KEYCODE_DPAD_RIGHT:
@@ -90,7 +91,8 @@ public class ScreenProgress extends FrameLayout {
             getContext().stopService(new Intent(getContext(), AspectLayoutService.class));
             return true;
         }
-        AspectLayoutService.lastUpdate = System.currentTimeMillis();
+//        AspectLayoutService.lastUpdate = System.currentTimeMillis();
+        AspectLayoutService.Companion.setLastUpdate(System.currentTimeMillis());
         switch (keyCode) {
             case KeyEvent.KEYCODE_DPAD_RIGHT:
                 return true;

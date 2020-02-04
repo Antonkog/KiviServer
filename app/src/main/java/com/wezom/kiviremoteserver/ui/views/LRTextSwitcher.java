@@ -14,7 +14,7 @@ import android.widget.TextView;
 
 import com.wezom.kiviremoteserver.R;
 import com.wezom.kiviremoteserver.service.AspectLayoutService;
-import com.wezom.kiviremoteserver.service.aspect.TextTypedValues;
+import com.wezom.kiviremoteserver.service.aspect.values.TextTypedValues;
 
 import java.util.Arrays;
 import java.util.List;
@@ -35,7 +35,8 @@ public class LRTextSwitcher extends FrameLayout {
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
 
-        AspectLayoutService.lastUpdate = System.currentTimeMillis();
+//        AspectLayoutService.lastUpdate = System.currentTimeMillis();
+        AspectLayoutService.Companion.setLastUpdate(System.currentTimeMillis());
         switch (keyCode) {
             case KeyEvent.KEYCODE_DPAD_RIGHT:
                 textSwitcher.setInAnimation(getContext(), android.R.anim.slide_in_left);
@@ -55,7 +56,8 @@ public class LRTextSwitcher extends FrameLayout {
 
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
-        AspectLayoutService.lastUpdate = System.currentTimeMillis();
+//        AspectLayoutService.lastUpdate = System.currentTimeMillis();
+        AspectLayoutService.Companion.setLastUpdate(System.currentTimeMillis());
         switch (keyCode) {
             case KeyEvent.KEYCODE_DPAD_RIGHT:
                 return true;

@@ -7,8 +7,8 @@ import com.wezom.kiviremoteserver.App;
 import com.wezom.kiviremoteserver.R;
 import com.wezom.kiviremoteserver.common.Constants;
 import com.wezom.kiviremoteserver.interfaces.DriverValue;
-import com.wezom.kiviremoteserver.service.aspect.AvailableValues;
-import com.wezom.kiviremoteserver.service.aspect.items.IFLMItems;
+import com.wezom.kiviremoteserver.service.aspect.values.AvailableValues;
+import com.wezom.kiviremoteserver.service.aspect.values.IFLMItems;
 import com.wezom.kiviremoteserver.service.inputs.InputSourceHelper;
 
 import java.util.ArrayList;

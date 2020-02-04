@@ -3,7 +3,7 @@ package com.wezom.kiviremoteserver.interfaces;
 import android.content.Context;
 
 import com.wezom.kiviremoteserver.environment.EnvironmentInputsHelper;
-import com.wezom.kiviremoteserver.service.aspect.HDRValues;
+import com.wezom.kiviremoteserver.service.aspect.values.HDRValues;
 import com.wezom.kiviremoteserver.service.inputs.InputSourceHelper;
 
 import java.util.HashMap;

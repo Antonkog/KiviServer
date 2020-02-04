@@ -1,4 +1,4 @@
-package com.wezom.kiviremoteserver.service.aspect.items;
+package com.wezom.kiviremoteserver.service.aspect.values;
 
 import android.support.annotation.StringRes;
 
