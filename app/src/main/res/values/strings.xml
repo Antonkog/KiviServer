@@ -420,8 +420,8 @@ or through the website </string>
     <string name="temperature_mode_very_cold">Очень холодная</string>
 
     <!--sound settings-->
-    <string name="sound_balance_right_value">П%d%%</string>
-    <string name="sound_balance_left_value">Л%d%%</string>
+    <string name="sound_balance_right_value">П %d%%</string>
+    <string name="sound_balance_left_value">Л %d%%</string>
 
     <!--inputs-->
     <string name="inputs_type_atv">Аналоговый</string>
@@ -429,9 +429,6 @@ or through the website </string>
     <string name="inputs_type_tv">Т2</string>
     <string name="inputs_type_dvb_s2">Спутник</string>
     <string name="inputs_type_dvb_c">Кабельное</string>
-
-
-
 
 <!--aspect-->
 
