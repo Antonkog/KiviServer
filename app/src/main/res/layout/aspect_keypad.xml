@@ -1,0 +1,287 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/ll_keyboard"
+    android:layout_width="@dimen/keypad_container_width"
+    android:layout_height="@dimen/keypad_container_height"
+    android:layout_alignParentEnd="true"
+    android:layout_centerVertical="true"
+    android:layout_marginEnd="@dimen/keypad_container_margin_end"
+    android:background="@drawable/shape_keypad_r3"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:translationY="@dimen/keypad_container_translation_y"
+    tools:translationY="0dp"
+    tools:translationZ="10dp">
+
+    <TextView
+        android:id="@+id/tv_channel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/keypad_tv_channel_margin_bottom"
+        android:textColor="@color/colorWhite"
+        android:textSize="@dimen/keypad_tv_channel_text_size"
+        tools:text="466" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/keypad_row_margin_bottom"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tv_numeric_sym_1"
+                android:layout_width="@dimen/keypad_cell_width"
+                android:layout_height="@dimen/keypad_cell_height"
+                android:layout_marginEnd="@dimen/keypad_cell_margin_end"
+                android:background="@drawable/selector_key_numeric"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:nextFocusLeft="@id/tv_numeric_sym_1"
+                android:nextFocusRight="@id/tv_numeric_sym_2"
+                android:nextFocusUp="@id/tv_numeric_sym_1"
+                android:nextFocusDown="@id/tv_numeric_sym_4"
+                android:text="1"
+                android:textColor="@color/colorWhite"
+                android:textSize="@dimen/keypad_cell_text_size"
+                tools:ignore="HardcodedText" />
+
+            <TextView
+                android:id="@+id/tv_numeric_sym_2"
+                android:layout_width="@dimen/keypad_cell_width"
+                android:layout_height="@dimen/keypad_cell_height"
+                android:layout_marginEnd="@dimen/keypad_cell_margin_end"
+                android:background="@drawable/selector_key_numeric"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:nextFocusLeft="@id/tv_numeric_sym_1"
+                android:nextFocusRight="@id/tv_numeric_sym_3"
+                android:nextFocusUp="@id/tv_numeric_sym_2"
+                android:nextFocusDown="@id/tv_numeric_sym_5"
+                android:text="2"
+                android:textColor="@color/colorWhite"
+                android:textSize="@dimen/keypad_cell_text_size"
+                tools:ignore="HardcodedText" />
+
+            <TextView
+                android:id="@+id/tv_numeric_sym_3"
+                android:layout_width="@dimen/keypad_cell_width"
+                android:layout_height="@dimen/keypad_cell_height"
+                android:background="@drawable/selector_key_numeric"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:nextFocusLeft="@id/tv_numeric_sym_2"
+                android:nextFocusRight="@id/tv_numeric_sym_3"
+                android:nextFocusUp="@id/tv_numeric_sym_3"
+                android:nextFocusDown="@id/tv_numeric_sym_6"
+                android:text="3"
+                android:textColor="@color/colorWhite"
+                android:textSize="@dimen/keypad_cell_text_size"
+                tools:ignore="HardcodedText" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/keypad_row_margin_bottom"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tv_numeric_sym_4"
+                android:layout_width="@dimen/keypad_cell_width"
+                android:layout_height="@dimen/keypad_cell_height"
+                android:layout_marginEnd="@dimen/keypad_cell_margin_end"
+                android:background="@drawable/selector_key_numeric"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:nextFocusLeft="@id/tv_numeric_sym_4"
+                android:nextFocusRight="@id/tv_numeric_sym_5"
+                android:nextFocusUp="@id/tv_numeric_sym_1"
+                android:nextFocusDown="@id/tv_numeric_sym_7"
+                android:text="4"
+                android:textColor="@color/colorWhite"
+                android:textSize="@dimen/keypad_cell_text_size"
+                tools:ignore="HardcodedText" />
+
+            <TextView
+                android:id="@+id/tv_numeric_sym_5"
+                android:layout_width="@dimen/keypad_cell_width"
+                android:layout_height="@dimen/keypad_cell_height"
+                android:layout_marginEnd="@dimen/keypad_cell_margin_end"
+                android:background="@drawable/selector_key_numeric"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:nextFocusLeft="@id/tv_numeric_sym_4"
+                android:nextFocusRight="@id/tv_numeric_sym_6"
+                android:nextFocusUp="@id/tv_numeric_sym_2"
+                android:nextFocusDown="@id/tv_numeric_sym_8"
+                android:text="5"
+                android:textColor="@color/colorWhite"
+                android:textSize="@dimen/keypad_cell_text_size"
+                tools:ignore="HardcodedText" />
+
+            <TextView
+                android:id="@+id/tv_numeric_sym_6"
+                android:layout_width="@dimen/keypad_cell_width"
+                android:layout_height="@dimen/keypad_cell_height"
+                android:background="@drawable/selector_key_numeric"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:nextFocusLeft="@id/tv_numeric_sym_5"
+                android:nextFocusRight="@id/tv_numeric_sym_6"
+                android:nextFocusUp="@id/tv_numeric_sym_3"
+                android:nextFocusDown="@id/tv_numeric_sym_9"
+                android:text="6"
+                android:textColor="@color/colorWhite"
+                android:textSize="@dimen/keypad_cell_text_size"
+                tools:ignore="HardcodedText" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/keypad_row_margin_bottom"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tv_numeric_sym_7"
+                android:layout_width="@dimen/keypad_cell_width"
+                android:layout_height="@dimen/keypad_cell_height"
+                android:layout_marginEnd="@dimen/keypad_cell_margin_end"
+                android:background="@drawable/selector_key_numeric"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:nextFocusLeft="@id/tv_numeric_sym_7"
+                android:nextFocusRight="@id/tv_numeric_sym_8"
+                android:nextFocusUp="@id/tv_numeric_sym_4"
+                android:nextFocusDown="@id/fl_keyboard_erase"
+                android:text="7"
+                android:textColor="@color/colorWhite"
+                android:textSize="@dimen/keypad_cell_text_size"
+                tools:ignore="HardcodedText" />
+
+            <TextView
+                android:id="@+id/tv_numeric_sym_8"
+                android:layout_width="@dimen/keypad_cell_width"
+                android:layout_height="@dimen/keypad_cell_height"
+                android:layout_marginEnd="@dimen/keypad_cell_margin_end"
+                android:background="@drawable/selector_key_numeric"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:nextFocusLeft="@id/tv_numeric_sym_7"
+                android:nextFocusRight="@id/tv_numeric_sym_9"
+                android:nextFocusUp="@id/tv_numeric_sym_5"
+                android:nextFocusDown="@id/tv_numeric_sym_0"
+                android:text="8"
+                android:textColor="@color/colorWhite"
+                android:textSize="@dimen/keypad_cell_text_size"
+                tools:ignore="HardcodedText" />
+
+            <TextView
+                android:id="@+id/tv_numeric_sym_9"
+                android:layout_width="@dimen/keypad_cell_width"
+                android:layout_height="@dimen/keypad_cell_height"
+                android:background="@drawable/selector_key_numeric"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:nextFocusLeft="@id/tv_numeric_sym_8"
+                android:nextFocusRight="@id/tv_numeric_sym_9"
+                android:nextFocusUp="@id/tv_numeric_sym_6"
+                android:nextFocusDown="@id/fl_keyboard_confirm"
+                android:text="9"
+                android:textColor="@color/colorWhite"
+                android:textSize="@dimen/keypad_cell_text_size"
+                tools:ignore="HardcodedText" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/keypad_row_margin_bottom"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <FrameLayout
+                android:id="@+id/fl_keyboard_erase"
+                android:layout_width="@dimen/keypad_cell_width"
+                android:layout_height="@dimen/keypad_cell_height"
+                android:layout_marginEnd="@dimen/keypad_cell_margin_end"
+                android:background="@drawable/selector_key_numeric"
+                android:clickable="true"
+                android:focusable="true"
+                android:nextFocusLeft="@id/fl_keyboard_erase"
+                android:nextFocusRight="@id/tv_numeric_sym_0"
+                android:nextFocusUp="@id/tv_numeric_sym_7"
+                android:nextFocusDown="@id/fl_keyboard_erase">
+
+                <ImageView
+                    android:layout_width="@dimen/keypad_cell_icon_size"
+                    android:layout_height="@dimen/keypad_cell_icon_size"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_backspace_icon" />
+
+            </FrameLayout>
+
+            <TextView
+                android:id="@+id/tv_numeric_sym_0"
+                android:layout_width="@dimen/keypad_cell_width"
+                android:layout_height="@dimen/keypad_cell_height"
+                android:layout_marginEnd="@dimen/keypad_cell_margin_end"
+                android:background="@drawable/selector_key_numeric"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:nextFocusLeft="@id/fl_keyboard_erase"
+                android:nextFocusRight="@id/fl_keyboard_confirm"
+                android:nextFocusUp="@id/tv_numeric_sym_8"
+                android:nextFocusDown="@id/tv_numeric_sym_0"
+                android:text="0"
+                android:textColor="@color/colorWhite"
+                android:textSize="@dimen/keypad_cell_text_size"
+                tools:ignore="HardcodedText" />
+
+            <FrameLayout
+                android:id="@+id/fl_keyboard_confirm"
+                android:layout_width="@dimen/keypad_cell_width"
+                android:layout_height="@dimen/keypad_cell_height"
+                android:background="@drawable/selector_key_numeric"
+                android:clickable="true"
+                android:focusable="true"
+                android:nextFocusLeft="@id/tv_numeric_sym_0"
+                android:nextFocusRight="@id/fl_keyboard_confirm"
+                android:nextFocusUp="@id/tv_numeric_sym_9"
+                android:nextFocusDown="@id/fl_keyboard_confirm">
+
+                <ImageView
+                    android:layout_width="@dimen/keypad_cell_icon_size"
+                    android:layout_height="@dimen/keypad_cell_icon_size"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_check_black_24dp" />
+
+            </FrameLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

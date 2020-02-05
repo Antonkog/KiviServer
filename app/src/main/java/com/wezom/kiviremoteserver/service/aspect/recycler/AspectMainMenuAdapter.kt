@@ -5,11 +5,11 @@ import android.app.PendingIntent
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
-import android.graphics.Color
 import android.os.Build
 import android.os.SystemClock
 import android.preference.PreferenceManager
 import android.provider.Settings
+import android.support.v4.content.ContextCompat
 import android.support.v4.view.animation.FastOutSlowInInterpolator
 import android.support.v7.widget.CardView
 import android.support.v7.widget.RecyclerView
@@ -182,7 +182,7 @@ class AspectMainMenuAdapter(var items: List<AspectMenuItem>, val pictureSettings
         }
 
         fun scaleCard(hasFocus: Boolean) {
-            val color = Color.parseColor(if (hasFocus) "#444444" else "#333333")
+            val color = ContextCompat.getColor(itemView.context, if (hasFocus) R.color.tundora else R.color.mine_shaft)
             card.setCardBackgroundColor(color)
             card.animate()
                     .scaleY(if (hasFocus) 1.1f else 1f)

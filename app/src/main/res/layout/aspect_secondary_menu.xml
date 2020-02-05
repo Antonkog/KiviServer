@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/secondary_menu"
+    android:layout_width="@dimen/secondary_menu_width"
+    android:layout_height="@dimen/secondary_menu_height"
+    android:layout_alignParentBottom="true"
+    android:layout_centerHorizontal="true"
+    android:background="@android:color/transparent"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingStart="@dimen/secondary_menu_padding_start"
+    android:translationY="@dimen/secondary_menu_translation_y"
+    android:translationZ="@dimen/secondary_menu_translation_z"
+    tools:background="@android:color/holo_green_dark"
+    tools:ignore="RtlSymmetry"
+    tools:listitem="@layout/item_aspect_settings"
+    tools:translationY="0dp"
+    tools:visibility="visible">
+
+    <ImageView
+        android:id="@+id/iv_arrow_left"
+        android:layout_width="@dimen/arrow_size"
+        android:layout_height="@dimen/arrow_size"
+        android:src="@drawable/ic_arrow_left" />
+
+    <NumberPicker
+        android:id="@+id/text_picker"
+        android:layout_width="@dimen/text_picker_width"
+        android:layout_height="match_parent"
+        android:layout_marginStart="@dimen/text_picker_margin_start"
+        android:layout_marginEnd="@dimen/text_picker_margin_end"
+        android:focusable="true"
+        android:theme="@style/AppTheme.Picker" />
+
+    <TextView
+        android:id="@+id/tv_sound_balance_title_left"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/tv_sound_balance_title_left_margin_end"
+        android:text="@string/sound_balance_title_left"
+        android:textColor="@color/boulder"
+        android:textSize="@dimen/sound_balance_title_text_size"
+        android:visibility="gone"
+        tools:visibility="visible" />
+
+    <FrameLayout
+        android:layout_width="@dimen/progress_settings_width"
+        android:layout_height="@dimen/progress_settings_height">
+
+        <ProgressBar
+            android:id="@+id/pb"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="@dimen/progress_settings_width"
+            android:layout_height="@dimen/progress_settings_bar_height"
+            android:layout_gravity="center"
+            android:max="100"
+            android:progressDrawable="@drawable/gradient_progress"
+            tools:progress="60" />
+
+        <ImageView
+            android:id="@+id/iv_progress_temperature"
+            android:layout_width="@dimen/progress_settings_width"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_temperature_bar"
+            android:visibility="gone"
+            tools:visibility="visible" />
+
+        <View
+            android:id="@+id/view_temperature_selector"
+            android:layout_width="@dimen/selector_width"
+            android:layout_height="@dimen/selector_height"
+            android:layout_gravity="center"
+            android:background="@color/colorWhite"
+            android:visibility="gone"
+            tools:translationX="-78dp"
+            tools:visibility="visible" />
+
+        <ImageView
+            android:id="@+id/iv_progress_sound_balance"
+            android:layout_width="@dimen/progress_settings_width"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_sound_balance_bar"
+            android:visibility="gone"
+            tools:visibility="visible" />
+
+        <View
+            android:id="@+id/view_sound_balance_selector"
+            android:layout_width="@dimen/selector_width"
+            android:layout_height="@dimen/selector_height"
+            android:layout_gravity="center"
+            android:background="@color/colorWhite"
+            android:visibility="gone"
+            tools:translationX="-78dp"
+            tools:visibility="visible" />
+
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/tv_sound_balance_title_right"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/sound_balance_title_right_margin_start"
+        android:text="@string/sound_balance_title_right"
+        android:textColor="@color/boulder"
+        android:textSize="@dimen/sound_balance_title_text_size"
+        android:visibility="gone"
+        tools:visibility="visible" />
+
+    <ImageView
+        android:id="@+id/iv_arrow_right"
+        android:layout_width="@dimen/arrow_size"
+        android:layout_height="@dimen/arrow_size"
+        android:layout_marginStart="@dimen/iv_arrow_right_margin_start"
+        android:src="@drawable/ic_arrow_right" />
+
+    <TextView
+        android:id="@+id/tv_value"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/tv_value_margin_start"
+        android:gravity="center_horizontal"
+        android:textColor="@color/colorWhite"
+        android:textSize="@dimen/tv_value_text_size"
+        tools:text="10" />
+
+</LinearLayout>

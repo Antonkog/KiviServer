@@ -1,7 +1,7 @@
 package com.wezom.kiviremoteserver.service.aspect.recycler
 
 import android.content.Context
-import android.graphics.Color
+import android.support.v4.content.ContextCompat
 import android.support.v4.view.animation.FastOutSlowInInterpolator
 import android.support.v7.widget.RecyclerView
 import android.view.KeyEvent
@@ -111,7 +111,7 @@ class AspectInputsAdapter(context: Context, val inputsHelper: EnvironmentInputsH
 
         fun onFocusChanged(hasFocus: Boolean) {
             ivIcon.setImageResource(if (hasFocus) focusedDrawable else unfocusedDrawable)
-            tvTitle.setTextColor(Color.parseColor(if (hasFocus) "#ffffff" else "#737474"))
+            tvTitle.setTextColor(ContextCompat.getColor(itemView.context, if (hasFocus) R.color.colorWhite else R.color.sirocco))
             ivIcon.animate()
                     .scaleY(if (hasFocus) 1.1f else 1f)
                     .scaleX(if (hasFocus) 1.1f else 1f)
