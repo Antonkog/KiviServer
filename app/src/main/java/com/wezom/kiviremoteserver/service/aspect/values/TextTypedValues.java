@@ -1,6 +1,6 @@
 package com.wezom.kiviremoteserver.service.aspect.values;
 
-import android.support.annotation.StringRes;
+import androidx.annotation.StringRes;
 
 public interface TextTypedValues {
     @StringRes  int getStringResourceID();

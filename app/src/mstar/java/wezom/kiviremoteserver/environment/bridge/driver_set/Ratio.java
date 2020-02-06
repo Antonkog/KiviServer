@@ -1,7 +1,7 @@
 package wezom.kiviremoteserver.environment.bridge.driver_set;
 
 import android.content.Context;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import com.wezom.kiviremoteserver.R;
 import com.wezom.kiviremoteserver.interfaces.DriverValue;

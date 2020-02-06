@@ -1,7 +1,7 @@
 package wezom.kiviremoteserver.environment.bridge;
 
 import android.content.Context;
-import android.support.annotation.IntRange;
+import androidx.annotation.IntRange;
 
 import com.realtek.tv.AQ;
 import com.wezom.kiviremoteserver.environment.IAudioSettings;

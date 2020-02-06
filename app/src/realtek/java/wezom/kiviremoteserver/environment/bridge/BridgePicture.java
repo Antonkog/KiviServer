@@ -1,9 +1,10 @@
 package wezom.kiviremoteserver.environment.bridge;
 
 import android.content.Context;
-import android.support.annotation.IntRange;
 import android.util.Log;
 import android.view.WindowManager;
+
+import androidx.annotation.IntRange;
 
 import com.realtek.tv.AQ;
 import com.realtek.tv.ColorTempInfo;

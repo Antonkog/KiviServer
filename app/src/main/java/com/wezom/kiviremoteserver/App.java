@@ -15,8 +15,6 @@ import android.hardware.usb.UsbManager;
 import android.os.Build;
 import android.os.Handler;
 import android.preference.PreferenceManager;
-import android.support.annotation.RequiresApi;
-import android.support.v7.app.AppCompatDelegate;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -24,6 +22,9 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatDelegate;
 
 import com.wezom.kiviremoteserver.common.Constants;
 import com.wezom.kiviremoteserver.di.components.ApplicationComponent;

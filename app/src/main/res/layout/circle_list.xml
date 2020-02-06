@@ -20,7 +20,7 @@
         android:src="@drawable/ic_chevron_left_black_24dp"
         android:visibility="visible" />
 
-    <android.support.v7.widget.RecyclerView
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view"
         android:layout_width="120dp"
         android:layout_height="match_parent"

@@ -1,7 +1,7 @@
 package com.wezom.kiviremoteserver.service.aspect.data
 
-import android.support.annotation.DrawableRes
-import android.support.annotation.StringRes
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import com.wezom.kiviremoteserver.service.aspect.values.IFLMItems
 
 data class AspectMenuItem(

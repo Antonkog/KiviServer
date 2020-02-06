@@ -2,7 +2,8 @@ package com.wezom.kiviremoteserver.ui.views.pageindicatorview.draw.drawer.type;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.support.annotation.NonNull;
+
+import androidx.annotation.NonNull;
 
 import com.wezom.kiviremoteserver.ui.views.pageindicatorview.animation.data.Value;
 import com.wezom.kiviremoteserver.ui.views.pageindicatorview.animation.data.type.ScaleAnimationValue;

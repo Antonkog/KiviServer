@@ -12,7 +12,7 @@
         android:layout_alignParentBottom="true"
         android:background="@color/back_view_background" />
 
-    <android.support.v7.widget.CardView
+    <androidx.cardview.widget.CardView
         android:id="@+id/cv_inputs"
         android:layout_width="@dimen/inputs_container_width"
         android:layout_height="@dimen/inputs_container_height"
@@ -27,22 +27,22 @@
         app:cardUseCompatPadding="false"
         tools:translationY="-250dp">
 
-        <android.support.v7.widget.RecyclerView
+        <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_inputs"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             tools:itemCount="7"
-            tools:layoutManager="android.support.v7.widget.LinearLayoutManager"
+            tools:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             tools:listitem="@layout/item_aspect_input"
             tools:orientation="horizontal" />
 
-    </android.support.v7.widget.CardView>
+    </androidx.cardview.widget.CardView>
 
     <include layout="@layout/aspect_keypad"/>
 
     <include layout="@layout/aspect_secondary_menu" />
 
-    <android.support.v7.widget.RecyclerView
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/main_menu"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -54,7 +54,7 @@
         android:padding="@dimen/main_menu_padding"
         android:translationY="@dimen/main_menu_translation_y"
         tools:itemCount="5"
-        tools:layoutManager="android.support.v7.widget.LinearLayoutManager"
+        tools:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         tools:listitem="@layout/menu_item"
         tools:translationY="0dp" />
 

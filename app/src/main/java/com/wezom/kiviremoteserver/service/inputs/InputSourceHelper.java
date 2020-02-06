@@ -2,11 +2,12 @@ package com.wezom.kiviremoteserver.service.inputs;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.DrawableRes;
-import android.support.annotation.Nullable;
-import android.support.annotation.StringRes;
-import android.support.v4.content.res.ResourcesCompat;
 import android.util.Base64;
+
+import androidx.annotation.DrawableRes;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
+import androidx.core.content.res.ResourcesCompat;
 
 import com.wezom.kiviremoteserver.App;
 import com.wezom.kiviremoteserver.R;

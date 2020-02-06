@@ -3,9 +3,10 @@ package com.wezom.kiviremoteserver.ui.views.pageindicatorview.animation.type;
 import android.animation.ArgbEvaluator;
 import android.animation.PropertyValuesHolder;
 import android.animation.ValueAnimator;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.view.animation.AccelerateDecelerateInterpolator;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.wezom.kiviremoteserver.ui.views.pageindicatorview.animation.controller.ValueController;
 import com.wezom.kiviremoteserver.ui.views.pageindicatorview.animation.data.type.ColorAnimationValue;

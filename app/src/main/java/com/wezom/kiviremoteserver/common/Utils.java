@@ -12,10 +12,11 @@ import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
-import android.support.graphics.drawable.VectorDrawableCompat;
-import android.support.v4.graphics.drawable.DrawableCompat;
 import android.util.Log;
 import android.widget.Toast;
+
+import androidx.core.graphics.drawable.DrawableCompat;
+import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
 import com.wezom.kiviremoteserver.BuildConfig;
 

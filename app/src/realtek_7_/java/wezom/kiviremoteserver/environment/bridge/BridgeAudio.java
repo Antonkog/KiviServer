@@ -3,7 +3,8 @@ package wezom.kiviremoteserver.environment.bridge;
 import android.content.Context;
 import android.os.Build;
 import android.preference.PreferenceManager;
-import android.support.annotation.IntRange;
+
+import androidx.annotation.IntRange;
 
 import com.crashlytics.android.Crashlytics;
 import com.realtek.tv.AQ;

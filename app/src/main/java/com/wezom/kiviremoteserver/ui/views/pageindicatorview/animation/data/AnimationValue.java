@@ -1,7 +1,7 @@
 package com.wezom.kiviremoteserver.ui.views.pageindicatorview.animation.data;
 
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.wezom.kiviremoteserver.ui.views.pageindicatorview.animation.data.type.ColorAnimationValue;
 import com.wezom.kiviremoteserver.ui.views.pageindicatorview.animation.data.type.DropAnimationValue;

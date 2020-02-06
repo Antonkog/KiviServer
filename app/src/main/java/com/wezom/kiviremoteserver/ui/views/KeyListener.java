@@ -1,9 +1,10 @@
 package com.wezom.kiviremoteserver.ui.views;
 
 import android.content.Intent;
-import android.support.annotation.NonNull;
 import android.view.KeyEvent;
 import android.view.View;
+
+import androidx.annotation.NonNull;
 
 import com.wezom.kiviremoteserver.service.AspectLayoutService;
 

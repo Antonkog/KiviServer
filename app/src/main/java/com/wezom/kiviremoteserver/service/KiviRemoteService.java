@@ -13,11 +13,12 @@ import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
 import android.provider.Settings;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.util.Pair;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.app.NotificationCompat;
 
 import com.google.gson.Gson;
 import com.wezom.kiviremoteserver.App;

@@ -9,10 +9,6 @@ import android.os.Build
 import android.os.SystemClock
 import android.preference.PreferenceManager
 import android.provider.Settings
-import android.support.v4.content.ContextCompat
-import android.support.v4.view.animation.FastOutSlowInInterpolator
-import android.support.v7.widget.CardView
-import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.KeyEvent
 import android.view.LayoutInflater
@@ -20,6 +16,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.cardview.widget.CardView
+import androidx.core.content.ContextCompat
+import androidx.interpolator.view.animation.FastOutSlowInInterpolator
+import androidx.recyclerview.widget.RecyclerView
 import com.wezom.kiviremoteserver.R
 import com.wezom.kiviremoteserver.environment.EnvironmentPictureSettings
 import com.wezom.kiviremoteserver.service.aspect.Alarm

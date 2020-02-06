@@ -1,8 +1,9 @@
 package com.wezom.kiviremoteserver.ui.views.pageindicatorview.draw.controller;
 
-import android.support.annotation.NonNull;
 import android.util.Pair;
 import android.view.View;
+
+import androidx.annotation.NonNull;
 
 import com.wezom.kiviremoteserver.ui.views.pageindicatorview.animation.type.AnimationType;
 import com.wezom.kiviremoteserver.ui.views.pageindicatorview.draw.data.Indicator;

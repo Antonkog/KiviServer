@@ -3,9 +3,10 @@ package com.wezom.kiviremoteserver.service.aspect;
 import android.app.Instrumentation;
 import android.app.IntentService;
 import android.content.Intent;
-import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.KeyEvent;
+
+import androidx.annotation.Nullable;
 
 public class Alarm extends IntentService {
 

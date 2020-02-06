@@ -1,8 +1,9 @@
 package com.wezom.kiviremoteserver.ui.views.pageindicatorview.animation.type;
 
 import android.animation.ValueAnimator;
-import android.support.annotation.NonNull;
 import android.view.animation.AccelerateDecelerateInterpolator;
+
+import androidx.annotation.NonNull;
 
 import com.wezom.kiviremoteserver.ui.views.pageindicatorview.animation.controller.ValueController;
 import com.wezom.kiviremoteserver.ui.views.pageindicatorview.animation.data.type.ThinWormAnimationValue;

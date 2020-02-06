@@ -10,16 +10,16 @@ import android.os.Build
 import android.os.Handler
 import android.os.IBinder
 import android.provider.Settings
-import android.support.v4.content.ContextCompat
-import android.support.v4.content.res.ResourcesCompat
-import android.support.v7.widget.CardView
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
 import android.view.KeyEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.*
+import androidx.cardview.widget.CardView
+import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.wezom.kiviremoteserver.App
 import com.wezom.kiviremoteserver.R
 import com.wezom.kiviremoteserver.common.extensions.animateAnimation
@@ -126,7 +126,7 @@ class AspectLayoutService : Service() {
     override fun onBind(intent: Intent): IBinder? = null
 
     @Suppress("UsePropertyAccessSyntax")
-    @SuppressLint("SetTextI18n")
+    @SuppressLint("SetTextI18n", "WrongConstant")
     private fun initLayout() {
         val param = WindowManager.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, generalType, WindowManager.LayoutParams.FLAG_FULLSCREEN, PixelFormat.TRANSLUCENT)
         windowManager.addView(generalView, param)
@@ -153,14 +153,15 @@ class AspectLayoutService : Service() {
                 onBackClick = { onMainCardsBackClick() },
                 onSettingsClick = { onSettingsClick() },
                 onKeyboardClick = { onKeyboardClick() })
-        mainMenu.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+
+        mainMenu.layoutManager = LinearLayoutManager(this, RecyclerView.HORIZONTAL, false)
         mainMenu.adapter = mainMenuCardsAdapter
 
         val inputsAdapter = AspectInputsAdapter(cvSubmenuInputsContainer.context, inputsHelper, onBackClick = {
             setModeUp(false)
             backView.animateAnimation(applicationContext, android.R.anim.fade_in, 600, onAnimationEnd = { backView.setVisibility(View.VISIBLE) })
         })
-        rvSubmenuInputs.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        rvSubmenuInputs.layoutManager = LinearLayoutManager(this, RecyclerView.HORIZONTAL, false)
         rvSubmenuInputs.adapter = inputsAdapter
 
         keyboardNumericKeys.forEach {

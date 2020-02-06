@@ -2,11 +2,12 @@ package com.wezom.kiviremoteserver.ui.views.pageindicatorview.draw;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.util.Pair;
 import android.view.MotionEvent;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.wezom.kiviremoteserver.ui.views.pageindicatorview.animation.data.Value;
 import com.wezom.kiviremoteserver.ui.views.pageindicatorview.draw.controller.AttributeController;

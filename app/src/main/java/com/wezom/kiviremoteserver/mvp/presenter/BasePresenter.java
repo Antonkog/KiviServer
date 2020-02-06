@@ -1,6 +1,6 @@
 package com.wezom.kiviremoteserver.mvp.presenter;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.arellomobile.mvp.MvpPresenter;
 import com.arellomobile.mvp.MvpView;

@@ -23,7 +23,6 @@ android {
         abortOnError false
     }
     compileSdkVersion versions.compileSdk
-    buildToolsVersion versions.buildTools
     defaultConfig {
         applicationId "com.wezom.kiviremoteserver"
         minSdkVersion versions.minSdk
@@ -31,7 +30,7 @@ android {
         versionCode generateVersionCode()
         versionName generateVersionName()
         multiDexEnabled true
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }
     dexOptions {

@@ -1,20 +1,19 @@
 package com.wezom.kiviremoteserver.ui.fragments;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.arellomobile.mvp.MvpAppCompatFragment;
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
+
 import com.wezom.kiviremoteserver.di.components.ActivityComponent;
 import com.wezom.kiviremoteserver.di.components.FragmentComponent;
 import com.wezom.kiviremoteserver.di.modules.FragmentModule;
 import com.wezom.kiviremoteserver.mvp.view.BaseMvpView;
 import com.wezom.kiviremoteserver.ui.activity.BaseActivity;
 import com.wezom.kiviremoteserver.ui.activity.HomeActivity;
-
 
 import butterknife.ButterKnife;
 

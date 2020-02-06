@@ -10,16 +10,17 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.wezom.kiviremoteserver.R;
@@ -154,7 +155,7 @@ public class HomeFragment extends BaseFragment implements HomeFragmentView {
     @Override
     public void bindService(ServiceConnection connection) {
         try {
-            getActivity().bindService(new Intent(getActivity(), KiviRemoteService.class),
+            getActivity().bindService(new Intent(getContext(), KiviRemoteService.class),
                     connection, Context.BIND_AUTO_CREATE);
             presenter.setBound(true);
         } catch (Exception e) {
@@ -232,7 +233,7 @@ public class HomeFragment extends BaseFragment implements HomeFragmentView {
 
     private void cmdTurnCursorServiceOn() {
         if (Build.VERSION.SDK_INT >= 23) {
-            if (!Settings.canDrawOverlays(getActivity())) {
+            if (!Settings.canDrawOverlays(getContext())) {
                 if (getActivity() != null) {
                     try {
                         Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
@@ -252,13 +253,13 @@ public class HomeFragment extends BaseFragment implements HomeFragmentView {
 
     private void startCursorService() {
         try {
-            getActivity().startService(new Intent(getActivity(), CursorService.class));
+            getActivity().startService(new Intent(getContext(), CursorService.class));
         } catch (Exception e) {
         }
     }
 
     private void cmdTurnCursorServiceOff() {
-        getActivity().stopService(new Intent(getActivity(), CursorService.class));
+        getActivity().stopService(new Intent(getContext(), CursorService.class));
     }
 
     @Override

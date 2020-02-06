@@ -1,10 +1,8 @@
 package com.wezom.kiviremoteserver.ui.activity;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatDelegate;
 import android.widget.Toast;
 
-import com.arellomobile.mvp.MvpAppCompatActivity;
 import com.wezom.kiviremoteserver.App;
 import com.wezom.kiviremoteserver.R;
 import com.wezom.kiviremoteserver.di.components.ActivityComponent;

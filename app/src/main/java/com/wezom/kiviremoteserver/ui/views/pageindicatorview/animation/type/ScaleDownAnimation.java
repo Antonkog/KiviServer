@@ -2,7 +2,8 @@ package com.wezom.kiviremoteserver.ui.views.pageindicatorview.animation.type;
 
 import android.animation.IntEvaluator;
 import android.animation.PropertyValuesHolder;
-import android.support.annotation.NonNull;
+
+import androidx.annotation.NonNull;
 
 import com.wezom.kiviremoteserver.ui.views.pageindicatorview.animation.controller.ValueController;
 

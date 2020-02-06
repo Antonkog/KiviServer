@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
-  <bool name="im_is_default" tools:ignore="MissingDefaultResource">true</bool>
+    <bool name="im_is_default" tools:ignore="MissingDefaultResource">true</bool>
 </resources>

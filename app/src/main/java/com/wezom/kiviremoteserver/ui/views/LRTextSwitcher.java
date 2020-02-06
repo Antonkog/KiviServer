@@ -2,15 +2,16 @@ package com.wezom.kiviremoteserver.ui.views;
 
 import android.content.Context;
 import android.content.Intent;
-import android.support.annotation.DrawableRes;
-import android.support.annotation.Nullable;
-import android.support.annotation.StringRes;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextSwitcher;
 import android.widget.TextView;
+
+import androidx.annotation.DrawableRes;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 
 import com.wezom.kiviremoteserver.R;
 import com.wezom.kiviremoteserver.service.AspectLayoutService;

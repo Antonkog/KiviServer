@@ -1,9 +1,8 @@
 package com.wezom.kiviremoteserver.net.server.model;
 
 import android.os.Parcel;
-import android.support.annotation.NonNull;
 
-import com.google.gson.annotations.SerializedName;
+import androidx.annotation.NonNull;
 
 import java.util.HashMap;
 

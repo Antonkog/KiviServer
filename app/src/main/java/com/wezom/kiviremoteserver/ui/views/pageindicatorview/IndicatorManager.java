@@ -1,7 +1,7 @@
 package com.wezom.kiviremoteserver.ui.views.pageindicatorview;
 
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import com.wezom.kiviremoteserver.ui.views.pageindicatorview.animation.AnimationManager;
 import com.wezom.kiviremoteserver.ui.views.pageindicatorview.animation.controller.ValueController;
