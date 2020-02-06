@@ -1,2 +1,2 @@
-include ':app', ':keyboardsample'
+include ':app'
 include ':mstarime'

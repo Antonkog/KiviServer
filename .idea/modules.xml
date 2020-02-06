@@ -3,7 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/keyboardsample/keyboardsample.iml" filepath="$PROJECT_DIR$/keyboardsample/keyboardsample.iml" />
       <module fileurl="file://$PROJECT_DIR$/kivi_wezom_server.iml" filepath="$PROJECT_DIR$/kivi_wezom_server.iml" />
       <module fileurl="file://$PROJECT_DIR$/mstarime/mstarime.iml" filepath="$PROJECT_DIR$/mstarime/mstarime.iml" />
     </modules>
