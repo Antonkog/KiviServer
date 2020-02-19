@@ -25,6 +25,7 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.android.inputmethod.pinyin.util.PropertyHelper;
 import com.wezom.kiviremoteserver.common.Constants;
 import com.wezom.kiviremoteserver.di.components.ApplicationComponent;
 import com.wezom.kiviremoteserver.di.components.DaggerApplicationComponent;
@@ -36,7 +37,6 @@ import com.wezom.kiviremoteserver.service.RemoteConlrolService;
 import com.wezom.kiviremoteserver.service.communication.DelegatePlatformsService;
 import com.wezom.kiviremoteserver.service.inputs.InputSourceHelper;
 
-import java.lang.reflect.Method;
 import java.util.List;
 import java.util.UUID;
 
@@ -222,20 +222,9 @@ public class App extends Application {
 
 
     public static boolean isTVRealtek() {
-        return "realtek".equalsIgnoreCase(getProperty("ro.product.manufacturer"));
+        return "realtek".equalsIgnoreCase(PropertyHelper.getProperty("ro.product.manufacturer"));
     }
 
-    public static String getProperty(String value) {
-        String model = "";
-        try {
-            Class<?> c = Class.forName("android.os.SystemProperties");
-            Method get = c.getMethod("get", String.class);
-            model = (String) get.invoke(c, value);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return model;
-    }
 
     public static boolean isRUMarket() {
         try {

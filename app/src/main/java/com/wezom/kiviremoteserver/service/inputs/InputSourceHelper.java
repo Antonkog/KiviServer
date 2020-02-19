@@ -5,7 +5,7 @@ import android.support.annotation.DrawableRes;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 
-import com.wezom.kiviremoteserver.App;
+import com.android.inputmethod.pinyin.util.PropertyHelper;
 import com.wezom.kiviremoteserver.R;
 import com.wezom.kiviremoteserver.common.Constants;
 import com.wezom.kiviremoteserver.environment.EnvironmentInputsHelper;
@@ -168,7 +168,7 @@ public class InputSourceHelper {
         }
 
         public static INPUT_PORT getPortByRealtekID(String id) { //todo: moke fix
-            String str = App.getProperty("ro.ota.modelname");
+            String str = PropertyHelper.getProperty("ro.ota.modelname");
             boolean is2841 = "2841".equals(str.trim());
             boolean is2851 = "2851".equals(str.trim()) ||
                     "2842P533".equals(str.trim()) ||

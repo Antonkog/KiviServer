@@ -4,6 +4,7 @@ import android.app.ActivityManager;
 import android.app.Instrumentation;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -108,6 +109,9 @@ public class RemoteConlrolService extends Service implements ServiceMvpView {
 
     @Inject
     DeviceUtils deviceUtils;
+
+    @Inject
+    InitialMessage initialMessage;
 
     @Inject
     AppsInfoLoader appsInfoLoader;
@@ -271,7 +275,7 @@ public class RemoteConlrolService extends Service implements ServiceMvpView {
 
                     if (ImeUtils.isCurrentImeOk(this)) {
                         handleDataRequest(request);
-                        Timber.e("posting new data event, " + request.getAction().name());
+                        Timber.d("posting new data event, " + request.getAction().name());
                     } else {
                         server.postMessage(
                                 new ServerEventStructure(
@@ -322,9 +326,13 @@ public class RemoteConlrolService extends Service implements ServiceMvpView {
                             sendBroadcast(new Intent("com.kivi.launcher_v2.ACTION_VIDEO_CATALOG"));
                             break;
                         case R.string.lt_widgets:
-                            Intent widgetIntent = new Intent();
-                            widgetIntent.setComponent(new ComponentName("com.kivi.widget2", "com.kivi.widget2.MainActivity"));
-                            startActivity(widgetIntent);
+                            try {
+                                Intent widgetIntent = new Intent();
+                                widgetIntent.setComponent(new ComponentName("com.kivi.widget2", "com.kivi.widget2.MainActivity"));
+                                startActivity(widgetIntent);
+                            } catch (ActivityNotFoundException e){
+                                Timber.e(" com.kivi.widget2 not found on tv" + e.getMessage());
+                            }
                             break;
                     }
                 }, Timber::e));
@@ -340,9 +348,8 @@ public class RemoteConlrolService extends Service implements ServiceMvpView {
 
 
         disposables.add(bus.listen(SendImgByIds.class).subscribe(
-                event ->
-                        server.postMessage(new ServerEventStructure(KiviProtocolStructure.ServerEventType.IMG_BY_IDS)
-                                .addPreviewContents(deviceUtils.getImgByIds(event.getIds()))),
+                event -> server.postMessage(new ServerEventStructure(KiviProtocolStructure.ServerEventType.IMG_BY_IDS)
+                                .addPreviewContents(appsInfoLoader.getImgByIds(event.getIds()))),
                 Timber::e));
 
 
@@ -363,7 +370,7 @@ public class RemoteConlrolService extends Service implements ServiceMvpView {
                         server.postMessage(new ServerEventStructure(KiviProtocolStructure.ServerEventType.INITIAL_II).
                                 addPreviewCommonStructures(sendInitialEvent.getStructures()));
                     } else { //initial 1 (old versions)
-                        server.sendInitialMsg(prepareAspect(), AspectAvailable.getInstance(), InitialMessage.getInstance());
+                        server.sendInitialMsg(prepareAspect(), AspectAvailable.getInstance(), sendInitialEvent.getInitialMessage());
                     }
                 },
                 Timber::e));
@@ -536,18 +543,16 @@ public class RemoteConlrolService extends Service implements ServiceMvpView {
                     break;
                 case REQUEST_INITIAL:
                     dispose(disposableInit);
-                    disposableInit =
-                            InitialMessage.getInstance().setDriverValueListSingle(getApplicationContext()).
+                    disposableInit = initialMessage.getInitialSingle().
                                     subscribeOn(Schedulers.io())
                                     .observeOn(AndroidSchedulers.mainThread())
-                                    .subscribe(
-                                            initialMessage -> RxBus.INSTANCE.publish(new SendInitialEvent(initialMessage)),
+                                    .subscribe(initialMessage -> RxBus.INSTANCE.publish(new SendInitialEvent(initialMessage)),
                                             e -> Timber.e(e, e.getMessage()));
                     break;
                 case REQUEST_INITIAL_II:
                     dispose(disposableInit_II);
                     disposableInit_II =
-                            deviceUtils.getPreviewCommonStructureSingle(getApplicationContext())
+                            deviceUtils.getPreviewCommonStructureSingle()
                                     .subscribeOn(Schedulers.computation())
                                     .observeOn(AndroidSchedulers.mainThread())
                                     .subscribe(previewCommonStructures -> RxBus.INSTANCE.publish(new SendInitialEvent(previewCommonStructures)),

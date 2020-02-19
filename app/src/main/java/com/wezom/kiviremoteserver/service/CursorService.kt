@@ -114,7 +114,6 @@ class CursorService : Service() {
     }
 
     private fun update(x1: Float, y1: Float) {
-        Timber.e("update x y on move")
         showCursor()
         onMouseMove(x1.toInt(), y1.toInt())
     }

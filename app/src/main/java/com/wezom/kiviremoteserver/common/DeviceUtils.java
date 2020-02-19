@@ -15,7 +15,6 @@ import com.wezom.kiviremoteserver.net.server.model.AppVisibility;
 import com.wezom.kiviremoteserver.net.server.model.Channel;
 import com.wezom.kiviremoteserver.net.server.model.LauncherBasedData;
 import com.wezom.kiviremoteserver.net.server.model.PreviewCommonStructure;
-import com.wezom.kiviremoteserver.net.server.model.PreviewContent;
 import com.wezom.kiviremoteserver.net.server.model.Recommendation;
 import com.wezom.kiviremoteserver.service.inputs.InputSourceHelper;
 
@@ -38,19 +37,21 @@ import static android.content.Context.UI_MODE_SERVICE;
  */
 
 public class DeviceUtils implements SyncValue {
+
+    private Context context;
     private AppsInfoLoader appsInfoLoader;
     private long syncFrequency = 10 * DateUtils.MINUTE_IN_MILLIS;
 
     @Inject
     public DeviceUtils(AppsInfoLoader appsInfoLoader, @ApplicationContext Context context) {
         this.appsInfoLoader = appsInfoLoader;
+        this.context = context;
+        init(context);
     }
 
     @Override
     public void init(@NotNull Context context) {
-        Timber.e("DeviceUtils init ");
-        int size = getPreviewCommonStructure(context).size();
-        Timber.e("getPreviewCommonStructure size = " + size);
+        getPreviewCommonStructure();
     }
 
     private static final List<Channel> channels = new ArrayList<>();
@@ -82,7 +83,7 @@ public class DeviceUtils implements SyncValue {
         return android.os.Build.MODEL;
     }
 
-    public Single<List<PreviewCommonStructure>> getPreviewCommonStructureSingle(Context context) {
+    public Single<List<PreviewCommonStructure>> getPreviewCommonStructureSingle() {
         return Single.create(emitter -> {
             try {
                 if (!previewCommonStructures.isEmpty() &&
@@ -90,7 +91,7 @@ public class DeviceUtils implements SyncValue {
                         ((System.currentTimeMillis() - previewsCollectedTime) < syncFrequency)) {
                     emitter.onSuccess(previewCommonStructures);
                 } else {
-                    List<PreviewCommonStructure> s = getPreviewCommonStructure(context);
+                    List<PreviewCommonStructure> s = getPreviewCommonStructure();
                     emitter.onSuccess(s);
                 }
             } catch (Exception e) {
@@ -99,35 +100,30 @@ public class DeviceUtils implements SyncValue {
         });
     }
 
-    public List<PreviewContent> getImgByIds(List<String> ids) {
-        return appsInfoLoader.getImgByIds(ids);
-    }
-
-
-    public List<PreviewCommonStructure> getPreviewCommonStructure(Context context) {
+    private List<PreviewCommonStructure> getPreviewCommonStructure() {
         previewCommonStructures.clear();
 
         for (LauncherBasedData data : getLauncherData(recommendations, LauncherBasedData.TYPE.RECOMMENDATION, context)) {
-            if(data.getType()!=null)
-            previewCommonStructures.add(new PreviewCommonStructure(data.getType().name(),
-                    data.getID(), data.getName(),
-                    data.getImageUrl(),
-                    data.isActive(), data.getAdditionalData()));
+            if (data.getType() != null)
+                previewCommonStructures.add(new PreviewCommonStructure(data.getType().name(),
+                        data.getID(), data.getName(),
+                        data.getImageUrl(),
+                        data.isActive(), data.getAdditionalData()));
         }
         for (LauncherBasedData data : getLauncherData(channels, LauncherBasedData.TYPE.CHANNEL, context)) {
-            if(data.getType()!=null)
+            if (data.getType() != null)
                 previewCommonStructures.add(new PreviewCommonStructure(data.getType().name(),
-                    data.getID(), data.getName(),
-                    data.getImageUrl(),
-                    data.isActive(), data.getAdditionalData()));
+                        data.getID(), data.getName(),
+                        data.getImageUrl(),
+                        data.isActive(), data.getAdditionalData()));
         }
 
         for (LauncherBasedData data : InputSourceHelper.getAsInputs(context)) {
-            if(data.getType()!=null)
+            if (data.getType() != null)
                 previewCommonStructures.add(new PreviewCommonStructure(data.getType().name(),
-                    data.getID(), data.getName(),
-                    data.getImageUrl(),
-                    data.isActive(), data.getAdditionalData()));
+                        data.getID(), data.getName(),
+                        data.getImageUrl(),
+                        data.isActive(), data.getAdditionalData()));
         }
 
         for (LauncherBasedData data : appsInfoLoader.checkApps(context, false)) {
@@ -146,9 +142,9 @@ public class DeviceUtils implements SyncValue {
         List<LauncherBasedData> recsList = getLauncherPreference(type, context);
         if (recsList != null)
             for (int i = 0; i < recsList.size(); i++) {
+                if (i == 0) Timber.e(" get LauncherBasedData " + recsList.get(0).getName());
                 recs.add((T) recsList.get(i));
             }
-
         Timber.e(" get LauncherBasedData , size is : " + ((recsList == null) ? " null" : recsList.size()));
         return recs;
     }
@@ -157,7 +153,7 @@ public class DeviceUtils implements SyncValue {
 
         SharedPreferences p = null;
         try {
-            Context myContext = context.createPackageContext(Constants.LAUNCHER_PACKAGE, Context.MODE_PRIVATE);
+            Context myContext = context.createPackageContext(Constants.LAUNCHER_PACKAGE, Context.CONTEXT_IGNORE_SECURITY);
             switch (type) {
                 case RECOMMENDATION:
                     p = myContext.getSharedPreferences(Constants.PREFERENCE_CATEGORY + Constants.RECOMMENDATION_MANAGER, Context.MODE_PRIVATE);

@@ -26,7 +26,7 @@ public class BridgeAudio implements IAudioSettings {
             return audioPreference.getAudioMode();
         else {
             Crashlytics.logException(new Throwable("audioPreference is null " + Build.MODEL + Build.ID));
-            return 0;
+            return Constants.NO_VALUE;
         }
     }
 

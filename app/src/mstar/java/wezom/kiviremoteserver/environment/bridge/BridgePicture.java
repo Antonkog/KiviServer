@@ -5,11 +5,10 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.view.WindowManager;
 
+import com.android.inputmethod.pinyin.util.PropertyHelper;
 import com.mstar.android.tv.TvCommonManager;
 import com.mstar.android.tv.TvPictureManager;
 import com.mstar.android.tvapi.common.vo.ColorTemperatureExData;
-
-import java.lang.reflect.Method;
 
 import static android.os.Build.MODEL;
 
@@ -174,22 +173,9 @@ public class BridgePicture {
 
     }
     private boolean isPlay() {
-        String string = getSystemProp("Storage_Video_Status", "Finalize");
+        String string = PropertyHelper.getSystemProp("Storage_Video_Status", "Finalize");
         // Log.e("isSafe", "string " + string);
         return "inited".equals(string);
-    }
-    private String getSystemProp(String prop, String value) {
-        String string = "";
-        try {
-
-            Class properties = Class.forName("android.os.SystemProperties");
-            Method setProp = properties.getMethod("get", new Class[]{String.class, String.class});
-            string = (String) setProp.invoke(properties, new Object[]{prop, value});
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return string;
     }
 
     public int getContrast() {

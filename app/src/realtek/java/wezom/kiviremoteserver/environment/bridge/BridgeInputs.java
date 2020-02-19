@@ -11,6 +11,7 @@ import android.os.Build;
 import android.util.Log;
 import android.view.KeyEvent;
 
+import com.android.inputmethod.pinyin.util.PropertyHelper;
 import com.realtek.tv.Tv;
 import com.wezom.kiviremoteserver.App;
 import com.wezom.kiviremoteserver.common.Constants;
@@ -22,7 +23,7 @@ import static com.wezom.kiviremoteserver.service.inputs.InputSourceHelper.INPUT_
 
 public class BridgeInputs {
     public void getPortsList(ArrayList<InputSourceHelper.INPUT_PORT> result, Context context) {
-        String modelNew = App.getProperty("ro.ota.modelname").trim();
+        String modelNew = PropertyHelper.getProperty("ro.ota.modelname").trim();
         boolean is2831 = "2831".equals(modelNew);
         boolean is2851 = "2851".equals(modelNew);
         boolean is2842 = "2842P533".equals(modelNew)
@@ -92,7 +93,7 @@ public class BridgeInputs {
     }
 
     public void changeInput(InputSourceHelper.INPUT_PORT inputPort, Context context) {
-        String str = App.getProperty("ro.ota.modelname");
+        String str = PropertyHelper.getProperty("ro.ota.modelname");
         String id = inputPort.getRealtekID(str);
         startTvInputs(getInputUri(id), context);
     }
@@ -177,7 +178,7 @@ public class BridgeInputs {
 
 
     public int getCurrentTvInputSource() {
-        final String s = App.getProperty(Constants.REALTEK_INPUT_SOURCE);
+        final String s = PropertyHelper.getProperty(Constants.REALTEK_INPUT_SOURCE);
         InputSourceHelper.INPUT_PORT current = InputSourceHelper.INPUT_PORT.getPortByRealtekID(s);
         if (current != INPUT_SOURCE_NONE) {
             return current.getId();
@@ -191,7 +192,7 @@ public class BridgeInputs {
     }
 
     public boolean isTV(int i) {
-        final String launcherPort = App.getProperty(Constants.REALTEK_INPUT_SOURCE);
+        final String launcherPort = PropertyHelper.getProperty(Constants.REALTEK_INPUT_SOURCE);
         if ("com.kivi.launcher".equals(launcherPort)) return false;
         if (i == InputSourceHelper.INPUT_PORT.INPUT_SOURCE_VGA.getId() ||
                 i == InputSourceHelper.INPUT_PORT.INPUT_SOURCE_ATV.getId() ||
