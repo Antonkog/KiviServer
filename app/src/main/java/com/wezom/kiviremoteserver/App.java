@@ -41,7 +41,6 @@ import java.util.List;
 import java.util.UUID;
 
 import timber.log.Timber;
-import wezom.kiviremoteserver.environment.bridge.BridgeGeneral;
 
 import static com.wezom.kiviremoteserver.common.Constants.APPLICATION_UID;
 
@@ -53,14 +52,6 @@ public class App extends Application {
     private static ApplicationComponent appComponent;
     private static Context context;
     SharedPreferences prefs;
-    Handler hdmiTimer = new Handler();
-    Runnable runnable = new Runnable() {
-        @Override
-        public void run() {
-            BridgeGeneral.checkHDMIStatus();
-            hdmiTimer.postDelayed(runnable, 5000);
-        }
-    };
     public static volatile boolean hdmiStatus1;
     public static volatile boolean hdmiStatus2;
     public static volatile boolean hdmiStatus3;
@@ -114,8 +105,6 @@ public class App extends Application {
         }
 
         ScreenOnReceiver.setInitialBackL(getBaseContext());
-        hdmiTimer.postDelayed(runnable, 5000);
-
     }
 
     private final static int TYPE_USB = 0;
@@ -226,12 +215,4 @@ public class App extends Application {
     }
 
 
-    public static boolean isRUMarket() {
-        try {
-            return new BridgeGeneral().isRUMarket();
-        } catch (Exception e) {
-            return true;
-        }
-        // return MSTAR();
-    }
 }
