@@ -10,7 +10,7 @@ buildscript {
             'versionPatch'  : 47,
             'versionMajor'             : 1,
             'versionMinor'             : 2,
-            'versionPatch'             : 49,
+            'versionPatch'             : 50,
             //versioning see  https://medium.com/@maxirosson/versioning-android-apps-d6ec171cfd82
             'androidx'      : '1.1.0',
             'material'      : '1.1.0',

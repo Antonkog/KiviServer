@@ -1,6 +1,5 @@
 package com.wezom.kiviremoteserver.service.aspect.recycler
 
-import android.content.Context
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
@@ -15,9 +14,9 @@ import com.wezom.kiviremoteserver.R
 import com.wezom.kiviremoteserver.environment.EnvironmentInputsHelper
 import com.wezom.kiviremoteserver.service.inputs.InputSourceHelper
 
-class AspectInputsAdapter(context: Context, val inputsHelper: EnvironmentInputsHelper, val onBackClick: () -> Unit) : RecyclerView.Adapter<AspectInputsAdapter.InputsViewHolder>() {
-
-    private val items: List<InputSourceHelper.INPUT_PORT> = inputsHelper.getPortsList(arrayListOf<InputSourceHelper.INPUT_PORT>(), context)
+class AspectInputsAdapter(private val items: List<InputSourceHelper.INPUT_PORT>,
+                          val inputsHelper: EnvironmentInputsHelper,
+                          val onBackClick: () -> Unit) : RecyclerView.Adapter<AspectInputsAdapter.InputsViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): InputsViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_aspect_input, parent, false)
@@ -94,7 +93,8 @@ class AspectInputsAdapter(context: Context, val inputsHelper: EnvironmentInputsH
 
             container.setOnClickListener {
                 inputsHelper.changeInput(data, container.context)
-//                notifyDataSetChanged()
+                //TODO: refresh, diffutils
+                //notifyDataSetChanged()
             }
 
             container.setOnKeyListener { _, _, event ->
