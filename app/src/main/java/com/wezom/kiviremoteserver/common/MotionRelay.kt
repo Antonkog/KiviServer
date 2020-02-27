@@ -12,6 +12,12 @@ object MotionRelay {
     @JvmField
     val LEFT_CLICK = 2
 
+    @JvmField
+    val LONG_TAP_DOWN = 3
+
+    @JvmField
+    val LONG_TAP_UP = 4
+
     val relay: Relay<CursorMotionEvent> = PublishRelay.create<CursorMotionEvent>().also { it.doOnError(Timber::e) }
 
     data class CursorMotionEvent @JvmOverloads constructor(val type: Int, val x: Float = 0f, val y: Float = 0f)

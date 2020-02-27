@@ -3,7 +3,7 @@ package wezom.kiviremoteserver.environment.bridge.driver_set;
 import android.content.Context;
 import android.support.annotation.Nullable;
 
-import com.wezom.kiviremoteserver.App;
+import com.android.inputmethod.pinyin.util.PropertyHelper;
 import com.wezom.kiviremoteserver.R;
 import com.wezom.kiviremoteserver.common.Constants;
 import com.wezom.kiviremoteserver.interfaces.DriverValue;
@@ -95,7 +95,7 @@ public enum Ratio implements AvailableValues {
     }
 
     public List<Ratio> getRatios() {
-        final String s = App.getProperty(Constants.REALTEK_INPUT_SOURCE);
+        final String s = PropertyHelper.getProperty(Constants.REALTEK_INPUT_SOURCE);
         InputSourceHelper.INPUT_PORT currentInput = InputSourceHelper.INPUT_PORT.getPortByRealtekID(s);
         List<Ratio> ratios =  new ArrayList<>();
         ratios.add(Ratio.VIDEO_ARC_16x9);

@@ -29,7 +29,7 @@ android {
         minSdkVersion versions.minSdk
         targetSdkVersion versions.targetSdk
         versionCode generateVersionCode()
-        versionName generateVersionName()
+        versionName "testing new aidl api"
         multiDexEnabled true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
@@ -133,6 +133,7 @@ dependencies {
     implementation deps.support.recyclerView
     implementation deps.support.cardView
     implementation deps.support.leanback
+    implementation deps.support.constraintLayout
     implementation deps.rx.core
     implementation deps.rx.android
     implementation deps.rx.relay

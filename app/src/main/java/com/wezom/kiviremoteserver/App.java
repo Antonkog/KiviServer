@@ -26,6 +26,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.crashlytics.android.Crashlytics;
+import com.android.inputmethod.pinyin.util.PropertyHelper;
 import com.wezom.kiviremoteserver.common.Constants;
 import com.wezom.kiviremoteserver.di.components.ApplicationComponent;
 import com.wezom.kiviremoteserver.di.components.DaggerApplicationComponent;
@@ -35,10 +36,10 @@ import com.wezom.kiviremoteserver.environment.EnvironmentPictureSettings;
 import com.wezom.kiviremoteserver.receiver.ScreenOnReceiver;
 import com.wezom.kiviremoteserver.service.AspectLayoutService;
 import com.wezom.kiviremoteserver.service.CursorService;
+import com.wezom.kiviremoteserver.service.RemoteConlrolService;
 import com.wezom.kiviremoteserver.service.communication.DelegatePlatformsService;
 import com.wezom.kiviremoteserver.service.inputs.InputSourceHelper;
 
-import java.lang.reflect.Method;
 import java.util.List;
 import java.util.UUID;
 
@@ -74,6 +75,8 @@ public class App extends Application {
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         String uid = prefs.getString(APPLICATION_UID, null);
 
+        Timber.e("APP:  current app version: " + BuildConfig.VERSION_NAME + " debug? : "+ BuildConfig.DEBUG);
+
         if (uid == null) {
             prefs.edit().putString(APPLICATION_UID, UUID.randomUUID().toString().substring(3, 7)).apply();
         }
@@ -89,6 +92,9 @@ public class App extends Application {
 
         if (BridgeGeneral.ENVIRONMENT != EnvironmentFactory.ENVIRONMENT_MOCK)
             startService(new Intent(this, CursorService.class));
+        startService(new Intent(this, RemoteConlrolService.class));
+        startService(new Intent(this, CursorService.class));
+
         if (isTVRealtek()) {
             BroadcastReceiver mUsbReceiver = new BroadcastReceiver() {
                 public void onReceive(Context context, Intent intent) {
@@ -218,19 +224,8 @@ public class App extends Application {
 
 
     public static boolean isTVRealtek() {
-        return "realtek".equalsIgnoreCase(getProperty("ro.product.manufacturer"));
+        return "realtek".equalsIgnoreCase(PropertyHelper.getProperty("ro.product.manufacturer"));
     }
 
-    public static String getProperty(String value) {
-        String model = "";
-        try {
-            Class<?> c = Class.forName("android.os.SystemProperties");
-            Method get = c.getMethod("get", String.class);
-            model = (String) get.invoke(c, value);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return model;
-    }
 
 }

@@ -24,7 +24,8 @@ buildscript {
                     'design'      : "com.android.support:design:${versions.supportLibrary}",
                     'recyclerView': "com.android.support:recyclerview-v7:${versions.supportLibrary}",
                     'cardView'    : "com.android.support:cardview-v7:${versions.supportLibrary}",
-                    'leanback'    : "com.android.support:leanback-v17:${versions.supportLibrary}"
+                    'leanback'    : "com.android.support:leanback-v17:${versions.supportLibrary}",
+                    'constraintLayout': 'androidx.constraintlayout:constraintlayout:1.1.3'
             ],
             'rx'         : [
                     'core'   : "io.reactivex.rxjava2:rxjava:${versions.rx}",

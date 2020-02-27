@@ -11,6 +11,7 @@ import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.util.Log;
 
+import com.android.inputmethod.pinyin.util.PropertyHelper;
 import com.wezom.kiviremoteserver.App;
 import com.wezom.kiviremoteserver.di.qualifiers.ApplicationContext;
 import com.wezom.kiviremoteserver.environment.EnvironmentFactory;
@@ -51,7 +52,7 @@ public class NsdUtil {
     private String setServiceName() {
         mServiceName = Build.MODEL;
         if (App.isTVRealtek()) {
-            mServiceName = App.getProperty("ro.product.panel");
+            mServiceName = PropertyHelper.getProperty("ro.product.panel");
             if (mServiceName.isEmpty()) mServiceName = Build.MODEL;
         }
         return mServiceName;
