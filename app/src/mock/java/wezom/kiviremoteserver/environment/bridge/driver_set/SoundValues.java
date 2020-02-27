@@ -2,17 +2,18 @@ package wezom.kiviremoteserver.environment.bridge.driver_set;
 
 
 import android.content.Context;
-import android.support.annotation.Nullable;
-import android.support.annotation.StringRes;
 
 import com.wezom.kiviremoteserver.R;
 import com.wezom.kiviremoteserver.interfaces.DriverValue;
-import com.wezom.kiviremoteserver.service.aspect.AvailableValues;
-import com.wezom.kiviremoteserver.service.aspect.TextTypedValues;
+import com.wezom.kiviremoteserver.service.aspect.values.AvailableValues;
+import com.wezom.kiviremoteserver.service.aspect.values.TextTypedValues;
 
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 
 
 public enum SoundValues implements TextTypedValues, AvailableValues {

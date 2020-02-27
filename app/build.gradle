@@ -132,7 +132,6 @@ dependencies {
     implementation deps.support.recyclerView
     implementation deps.support.cardView
     implementation deps.support.leanback
-    implementation deps.support.constraintLayout
     implementation deps.rx.core
     implementation deps.rx.android
     implementation deps.rx.relay

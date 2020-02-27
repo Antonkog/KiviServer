@@ -1,15 +1,16 @@
 package wezom.kiviremoteserver.environment.bridge.driver_set;
 
 import android.content.Context;
-import android.support.annotation.Nullable;
 
 import com.wezom.kiviremoteserver.R;
 import com.wezom.kiviremoteserver.interfaces.DriverValue;
-import com.wezom.kiviremoteserver.service.aspect.AvailableValues;
+import com.wezom.kiviremoteserver.service.aspect.values.AvailableValues;
 
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+
+import androidx.annotation.Nullable;
 
 
 public enum Ratio implements AvailableValues {
@@ -72,7 +73,7 @@ public enum Ratio implements AvailableValues {
         }
         return linkedList;
     }
-    public List<Ratio> getRatios (){
+    public static List<Ratio> getRatios (){
         return Arrays.asList(
                 Ratio.VIDEO_ARC_DEFAULT,
                 Ratio.VIDEO_ARC_16x9,
