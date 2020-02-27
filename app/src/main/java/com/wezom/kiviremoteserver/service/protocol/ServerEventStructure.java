@@ -3,7 +3,6 @@ package com.wezom.kiviremoteserver.service.protocol;
 import android.os.Build;
 
 import com.google.gson.annotations.SerializedName;
-import com.wezom.kiviremoteserver.bus.TvPlayerEvent;
 import com.wezom.kiviremoteserver.common.KiviProtocolStructure;
 import com.wezom.kiviremoteserver.interfaces.AspectAvailable;
 import com.wezom.kiviremoteserver.interfaces.AspectMessage;
@@ -63,14 +62,6 @@ public class ServerEventStructure {
 
     public ServerEventStructure addApps(List<ServerApplicationInfo> appInfo) {
         this.appInfo = appInfo;
-        return this;
-    }
-
-
-    public ServerEventStructure addTvPlayerAction(TvPlayerEvent tvPlayerAction) {
-        if (tvPlayerAction.getPlayerAction() != null) this.event = tvPlayerAction.getPlayerAction();
-        if (tvPlayerAction.getPlayerPreview() != null) this.previewCommonStructures.add(tvPlayerAction.getPlayerPreview());
-        if (tvPlayerAction.getNewState() != 0) this.volume = tvPlayerAction.getNewState();
         return this;
     }
 

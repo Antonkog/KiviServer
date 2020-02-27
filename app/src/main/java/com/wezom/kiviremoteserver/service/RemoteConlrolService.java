@@ -63,7 +63,6 @@ import com.wezom.kiviremoteserver.environment.EnvironmentPictureSettings;
 import com.wezom.kiviremoteserver.interfaces.AspectAvailable;
 import com.wezom.kiviremoteserver.interfaces.AspectMessage;
 import com.wezom.kiviremoteserver.interfaces.DataStructure;
-import com.wezom.kiviremoteserver.interfaces.InitialMessage;
 import com.wezom.kiviremoteserver.interfaces.RemoteServer;
 import com.wezom.kiviremoteserver.mvp.view.ServiceMvpView;
 import com.wezom.kiviremoteserver.net.nsd.NsdUtil;
@@ -109,9 +108,6 @@ public class RemoteConlrolService extends Service implements ServiceMvpView {
 
     @Inject
     DeviceUtils deviceUtils;
-
-    @Inject
-    InitialMessage initialMessage;
 
     @Inject
     AppsInfoLoader appsInfoLoader;
@@ -199,9 +195,6 @@ public class RemoteConlrolService extends Service implements ServiceMvpView {
 
         handler.postDelayed(() -> {
             appsInfoLoader.init(this);
-            deviceUtils.init(this);
-//            Pair<String, String> address = server.getLocalIpPair(getApplicationContext());
-//            startForeground(SERVER_ID, createNotification(prepareIntent(), address));
         }, 300);
 
         receiveScreenOn();
@@ -543,7 +536,7 @@ public class RemoteConlrolService extends Service implements ServiceMvpView {
                     break;
                 case REQUEST_INITIAL:
                     dispose(disposableInit);
-                    disposableInit = initialMessage.getInitialSingle().
+                    disposableInit = deviceUtils.getInitialSingle(getApplicationContext()).
                                     subscribeOn(Schedulers.io())
                                     .observeOn(AndroidSchedulers.mainThread())
                                     .subscribe(initialMessage -> RxBus.INSTANCE.publish(new SendInitialEvent(initialMessage)),
@@ -551,8 +544,7 @@ public class RemoteConlrolService extends Service implements ServiceMvpView {
                     break;
                 case REQUEST_INITIAL_II:
                     dispose(disposableInit_II);
-                    disposableInit_II =
-                            deviceUtils.getPreviewCommonStructureSingle()
+                    disposableInit_II = deviceUtils.getPreviewCommonStructureSingle()
                                     .subscribeOn(Schedulers.computation())
                                     .observeOn(AndroidSchedulers.mainThread())
                                     .subscribe(previewCommonStructures -> RxBus.INSTANCE.publish(new SendInitialEvent(previewCommonStructures)),

@@ -11,6 +11,7 @@ import android.text.format.DateUtils;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.wezom.kiviremoteserver.di.qualifiers.ApplicationContext;
+import com.wezom.kiviremoteserver.interfaces.InitialMessage;
 import com.wezom.kiviremoteserver.net.server.model.AppVisibility;
 import com.wezom.kiviremoteserver.net.server.model.Channel;
 import com.wezom.kiviremoteserver.net.server.model.LauncherBasedData;
@@ -41,6 +42,7 @@ public class DeviceUtils implements SyncValue {
     private Context context;
     private AppsInfoLoader appsInfoLoader;
     private long syncFrequency = 10 * DateUtils.MINUTE_IN_MILLIS;
+    private InitialMessage initialMessage;
 
     @Inject
     public DeviceUtils(AppsInfoLoader appsInfoLoader, @ApplicationContext Context context) {
@@ -52,6 +54,15 @@ public class DeviceUtils implements SyncValue {
     @Override
     public void init(@NotNull Context context) {
         getPreviewCommonStructure();
+        initialMessage = new InitialMessage();
+        initialMessage.setDriverValueList(context);
+    }
+
+    public Single<InitialMessage> getInitialSingle(Context context) {
+        return Single.create(emitter -> {
+            Timber.d("getPreviewCommonStructureSingle started");
+            emitter.onSuccess(initialMessage);
+        });
     }
 
     private static final List<Channel> channels = new ArrayList<>();
@@ -104,14 +115,14 @@ public class DeviceUtils implements SyncValue {
         previewCommonStructures.clear();
 
         for (LauncherBasedData data : getLauncherData(recommendations, LauncherBasedData.TYPE.RECOMMENDATION, context)) {
-            if (data.getType() != null)
+            if(data.getType()!=null)
                 previewCommonStructures.add(new PreviewCommonStructure(data.getType().name(),
                         data.getID(), data.getName(),
                         data.getImageUrl(),
                         data.isActive(), data.getAdditionalData()));
         }
         for (LauncherBasedData data : getLauncherData(channels, LauncherBasedData.TYPE.CHANNEL, context)) {
-            if (data.getType() != null)
+            if(data.getType()!=null)
                 previewCommonStructures.add(new PreviewCommonStructure(data.getType().name(),
                         data.getID(), data.getName(),
                         data.getImageUrl(),
@@ -119,7 +130,7 @@ public class DeviceUtils implements SyncValue {
         }
 
         for (LauncherBasedData data : InputSourceHelper.getAsInputs(context)) {
-            if (data.getType() != null)
+            if(data.getType()!=null)
                 previewCommonStructures.add(new PreviewCommonStructure(data.getType().name(),
                         data.getID(), data.getName(),
                         data.getImageUrl(),

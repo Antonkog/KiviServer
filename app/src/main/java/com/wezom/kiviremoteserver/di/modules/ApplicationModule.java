@@ -11,7 +11,6 @@ import com.wezom.kiviremoteserver.common.KiviCache;
 import com.wezom.kiviremoteserver.common.LongTapMenuProvider;
 import com.wezom.kiviremoteserver.di.qualifiers.ApplicationContext;
 import com.wezom.kiviremoteserver.di.scopes.ApplicationScope;
-import com.wezom.kiviremoteserver.interfaces.InitialMessage;
 import com.wezom.kiviremoteserver.net.nsd.NsdUtil;
 import com.wezom.kiviremoteserver.service.inputs.InputSourceHelper;
 
@@ -97,12 +96,5 @@ public class ApplicationModule {
         return new DeviceUtils(appsInfoLoader, context);
     }
 
-
-    @Provides
-    @Singleton
-    @ApplicationContext
-    static InitialMessage provideInitialMessage(Context context) {
-        return new InitialMessage(context);
-    }
 
 }

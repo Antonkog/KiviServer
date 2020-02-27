@@ -216,10 +216,6 @@ public class KiviServer implements RemoteServer {
         postMessage(new ServerEventStructure(KiviProtocolStructure.ServerEventType.IMG_BY_IDS).addPreviewContents(previewContents));
     }
 
-//    public void sendPlayerAction(RemotePlayerEvent event) {
-//        postMessage(new ServerEventStructure(KiviProtocolStructure.ServerEventType.P).setAvailableInputs(inputs));
-//    }
-
     @Override
     public void sendInitialMsg(AspectMessage aspectMessage, AspectAvailable available, InitialMessage msg) {
         postMessage(new ServerEventStructure(aspectMessage, available,  msg, KiviProtocolStructure.ServerEventType.INITIAL));
