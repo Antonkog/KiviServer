@@ -9,6 +9,8 @@ import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import timber.log.Timber
 import java.io.ByteArrayOutputStream
+import kotlin.math.pow
+import kotlin.math.sqrt
 
 
 fun dpToPx(context: Context, dps: Int) = Math.round(context.resources.displayMetrics.density * dps)
@@ -49,6 +51,11 @@ fun getIconBytes(context: Context, outWidth: Int, outHeight: Int, banner: Drawab
         }
         return iconBytes
     }
+}
+
+
+fun distance(x: Double, y: Double, endX : Double , endY : Double): Double {
+    return sqrt((endX - x).pow(2.0) + (endY - y).pow(2.0))  //ERROR IN THIS LINE
 }
 
 fun drawableToBitmap(drawable: Drawable): Bitmap {

@@ -28,21 +28,16 @@ public class DataStructure {
     @Expose
     private List<Float> motion;
 
-    @SerializedName("mouseEvent")
-    @Expose
-    private int mouseEvent;
-
     @SerializedName("package_name")
     private String packageName;
 
     @SerializedName("aspectMessage")
     private AspectMessage aspectMessage;
 
-    public DataStructure(KiviProtocolStructure.ExecActionEnum action, List<String> args, List<Float> motion, int mouseEvent, String packageName, AspectMessage aspectMessage) {
+    public DataStructure(KiviProtocolStructure.ExecActionEnum action, List<String> args, List<Float> motion, String packageName, AspectMessage aspectMessage) {
         this.action = action;
         this.args = args;
         this.motion = motion;
-        this.mouseEvent = mouseEvent;
         this.packageName = packageName;
         this.aspectMessage = aspectMessage;
     }

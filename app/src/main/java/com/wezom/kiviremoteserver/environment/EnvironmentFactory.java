@@ -4,6 +4,7 @@ import android.content.Context;
 
 public class EnvironmentFactory {
     public static final int ENVIRONMENT_MTC = 0;
+    public static final int ENVIRONMENT_MOCK = -1;
     public static final int ENVIRONMENT_REALTEC = 1;
     private Context context;
 

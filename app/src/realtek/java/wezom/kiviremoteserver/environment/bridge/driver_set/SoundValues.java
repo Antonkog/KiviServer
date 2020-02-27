@@ -6,6 +6,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
 import com.wezom.kiviremoteserver.R;
+import com.wezom.kiviremoteserver.common.Constants;
 import com.wezom.kiviremoteserver.interfaces.DriverValue;
 import com.wezom.kiviremoteserver.service.aspect.values.AvailableValues;
 import com.wezom.kiviremoteserver.service.aspect.values.IFLMItems;
@@ -17,6 +18,7 @@ import java.util.List;
 
 public enum SoundValues implements TextTypedValues, AvailableValues, IFLMItems {
 
+    SOUND_WRONG_LIB_ERROR(Constants.NO_VALUE, R.string.error),
     SOUND_TYPE_STANDARD(1, R.string.sound_standard),
     SOUND_TYPE_VIDEO(2, R.string.sound_film),
     SOUND_TYPE_MUSIC(3, R.string.sound_music),

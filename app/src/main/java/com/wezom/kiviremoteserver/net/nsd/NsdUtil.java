@@ -11,12 +11,15 @@ import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.util.Log;
 
+import com.android.inputmethod.pinyin.util.PropertyHelper;
 import com.wezom.kiviremoteserver.App;
 import com.wezom.kiviremoteserver.di.qualifiers.ApplicationContext;
+import com.wezom.kiviremoteserver.environment.EnvironmentFactory;
 
 import javax.inject.Inject;
 
 import timber.log.Timber;
+import wezom.kiviremoteserver.environment.bridge.BridgeGeneral;
 
 import static com.wezom.kiviremoteserver.common.Constants.APPLICATION_UID;
 
@@ -49,7 +52,7 @@ public class NsdUtil {
     private String setServiceName() {
         mServiceName = Build.MODEL;
         if (App.isTVRealtek()) {
-            mServiceName = App.getProperty("ro.product.panel");
+            mServiceName = PropertyHelper.getProperty("ro.product.panel");
             if (mServiceName.isEmpty()) mServiceName = Build.MODEL;
         }
         return mServiceName;
@@ -85,10 +88,10 @@ public class NsdUtil {
 
             @Override
             public void onServiceLost(NsdServiceInfo service) {
-                if(service !=null)
-                Timber.e(TAG + "service lost" + service.toString());
-                if(nsdServiceInfo !=null)
-                Timber.e("\n old service :  \n" + nsdServiceInfo.toString());
+                if (service != null)
+                    Timber.e(TAG + "service lost" + service.toString());
+                if (nsdServiceInfo != null)
+                    Timber.e("\n old service :  \n" + nsdServiceInfo.toString());
                 if (nsdServiceInfo == service) {
                     nsdServiceInfo = null;
                 }
@@ -113,7 +116,8 @@ public class NsdUtil {
 
     private void syncDeviceName() {
         String deviceName = Settings.Global.getString(context.getContentResolver(), DEVICE_NAME_KEY);
-        Settings.System.putString(context.getContentResolver(), DEVICE_NAME_KEY, deviceName);
+        if (BridgeGeneral.ENVIRONMENT != EnvironmentFactory.ENVIRONMENT_MOCK)
+            Settings.System.putString(context.getContentResolver(), DEVICE_NAME_KEY, deviceName);
     }
 
     public void initializeResolveListener() {

@@ -10,7 +10,6 @@ import android.util.Log;
 import com.wezom.kiviremoteserver.common.Constants;
 import com.wezom.kiviremoteserver.service.aspect.values.HDRValues;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import wezom.kiviremoteserver.environment.bridge.BridgePicture;
@@ -33,7 +32,7 @@ public class EnvironmentPictureSettings {
     private int sharpness;
     private int contrast = 50;
     private int videoArcType;
-
+    private boolean isAutoInvalidate = false;
     //
     BridgePicture bridgePicture;
 
@@ -72,8 +71,7 @@ public class EnvironmentPictureSettings {
 
     public void initSettings(Context context) {
         bridgePicture.initSettings(context);
-
-
+        initValues();
     }
 
     public int getBrightness() {
@@ -196,6 +194,9 @@ public class EnvironmentPictureSettings {
         final float G = 0.715f * invSat;
         final float B = 0.072f * invSat;
 
+        if ((R + lSaturation) * lContrast + G * lContrast + B * lContrast + lBrightness < 0.1) {
+            lContrast = (float) ((0.1 - lBrightness) / (R + G + B + lSaturation));
+        }
         float[] matrixVal = new float[]{
                 (R + lSaturation) * lContrast, R * lContrast, R * lContrast, 0,
                 G * lContrast, (G + lSaturation) * lContrast, G * lContrast, 0,
@@ -237,7 +238,7 @@ public class EnvironmentPictureSettings {
             e.printStackTrace();
         } catch (IllegalAccessException e) {
             e.printStackTrace();
-        } catch (InvocationTargetException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

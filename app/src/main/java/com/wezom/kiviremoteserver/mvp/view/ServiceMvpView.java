@@ -7,9 +7,7 @@ import com.wezom.kiviremoteserver.service.protocol.ServerEventStructure;
  */
 
 public interface ServiceMvpView {
-
     void registerNsd(int port);
     void unregisterNsd();
-
     void sendBySocket(ServerEventStructure structure);
 }

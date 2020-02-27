@@ -11,7 +11,6 @@ public class Input implements LauncherBasedData, Comparable<Input> {
     private String portName;
     private String imageUrl;
     private Boolean active;
-    private String inputIcon;
 
     public Input addImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
@@ -33,10 +32,6 @@ public class Input implements LauncherBasedData, Comparable<Input> {
         return this;
     }
 
-    public Input addInputIcon(String inputIcon) {
-        this.inputIcon = inputIcon;
-        return this;
-    }
 
     @Override
     public String getID() {
@@ -51,11 +46,6 @@ public class Input implements LauncherBasedData, Comparable<Input> {
     @Override
     public String getImageUrl() {
         return imageUrl;
-    }
-
-    @Override
-    public String getBaseIcon() {
-        return inputIcon;
     }
 
     @Override
@@ -95,7 +85,6 @@ public class Input implements LauncherBasedData, Comparable<Input> {
         dest.writeString(this.portName);
         dest.writeString(this.imageUrl);
         dest.writeValue(this.active);
-        dest.writeString(this.inputIcon);
     }
 
     protected Input(Parcel in) {
@@ -103,7 +92,6 @@ public class Input implements LauncherBasedData, Comparable<Input> {
         this.portName = in.readString();
         this.imageUrl = in.readString();
         this.active = (Boolean) in.readValue(Boolean.class.getClassLoader());
-        this.inputIcon = in.readString();
     }
 
     public static final Creator<Input> CREATOR = new Creator<Input>() {

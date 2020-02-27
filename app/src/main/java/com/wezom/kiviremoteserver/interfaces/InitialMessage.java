@@ -3,7 +3,6 @@ package com.wezom.kiviremoteserver.interfaces;
 import android.content.Context;
 
 import com.wezom.kiviremoteserver.common.Constants;
-import com.wezom.kiviremoteserver.net.server.model.PreviewCommonStructure;
 import com.wezom.kiviremoteserver.service.inputs.InputSourceHelper;
 
 import java.io.BufferedReader;
@@ -12,7 +11,6 @@ import java.io.InputStreamReader;
 import java.util.LinkedList;
 import java.util.List;
 
-import io.reactivex.Single;
 import timber.log.Timber;
 import wezom.kiviremoteserver.environment.bridge.driver_set.PictureMode;
 import wezom.kiviremoteserver.environment.bridge.driver_set.Ratio;
@@ -22,28 +20,6 @@ import wezom.kiviremoteserver.environment.bridge.driver_set.TemperatureValues;
 public class InitialMessage {
     public String buildProp;
     public List<DriverValue> driverValueList;
-
-
-    private static class InstanceHolder {
-        private static final InitialMessage INSTANCE = new InitialMessage();
-    }
-
-    public static InitialMessage getInstance() {
-        return InitialMessage.InstanceHolder.INSTANCE;
-    }
-
-
-    public Single<InitialMessage> setDriverValueListSingle(Context context) {
-        return Single.create(emitter -> {
-            Timber.d("getPreviewCommonStructureSingle started");
-            try{
-                setDriverValueList(context);
-                emitter.onSuccess(this);
-            }catch (Exception e){
-                emitter.onError(e);
-            }
-        });
-    }
 
 
     public void setDriverValueList(Context context) {

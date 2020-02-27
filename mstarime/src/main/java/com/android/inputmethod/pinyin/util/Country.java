@@ -40,6 +40,7 @@ public enum Country {
                     }
                     break;
                 case REALTEK:
+                case REALTEK9:
                     countryKey = PropertyHelper.getProperty("ro.product.country");
                     break;
             }

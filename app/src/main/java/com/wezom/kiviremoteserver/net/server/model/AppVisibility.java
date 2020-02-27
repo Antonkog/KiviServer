@@ -46,11 +46,6 @@ public class AppVisibility implements LauncherBasedData {
     }
 
     @Override
-    public String getBaseIcon() {
-        return null;
-    }
-
-    @Override
     public Boolean isActive() {
         return ((isVisible != null) && isVisible.equalsIgnoreCase("true"));
     }

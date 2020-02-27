@@ -3,6 +3,9 @@ package com.wezom.kiviremoteserver.service.inputs;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.util.Base64;
+import android.support.annotation.DrawableRes;
+import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.Nullable;
@@ -10,9 +13,9 @@ import androidx.annotation.StringRes;
 import androidx.core.content.res.ResourcesCompat;
 
 import com.wezom.kiviremoteserver.App;
+import com.android.inputmethod.pinyin.util.PropertyHelper;
 import com.wezom.kiviremoteserver.R;
 import com.wezom.kiviremoteserver.common.Constants;
-import com.wezom.kiviremoteserver.common.extensions.ViewExtensionsKt;
 import com.wezom.kiviremoteserver.environment.EnvironmentInputsHelper;
 import com.wezom.kiviremoteserver.interfaces.DriverValue;
 import com.wezom.kiviremoteserver.net.server.model.Input;
@@ -173,7 +176,7 @@ public class InputSourceHelper {
         }
 
         public static INPUT_PORT getPortByRealtekID(String id) { //todo: moke fix
-            String str = App.getProperty("ro.ota.modelname");
+            String str = PropertyHelper.getProperty("ro.ota.modelname");
             boolean is2841 = "2841".equals(str.trim());
             boolean is2851 = "2851".equals(str.trim()) ||
                     "2842P533".equals(str.trim()) ||
@@ -245,36 +248,22 @@ public class InputSourceHelper {
 
         for (int i = 0; i < inputs.size(); i++) {
             InputSourceHelper.INPUT_PORT temp = inputs.get(i);
-            try {
-                byte[] iconBytes;
-                Drawable drawable = ResourcesCompat.getDrawable(context.getResources(), temp.drawable, null);
-                if (drawable != null) {
-                    int width = drawable.getIntrinsicWidth();
-                    int height = drawable.getIntrinsicHeight();
+            set.add(new Input()
+                    .addPortName(context.getResources().getString(temp.getNameResource()))
+                    .addActive(currentPort == temp.getId())
+                    .addPortNum(temp.getId()));
 
-                    iconBytes = ViewExtensionsKt.getIconBytes(context, ViewExtensionsKt.dpToPx(context, Constants.INPUT_ICON_WH), ViewExtensionsKt.dpToPx(context, Constants.INPUT_ICON_WH), drawable);
-
-                    String byteString = Base64.encodeToString(iconBytes, Base64.DEFAULT);
-
-                    set.add(new Input()
-                            .addPortName(context.getResources().getString(temp.getNameResource()))
-                            .addActive(currentPort == temp.getId())
-                            .addInputIcon(byteString)
-                            .addPortNum(temp.getId()));
-
-                } else {
-                    set.add(new Input()
-                            .addPortName(context.getResources().getString(temp.getNameResource()))
-                            .addActive(currentPort == temp.getId())
-                            .addPortNum(temp.getId()));
-                }
-            } catch (Exception e) {
-                Timber.e(e);
-                set.add(new Input()
-                        .addPortName(context.getResources().getString(temp.getNameResource()))
-                        .addActive(currentPort == temp.getId())
-                        .addPortNum(temp.getId()));
-            }
+//            try {
+//                byte[] iconBytes;
+//                Drawable drawable = ResourcesCompat.getDrawable(context.getResources(), temp.drawable, null);
+//                if (drawable != null) {
+//                    iconBytes = ViewExtensionsKt.getIconBytes(context, ViewExtensionsKt.dpToPx(context, Constants.INPUT_ICON_WH), ViewExtensionsKt.dpToPx(context, Constants.INPUT_ICON_WH), drawable);
+//                    String byteString = Base64.encodeToString(iconBytes, Base64.DEFAULT);
+//                }
+//
+//            } catch (Exception e) {
+//                Timber.e(e);
+//            }
         }
         return new LinkedList<>(set);
     }

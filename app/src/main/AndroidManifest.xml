@@ -69,7 +69,7 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".service.KiviRemoteService" />
+        <service android:name=".service.RemoteConlrolService" />
         <service android:name=".service.CursorService" />
         <service
             android:name=".service.ExecutorServiceIME"
@@ -117,8 +117,18 @@
 
         <service
             android:name=".service.communication.DelegatePlatformsService"
-            android:exported="true"></service>
+            android:exported="true"/>
 
+        <service android:name=".service.RemoteMessengerService" android:process=":remote"
+            android:exported="true"/>
+
+        <service android:name=".service.AidlPlayerService" android:process=":remote"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.kivi.launcher_v2.IPlayerControl" />
+            </intent-filter>
+        </service>
     </application>
     <!--<protected-broadcast android:name="com.wezom.kiviremoteserver.current_locale" />-->
 

@@ -23,6 +23,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.arellomobile.mvp.presenter.InjectPresenter;
+import com.wezom.kiviremoteserver.BuildConfig;
 import com.wezom.kiviremoteserver.R;
 import com.wezom.kiviremoteserver.common.DeviceUtils;
 import com.wezom.kiviremoteserver.common.ImeUtils;
@@ -30,7 +31,7 @@ import com.wezom.kiviremoteserver.common.NetConnectionUtils;
 import com.wezom.kiviremoteserver.mvp.presenter.HomeFragmentPresenter;
 import com.wezom.kiviremoteserver.mvp.view.HomeFragmentView;
 import com.wezom.kiviremoteserver.service.CursorService;
-import com.wezom.kiviremoteserver.service.KiviRemoteService;
+import com.wezom.kiviremoteserver.service.RemoteConlrolService;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -77,12 +78,11 @@ public class HomeFragment extends BaseFragment implements HomeFragmentView {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        if (!KiviRemoteService.isStarted) {
+        if (!RemoteConlrolService.isStarted ) {
             presenter.startServerService();
         }
         printCurrentIme();
-        tvTopInfo.setText("Running on real AndroidTV " + DeviceUtils.isTvDevice(getContext()));
-
+        tvTopInfo.setText("Running on real AndroidTV " + DeviceUtils.isTvDevice(getContext()) + "APP:  current app version: " + BuildConfig.VERSION_NAME + " debug? : "+ BuildConfig.DEBUG);
         initCursor();
         setPermission();
     }
@@ -155,7 +155,7 @@ public class HomeFragment extends BaseFragment implements HomeFragmentView {
     @Override
     public void bindService(ServiceConnection connection) {
         try {
-            getActivity().bindService(new Intent(getContext(), KiviRemoteService.class),
+            getActivity().bindService(new Intent(getActivity(), RemoteConlrolService.class),
                     connection, Context.BIND_AUTO_CREATE);
             presenter.setBound(true);
         } catch (Exception e) {

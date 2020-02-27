@@ -49,6 +49,9 @@ android {
         realtek_9_ {
             dimension "dim1"
         }
+        mock {
+            dimension "dim1"
+        }
     }
     sourceSets {
         realtek_9_ {
@@ -129,6 +132,7 @@ dependencies {
     implementation deps.support.recyclerView
     implementation deps.support.cardView
     implementation deps.support.leanback
+    implementation deps.support.constraintLayout
     implementation deps.rx.core
     implementation deps.rx.android
     implementation deps.rx.relay

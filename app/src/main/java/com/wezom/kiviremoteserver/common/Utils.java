@@ -12,6 +12,8 @@ import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -33,18 +35,21 @@ import timber.log.Timber;
 
 public class Utils {
     private static Method isStreamMute;
-
     public static Bitmap getBitmapFromVectorDrawable(Context context, int drawableId) {
-        Drawable drawable = VectorDrawableCompat.create(context.getResources(), drawableId, null);
-        Bitmap bitmap = null;
+        return getBitmapFromVectorDrawable(context, drawableId, 1f);
 
+    }
+    public static Bitmap getBitmapFromVectorDrawable(Context context, int drawableId, float scaleFactor) {
+        Drawable drawable = ContextCompat.getDrawable(context, drawableId);
+        Bitmap bitmap = null;
         if (drawable != null) {
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
                 drawable = (DrawableCompat.wrap(drawable)).mutate();
             }
 
-            bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(),
-                    drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+            bitmap = Bitmap.createBitmap( (int)(drawable.getIntrinsicWidth() * scaleFactor ) ,
+                    (int)(drawable.getIntrinsicHeight()* scaleFactor), Bitmap.Config.ARGB_8888);
+
             Canvas canvas = new Canvas(bitmap);
             drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
             drawable.draw(canvas);
@@ -133,6 +138,7 @@ public class Utils {
         Log.e(tag, text);
         Timber.e(text);
         File logFile = getLogFile();
+//        Timber.e("log file location " + logFile.getAbsolutePath());
         try {
             if (!logFile.exists()) {
                 logFile.createNewFile();
