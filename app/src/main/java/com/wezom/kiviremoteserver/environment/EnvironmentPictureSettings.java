@@ -10,7 +10,6 @@ import android.util.Log;
 import com.wezom.kiviremoteserver.common.Constants;
 import com.wezom.kiviremoteserver.service.aspect.HDRValues;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import wezom.kiviremoteserver.environment.bridge.BridgePicture;
@@ -25,14 +24,14 @@ public class EnvironmentPictureSettings {
     private int saturation = 50;
     private int backlight;
     private int temperature;
+    private int contrast = 50;
     private int HDR;
     private int green;
     private int BLue;
     private int red;
     private int sharpness;
-    private int contrast = 50;
     private int videoArcType;
-
+    private boolean isAutoInvalidate = false;
     //
     BridgePicture bridgePicture;
 
@@ -71,8 +70,7 @@ public class EnvironmentPictureSettings {
 
     public void initSettings(Context context) {
         bridgePicture.initSettings(context);
-
-
+        initValues();
     }
 
     public int getBrightness() {
@@ -82,6 +80,7 @@ public class EnvironmentPictureSettings {
     public int getSharpness() {
         return bridgePicture.getSharpness();
     }
+
     public int getSaturation() {
         return bridgePicture.getSaturation();
     }
@@ -98,6 +97,7 @@ public class EnvironmentPictureSettings {
     public void setTemperature(int temperature) {
         this.temperature = temperature;
         bridgePicture.setTemperature(temperature);
+        updateValues();
         //TvPictureManager.getInstance().setColorTempratureIdx(progress)
     }
 
@@ -133,29 +133,74 @@ public class EnvironmentPictureSettings {
         //                TvPictureManager.PICTURE_SHARPNESS, progress)
     }
 
+
+    public void setAutoInvalidate(boolean isAutoInvalidate) {
+        this.isAutoInvalidate = isAutoInvalidate;
+        updateValues();
+    }
+
+    private void initValues() {
+        brightness = bridgePicture.getBrightness();
+        saturation = bridgePicture.getSaturation();
+        backlight = bridgePicture.getBacklight();
+        temperature = bridgePicture.getTemperature();
+        contrast = bridgePicture.getContrast();
+        Log.e("bridgePicture", "" + brightness + ":" + saturation + ":"
+                + temperature + ":" + contrast + ":" + backlight);
+    }
+
     private void updateValues() {
-        if(true)
+        if (!isAutoInvalidate)
             return;
-        Log.e("transform", "test 3");
         float difContr = ((float) (contrast * 0.6 + 20) - 50f) / 100f;
         float lBrightness = ((float) (brightness * 0.6 + 20) - 50f) / 100f;
-        float lSaturation = ((float) saturation) / 100f;
+        float lSaturation = 0;
+        if (saturation <= 50) {
+            lSaturation = ((float) saturation) / 50f;
+        } else {
+            lSaturation = 1 + ((float) (saturation - 50) / 150f);
+        }
         float lContrast = 1 + difContr / (3 - 2 * lSaturation);
         float brightnessShift = -0.5f * (difContr);
 
         lBrightness += brightnessShift;
-        Log.e("transform", "br " + lBrightness +
-                " : sat " + lSaturation + " : contr " + lContrast);
+
         final float invSat = 1 - lSaturation;
         final float R = 0.213f * invSat;
         final float G = 0.715f * invSat;
         final float B = 0.072f * invSat;
+        float temp = 0f;
+//         COLOR_TEMP_NATURE(1, R.string.nature),
+//    COLOR_TEMP_WARMER(2, R.string.warmer),
+//    COLOR_TEMP_WARM(3, R.string.warm),
+//    COLOR_TEMP_COOL(4, R.string.cool),
+//    COLOR_TEMP_COOLER(5, R.string.cooler);
+        switch (temperature) {
+            case 2:
+                temp = 0.05f;
+                break;
+            case 3:
+                temp = 0.1f;
+                break;
+            case 5:
+                temp = -0.1f;
+                break;
+            case 4:
+                temp = -0.05f;
+                break;
+            case 1:
+            default:
+                break;
+        }
 
+        if ((R + lSaturation) * lContrast + G * lContrast + B * lContrast + lBrightness < 0.1) {
+            lContrast = (float) ((0.1 - lBrightness) / (R + G + B + lSaturation));
+        }
         float[] matrixVal = new float[]{
                 (R + lSaturation) * lContrast, R * lContrast, R * lContrast, 0,
                 G * lContrast, (G + lSaturation) * lContrast, G * lContrast, 0,
                 B * lContrast, B * lContrast, (B + lSaturation) * lContrast, 0,
-                lBrightness, lBrightness, lBrightness, 1};
+                lBrightness + temp, lBrightness, lBrightness - temp, 1};
         setColorTransform(matrixVal);
     }
 
@@ -192,7 +237,7 @@ public class EnvironmentPictureSettings {
             e.printStackTrace();
         } catch (IllegalAccessException e) {
             e.printStackTrace();
-        } catch (InvocationTargetException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -200,7 +245,6 @@ public class EnvironmentPictureSettings {
 //    float saturation = 50;
 //    float contrast = 50;
 //    float brightness = 50;
-
 
 
     public void setSharpness(int sharpness) {

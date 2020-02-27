@@ -196,6 +196,8 @@ public class AppsInfoLoader {
                 }
             } catch (PackageManager.NameNotFoundException e) {
                 Timber.e(e, e.getMessage());
+            } catch (Exception e){
+                Timber.e(e, e.getMessage());
             }
         }
         return visibleApps;

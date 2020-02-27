@@ -50,6 +50,9 @@ android {
         realtek_9_ {
             dimension "dim1"
         }
+        mock {
+            dimension "dim1"
+        }
     }
     sourceSets {
         realtek_9_ {

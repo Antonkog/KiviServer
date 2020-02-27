@@ -172,11 +172,13 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
         lastUpdate = System.currentTimeMillis();
         audioSettings = new EnviorenmentAudioSettings();
         pictureSettings = new EnvironmentPictureSettings();
+        pictureSettings.setAutoInvalidate(false);
         inputsHelper = new EnvironmentInputsHelper();
         createLayout(getBaseContext());
         //}, 5000);
         timer.post(updateSleepTime);
         //   }, 3000);
+        pictureSettings.setAutoInvalidate(true);
 
     }
 
@@ -557,7 +559,7 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
             picturesView.add(psdContrast(body));//+
             picturesView.add(psdSaturation(body));//+
             //psdSharpness(body);//+
-            if (BridgeGeneral.ENVIRONMENT != EnvironmentFactory.ENVIRONMENT_REALTEC)
+            if (BridgeGeneral.ENVIRONMENT == EnvironmentFactory.ENVIRONMENT_MTC)
                 picturesView.add(psdHDR(body));//+
             picturesView.add(psdTemperature(body));//+
             addPictureModeRow(body);//+
@@ -706,8 +708,10 @@ public class AspectLayoutService extends Service implements View.OnKeyListener {
         lrTextSwitcher.setLable(R.string.picture_mode);
         lrTextSwitcher.setIcon(R.drawable.ic_image_w_24dp);
         lrTextSwitcher.setProgressListener(progress -> {
+            pictureSettings.setAutoInvalidate(false);
             pictureSettings.setPictureMode(progress);
             enablePicturesSettings(progress == PictureMode.PICTURE_MODE_USER.getID(), true);
+            pictureSettings.setAutoInvalidate(true);
         });
         body.addView(lrTextSwitcher);
     }
