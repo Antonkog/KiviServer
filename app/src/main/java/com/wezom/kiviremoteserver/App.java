@@ -26,7 +26,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.crashlytics.android.Crashlytics;
-import com.android.inputmethod.pinyin.util.PropertyHelper;
 import com.wezom.kiviremoteserver.common.Constants;
 import com.wezom.kiviremoteserver.di.components.ApplicationComponent;
 import com.wezom.kiviremoteserver.di.components.DaggerApplicationComponent;
@@ -224,8 +223,6 @@ public class App extends Application {
 
 
     public static boolean isTVRealtek() {
-        return "realtek".equalsIgnoreCase(PropertyHelper.getProperty("ro.product.manufacturer"));
+        return BuildConfig.FLAVOR.contains("realtek");
     }
-
-
 }
